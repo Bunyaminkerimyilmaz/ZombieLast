@@ -15,7 +15,9 @@
         "LastHaven.Audio",
         "LastHaven.Feedback",
         "LastHaven.DebugTools",
-        "Unity.AI.Navigation"
+        "Unity.AI.Navigation",
+        "Unity.Cinemachine",
+        "Unity.RenderPipelines.Universal.Editor"
     ],
     "includePlatforms": [
         "Editor"

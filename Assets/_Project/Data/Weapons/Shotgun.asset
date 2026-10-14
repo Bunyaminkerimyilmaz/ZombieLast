@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0f372000ed9417a458f96e1cef84bc4d, type: 3}
+  m_Name: Shotgun
+  m_EditorClassIdentifier: LastHaven.Combat::LastHaven.Combat.WeaponData
+  _id: shotgun
+  _displayName: "Pompal\u0131"
+  _damage: 12
+  _pelletCount: 8
+  _fireRate: 1.1
+  _spreadAngle: 18
+  _range: 12
+  _magSize: 6
+  _reserveAmmo: 36
+  _reloadTime: 2
+  _tracerColor: {r: 1, g: 0.62352943, b: 0.2627451, a: 1}
+  _fireSound: {fileID: 0}
+  _muzzleVfx: {fileID: 0}

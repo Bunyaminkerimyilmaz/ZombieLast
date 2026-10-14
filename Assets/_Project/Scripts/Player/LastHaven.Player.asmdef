@@ -4,7 +4,8 @@
     "references": [
         "LastHaven.Core",
         "LastHaven.Combat",
-        "Unity.InputSystem"
+        "Unity.InputSystem",
+        "Unity.Cinemachine"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

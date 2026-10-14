@@ -21,5 +21,6 @@ namespace LastHaven.Editor
         Ground,
         BaseArea,
         Obstacle,
+        TestDummy,
     }
 }

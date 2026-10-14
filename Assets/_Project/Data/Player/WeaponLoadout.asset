@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d2606c874a3dade459c667d46df62890, type: 3}
+  m_Name: WeaponLoadout
+  m_EditorClassIdentifier: LastHaven.Player::LastHaven.Player.WeaponLoadoutData
+  _slots:
+  - _weapon: {fileID: 11400000, guid: 77077437a72965740855faafb92a63e9, type: 2}
+    _unlockedAtStart: 1
+  - _weapon: {fileID: 11400000, guid: b91b99ae08ed1294c9386a582dab3809, type: 2}
+    _unlockedAtStart: 0
+  - _weapon: {fileID: 11400000, guid: 356459c90c36fe54b83a5b4c3aef1d31, type: 2}
+    _unlockedAtStart: 0
+  _upgrades: {fileID: 11400000, guid: c0490e220c4be82488c66ed6728b68a7, type: 2}
+  _hitMask:
+    serializedVersion: 2
+    m_Bits: 2368

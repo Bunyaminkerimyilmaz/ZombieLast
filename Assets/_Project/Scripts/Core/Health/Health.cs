@@ -34,11 +34,22 @@ namespace LastHaven.Core
 
         public bool IsAlive => Model.IsAlive;
 
+        /// <summary>
+        /// Hasarı engelleyebilen kaynak (ör. oyuncunun atılma dokunulmazlığı). Null ise her hasar uygulanır.
+        /// Sahibi kendi Awake'inde atar.
+        /// </summary>
+        public IDamageFilter DamageFilter { get; set; }
+
         // Tembel kurulum: başka bir bileşen Awake'te SetMax çağırsa da çalışır.
         private HealthModel Model => _model ??= new HealthModel(_maxHealth);
 
         public void TakeDamage(DamageInfo damage)
         {
+            if (DamageFilter != null && !DamageFilter.CanTakeDamage(damage))
+            {
+                return;
+            }
+
             float applied = Model.TakeDamage(damage.Amount);
             if (applied <= 0f)
             {

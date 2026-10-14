@@ -65,6 +65,35 @@ namespace LastHaven.Tests.EditMode
             Assert.AreEqual(DamageType.Explosion, _lastDied.KillingBlow.DamageType);
         }
 
+        [Test]
+        public void TakeDamage_BlockedByFilter_NoDamageNoEvent()
+        {
+            var filter = new ToggleFilter { Allow = false };
+            _health.DamageFilter = filter;
+            var damage = new DamageInfo(20f, DamageType.Melee, null, Vector3.zero, Vector3.forward);
+
+            _health.TakeDamage(damage);
+
+            Assert.AreEqual(50f, _health.Current);
+            Assert.AreEqual(0, _damagedCount);
+
+            filter.Allow = true;
+            _health.TakeDamage(damage);
+
+            Assert.AreEqual(30f, _health.Current);
+            Assert.AreEqual(1, _damagedCount);
+        }
+
+        private sealed class ToggleFilter : IDamageFilter
+        {
+            public bool Allow { get; set; }
+
+            public bool CanTakeDamage(in DamageInfo damage)
+            {
+                return Allow;
+            }
+        }
+
         private void OnDamaged(DamagedEvent evt)
         {
             _damagedCount++;

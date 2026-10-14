@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8a5fed1f5bab4d44cbd070859067e1d0, type: 3}
+  m_Name: CombatFeedbackConfig
+  m_EditorClassIdentifier: LastHaven.Feedback::LastHaven.Feedback.CombatFeedbackConfig
+  _tracerPrefab: {fileID: 6087627969972966377, guid: 74ae4e883693e944881398b359d057e8, type: 3}
+  _impactPrefab: {fileID: 3566405711815185995, guid: 079d5ebee7ebb484bad07d107cf5e6ac, type: 3}
+  _muzzleFlashPrefab: {fileID: 8861395792130334704, guid: 33d801e0d28213543ab22a4d51d795d8, type: 3}
+  _tracerPrewarm: 16
+  _impactPrewarm: 24
+  _muzzleFlashPrewarm: 4
+  _weapons:
+  - {fileID: 11400000, guid: 77077437a72965740855faafb92a63e9, type: 2}
+  - {fileID: 11400000, guid: b91b99ae08ed1294c9386a582dab3809, type: 2}
+  - {fileID: 11400000, guid: 356459c90c36fe54b83a5b4c3aef1d31, type: 2}
+  _defaultTracerColor: {r: 1, g: 1, b: 1, a: 1}
+  _minTracerLength: 0.3

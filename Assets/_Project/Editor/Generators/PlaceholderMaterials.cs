@@ -70,6 +70,7 @@ namespace LastHaven.Editor
                 PlaceholderMaterialId.Ground => Hex("#363636"),            // Koyu gri
                 PlaceholderMaterialId.BaseArea => Hex("#555555"),          // Biraz açık gri
                 PlaceholderMaterialId.Obstacle => Hex("#6E6257"),          // Kahve-gri
+                PlaceholderMaterialId.TestDummy => Hex("#9A9A9A"),         // Gri (GDD'de yok; silah testi kuklası)
                 _ => throw new ArgumentOutOfRangeException(nameof(id), id, null),
             };
         }

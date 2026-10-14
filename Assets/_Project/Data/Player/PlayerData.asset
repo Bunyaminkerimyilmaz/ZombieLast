@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14471ef70af71ae418fc1813126fc9ca, type: 3}
+  m_Name: PlayerData
+  m_EditorClassIdentifier: LastHaven.Player::LastHaven.Player.PlayerData
+  _maxHealth: 100
+  _hitInvulnerabilityDuration: 0.3
+  _moveSpeed: 6
+  _dashDistance: 5
+  _dashDuration: 0.18
+  _dashCooldown: 2
+  _aimHeight: 1.2
+  _gamepadAimDistance: 6
+  _pickupRadius: 3

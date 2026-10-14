@@ -51,6 +51,10 @@ namespace LastHaven.Editor
             new ObstacleShape("WallSegment", new Vector3(5f, 2f, 0.5f), 1f, 0f),
         };
 
+        [Header("Oyuncu")]
+        [SerializeField, Tooltip("Oyuncunun sahnedeki başlangıç noktası (m). Varsayılan: merkezin 3 m güneyi.")]
+        private Vector3 _playerSpawnPosition = new Vector3(0f, 0f, -3f);
+
         [Header("Sınır")]
         [SerializeField, Min(0.5f), Tooltip("Görünmez sınır duvarlarının yüksekliği (m).")]
         private float _boundaryWallHeight = 5f;
@@ -67,6 +71,8 @@ namespace LastHaven.Editor
         public float SpawnZoneRadius => _spawnZoneRadius;
 
         public IReadOnlyList<ObstacleShape> ObstacleShapes => _obstacleShapes;
+
+        public Vector3 PlayerSpawnPosition => _playerSpawnPosition;
 
         public float BoundaryWallHeight => _boundaryWallHeight;
 

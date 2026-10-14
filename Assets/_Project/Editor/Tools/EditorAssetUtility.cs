@@ -1,5 +1,7 @@
+using System;
 using UnityEditor;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace LastHaven.Editor
 {
@@ -38,6 +40,54 @@ namespace LastHaven.Editor
             AssetDatabase.CreateAsset(asset, assetPath);
             created = true;
             return asset;
+        }
+
+        /// <summary>
+        /// Var olan prefab'ı düzenleme için açar ve <paramref name="edit"/>'i çalıştırır; dönen değişiklik sayısı 0'dan büyükse kaydeder.
+        /// Eksik bileşen veya referans eklemek için; düzenleyici kullanıcının ayarlarını ezmemeli.
+        /// </summary>
+        /// <returns>Değişiklik sayısı.</returns>
+        public static int EditPrefab(string prefabPath, Func<GameObject, int> edit)
+        {
+            GameObject contents = PrefabUtility.LoadPrefabContents(prefabPath);
+            try
+            {
+                int changes = edit(contents);
+                if (changes > 0)
+                {
+                    PrefabUtility.SaveAsPrefabAsset(contents, prefabPath);
+                }
+
+                return changes;
+            }
+            finally
+            {
+                PrefabUtility.UnloadPrefabContents(contents);
+            }
+        }
+
+        /// <summary>
+        /// Private serialized referans alanı boşsa <paramref name="value"/>'yu yazar; doluysa dokunmaz.
+        /// Alan yoksa hata loglar. Yazdıysa true döner.
+        /// </summary>
+        public static bool AssignIfMissing(Object target, string propertyName, Object value)
+        {
+            var serialized = new SerializedObject(target);
+            SerializedProperty property = serialized.FindProperty(propertyName);
+            if (property == null || property.propertyType != SerializedPropertyType.ObjectReference)
+            {
+                Debug.LogError($"[Last Haven] {target.GetType().Name}: '{propertyName}' referans alanı bulunamadı.", target);
+                return false;
+            }
+
+            if (property.objectReferenceValue != null)
+            {
+                return false;
+            }
+
+            property.objectReferenceValue = value;
+            serialized.ApplyModifiedPropertiesWithoutUndo();
+            return true;
         }
     }
 }

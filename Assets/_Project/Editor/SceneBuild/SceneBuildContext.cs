@@ -56,18 +56,7 @@ namespace LastHaven.Editor
             int layer = 0,
             bool withCollider = true)
         {
-            GameObject gameObject = GameObject.CreatePrimitive(type);
-            gameObject.name = name;
-            gameObject.layer = layer;
-            gameObject.transform.SetParent(parent, false);
-            gameObject.GetComponent<Renderer>().sharedMaterial = GetMaterial(material);
-
-            if (!withCollider)
-            {
-                Object.DestroyImmediate(gameObject.GetComponent<Collider>());
-            }
-
-            return gameObject;
+            return PrimitiveFactory.Create(type, name, parent, GetMaterial(material), layer, withCollider);
         }
     }
 }

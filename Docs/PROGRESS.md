@@ -4,9 +4,9 @@
 
 ## Durum
 
-- **Son tamamlanan görev:** Gün 2 · 2.1
-- **Sıradaki görev:** Gün 2 · 2.2
-- **Kilometre taşı:** —
+- **Son tamamlanan görev:** Gün 3 · 3.3
+- **Sıradaki görev:** Gün 4 · 4.1
+- **Kilometre taşı:** 🏁 M1 (yürü, nişan al, ateş et) kod tarafında tamam; kullanıcının elle testi ve commit'i bekleniyor
 
 ## Tamamlanan görevler
 
@@ -16,6 +16,11 @@
 | 1.2 Core altyapısı | `EventBus<T>` (copy-on-write) + `EventBusRegistry`, `ServiceLocator`, hasar sözleşmesi (`DamageType`, `DamageInfo`, `IDamageable`), `TargetType`, `ITargetable`, `HealthModel` (saf C#), `Health` (MonoBehaviour), `DamagedEvent`/`DiedEvent`, `GameLayers`, `GameTags`. 42 EditMode testi | `Scripts/Core/Messaging/`, `Core/Services/ServiceLocator.cs`, `Core/Damage/`, `Core/Targeting/`, `Core/Health/`, `Core/Events/HealthEvents.cs`, `Core/GameLayers.cs`, `Core/GameTags.cs`, `Tests/EditMode/Core/` |
 | 1.3 Üretici altyapısı + test haritası | `IGenerationStep` / `ISceneBuildStep` + `StepDiscovery` (TypeCache), `SceneBuildContext`, `GameSceneBuilder`, `ProjectSetup`, `GenerationPipeline`, 5 menü. 18 yer tutucu URP/Lit materyal. `MapLayoutConfig` + saf `ObstacleLayout`. Game.unity: zemin + NavMeshSurface, üs dairesi, 25 engel, sınır duvarları, güneş, 4 `SpawnZone`. `CompassDirection`, `NavMeshBaker`. 57 EditMode testi | `Editor/Tools/`, `Editor/Generators/`, `Editor/SceneBuild/` (+ `Map/`), `Core/CompassDirection.cs`, `Enemies/Navigation/NavMeshBaker.cs`, `Waves/SpawnZone.cs`, `Tests/EditMode/Generation/`, `Scenes/Game.unity`, `Data/Map/MapLayoutConfig.asset`, `Materials/Placeholder/M_*.mat` |
 | 2.1 Girdi sistemi | Core: `IInputReader`, `InputMode`. Player: `GameInputActions` (GDD §4 bağlamaları kodda; Gameplay/BuildMode/UI haritaları), `InputActionNames`, `LocomotionActions`, `InputReader` (servis, mod, son cihaz, Start bas/tut). DebugTools: `InputDebugLogger` (varsayılan kapalı). `InputSceneStep` → `[Systems]/Input`. 76 yeni EditMode testi (toplam 133) | `Scripts/Core/Input/`, `Scripts/Player/Input/`, `Scripts/DebugTools/InputDebugLogger.cs`, `Editor/SceneBuild/InputSceneStep.cs`, `Tests/EditMode/Player/GameInputActionsTests.cs` |
+| 2.2 Oyuncu hareketi ve nişan | Core: `IPlayer`, `ITargetRegistry` + saf `TargetSet` + `TargetRegistry` (servis), `IDamageFilter` (`Health.DamageFilter`). Player: `PlayerData` (GDD §5), saf `DashModel` ve `PlanarMath`, `PlayerMotor` (CharacterController, kamera yaw'ı, yerçekimi, atılma), `PlayerAim` (fare: nişan düzlemine ışın; gamepad: sağ çubuk), `PlayerCharacter` (kök: IPlayer + ITargetable + hasar filtresi). `PlayerGenerator` (data + prefab), `TargetingSceneStep`, `PlayerSceneStep`, geçici `CameraSceneStep`. 26 yeni EditMode testi (toplam 159) | `Scripts/Core/Player/`, `Scripts/Core/Targeting/`, `Scripts/Player/{Data,Movement,Aim}/`, `Scripts/Player/PlayerCharacter.cs`, `Editor/Generators/PlayerGenerator.cs`, `Editor/SceneBuild/{Targeting,Player,Camera}SceneStep.cs`, `Data/Player/PlayerData.asset`, `Prefabs/Player/Player.prefab` |
+| 2.3 Kamera | Core: `CameraPreset` + `CameraPresets.Next`, `ICameraService` (Camera, CurrentPreset, Yaw, SetPreset, boş Shake). Player: `CameraConfig` (GDD §4 preset'leri, look-ahead, takip yumuşatması), `CameraPresetSettings`, saf `LookAhead`, `CameraRig` (Cinemachine 3: Brain + CinemachineCamera + CinemachineFollow, CameraTarget), `CameraPresetHotkey` (F9, sadece editör/dev build). `PlayerMotor`/`PlayerAim` kamerayı `ICameraService`'ten alıyor; geçici `MainCameraCache` silindi. `CameraGenerator`, `CameraSceneStep` (yeniden yazıldı). 12 yeni EditMode testi (toplam 171) | `Scripts/Core/Camera/`, `Scripts/Player/Camera/`, `Editor/Generators/CameraGenerator.cs`, `Editor/SceneBuild/CameraSceneStep.cs`, `Data/Camera/CameraConfig.asset` |
+| 3.1 Stat sistemi ve silah verisi | Core/Stats: `StatType` (11 stat), `StatModifier` (Flat / PercentAdd + kaynak id), saf `StatCollection`, `PerkFlag`, `IRunModifiers` + saf `RunModifiers` + `RunModifiersHost` (kayıt bileşeni). Combat: `WeaponData`. `WeaponsGenerator` (Pistol, Shotgun, Rifle; GDD §6), `RunModifiersSceneStep`. 22 yeni EditMode testi (toplam 193) | `Scripts/Core/Stats/`, `Scripts/Combat/Weapons/WeaponData.cs`, `Editor/Generators/WeaponsGenerator.cs`, `Editor/SceneBuild/RunModifiersSceneStep.cs`, `Data/Weapons/*.asset`, `Tests/EditMode/Core/{StatCollection,RunModifiers}Tests.cs` |
+| 3.2 Ateş etme | Core: `CombatEvents` (6 olay), `HitTargetType` + `HitTargetTypes.FromLayer`, `DamageableLookup` (collider → IDamageable önbelleği), saf `Countdown`. Combat: saf `WeaponRuntime`, `WeaponUpgradeType`, `WeaponUpgradeConfig`, `HitscanShooter` + `HitscanRequest` + `ShotResult`, saf `SpreadPattern`. Player: `WeaponLoadoutData` + `WeaponSlotDefinition`, saf `WeaponSlots` ve `WeaponArsenal`, `WeaponController`. DebugTools: `TestDummy`, `CombatDebugLogger`. `PlayerWeaponsGenerator`, `TestDummiesGenerator` (+ açma/kapama menüsü), `TestDummiesConfig`, `TestDummiesSceneStep`; `PlayerGenerator` var olan prefab'a eksik `WeaponController`'ı ekliyor. 54 yeni EditMode testi (toplam 247) | `Scripts/Core/Events/CombatEvents.cs`, `Core/Damage/{HitTargetType,DamageableLookup}.cs`, `Core/Timing/Countdown.cs`, `Scripts/Combat/{Weapons,Hitscan}/`, `Scripts/Player/Weapons/`, `Scripts/Player/Data/{WeaponLoadoutData,WeaponSlotDefinition}.cs`, `Scripts/DebugTools/{TestDummy,CombatDebugLogger}.cs`, `Editor/Generators/{PlayerWeapons,TestDummies}Generator.cs`, `Editor/SceneBuild/TestDummies*`, `Data/Player/WeaponLoadout.asset`, `Data/Weapons/WeaponUpgradeConfig.asset`, `Data/Debug/TestDummiesConfig.asset`, `Tests/EditMode/Combat/` |
+| 3.3 Havuzlama ve vuruş efektleri | Core/Pooling: `IPoolService`, `IPoolable`, `PoolStats`, `PoolService` (`ObjectPool<T>` ile prefab başına `GameObjectPool` + `PooledInstance`), `PooledLifetime`. Core: `ShotTracedEvent` (saçma başına iz olayı; `HitscanRequest`'e `WeaponId` + `TracerOrigin`). Feedback: `Tracer` (LineRenderer), `ImpactEffect` + `ImpactProfile` (ParticleSystem; et/kıvılcım), `MuzzleFlash` (nokta ışık), `TracerPalette`, `CombatFeedbackConfig`, `FeedbackDirector`. Editor: `FxMaterials` (additive/alpha), `FeedbackPrefabs`, `FeedbackGenerator`, `PoolSceneStep`, `FeedbackSceneStep`. 24 yeni EditMode testi (toplam 271) | `Scripts/Core/Pooling/`, `Core/Events/CombatEvents.cs`, `Scripts/Combat/Hitscan/`, `Scripts/Feedback/`, `Editor/Generators/{Feedback*,FxMaterials}.cs`, `Editor/SceneBuild/{Pool,Feedback}SceneStep.cs`, `Data/Feedback/CombatFeedbackConfig.asset`, `Prefabs/Feedback/{Tracer,Impact,MuzzleFlash}.prefab`, `Materials/Fx/M_Fx{Additive,Alpha}.mat`, `Tests/EditMode/{Core/PoolServiceTests,Feedback/CombatFeedbackTests}.cs` |
 
 ## Assembly'ler
 
@@ -23,16 +28,16 @@
 |---|---|
 | LastHaven.Core | — |
 | LastHaven.Combat | Core |
-| LastHaven.Player | Core, Combat, Unity.InputSystem |
+| LastHaven.Player | Core, Combat, Unity.InputSystem, Unity.Cinemachine |
 | LastHaven.Enemies | Core, Unity.AI.Navigation |
 | LastHaven.Waves | Core, Enemies |
 | LastHaven.Building | Core, Combat |
 | LastHaven.Economy / GameFlow / Progression | Core |
 | LastHaven.UI / Audio / Feedback / DebugTools | 9 oynanış modülü (Core…Progression); birbirlerini referans almaz |
-| LastHaven.Editor (sadece Editor) | 13 modülün hepsi, Unity.AI.Navigation |
+| LastHaven.Editor (sadece Editor) | 13 modülün hepsi, Unity.AI.Navigation, Unity.Cinemachine, Unity.RenderPipelines.Universal.Editor |
 | LastHaven.Tests.EditMode | 13 modülün hepsi + LastHaven.Editor + Unity.InputSystem + UnityEngine/UnityEditor.TestRunner + nunit.framework.dll; `UNITY_INCLUDE_TESTS` |
 
-Paket referansları: Unity.AI.Navigation (Enemies, Editor), Unity.InputSystem (Player, Tests.EditMode). Cinemachine ve URP henüz yok; ihtiyaç olan görevde eklenecek.
+Paket referansları: Unity.AI.Navigation (Enemies, Editor), Unity.InputSystem (Player, Tests.EditMode), Unity.Cinemachine (Player, Editor), Unity.RenderPipelines.Universal.Editor (Editor; FX materyalinde `BaseShaderGUI.SetupMaterialBlendMode` için). Runtime URP referansı henüz yok; ihtiyaç olan görevde eklenecek.
 
 ## Editör menüleri
 
@@ -40,9 +45,10 @@ Paket referansları: Unity.AI.Navigation (Enemies, Editor), Unity.InputSystem (P
 |---|---|
 | `Tools/Last Haven/Rebuild All` | Sırayla: Setup Project → Generate Default Data → Generate Prefabs → Build Game Scene |
 | `Tools/Last Haven/Setup Project` | `GameLayers.All`'ı TagManager'a sabit indekslerle, `GameTags.Custom`'ı tag olarak yazar. Her değişikliği loglar |
-| `Tools/Last Haven/Generate Default Data` | Tüm `IGenerationStep.GenerateData()`: yer tutucu materyaller, `MapLayoutConfig`. Varsa dokunmaz |
-| `Tools/Last Haven/Generate Prefabs` | Tüm `IGenerationStep.GeneratePrefabs()` (şimdilik içi boş) |
+| `Tools/Last Haven/Generate Default Data` | Tüm `IGenerationStep.GenerateData()`: yer tutucu materyaller, `MapLayoutConfig`, `PlayerData`, `CameraConfig`, silahlar + `WeaponUpgradeConfig` (`Data/Weapons/`), `WeaponLoadout`, `TestDummiesConfig`, FX materyalleri (`Materials/Fx/`), `CombatFeedbackConfig`. Varsa dokunmaz |
+| `Tools/Last Haven/Generate Prefabs` | Tüm `IGenerationStep.GeneratePrefabs()`: Player prefab'ı, efekt prefab'ları (`Prefabs/Feedback/`). Varsa sadece eksikleri tamamlar (boş data/prefab referansları, eksik `WeaponController` ve referansları) |
 | `Tools/Last Haven/Build Game Scene` | Game.unity'yi açar/oluşturur, `[Systems]` ve `[Gameplay]`'i silip tüm `ISceneBuildStep`'lerle kurar, kaydeder, Build Settings'e ekler. `[Environment]`'a dokunmaz |
+| `Tools/Last Haven/Options/Build Test Dummies` | Onay kutulu seçenek: test kuklaları sahneye kurulsun mu (`TestDummiesConfig._enabled`). Değiştirince Build Game Scene'i çalıştır |
 
 **Adım sıraları** (araya ekleme için 100'lük boşluk):
 
@@ -50,10 +56,23 @@ Paket referansları: Unity.AI.Navigation (Enemies, Editor), Unity.InputSystem (P
 |---|---|---|
 | Generation | `PlaceholderMaterialsGenerator` | 0 |
 | Generation | `MapGenerator` | 100 |
+| Generation | `PlayerGenerator` → `Data/Player/PlayerData.asset`, `Prefabs/Player/Player.prefab` | 200 |
+| Generation | `CameraGenerator` → `Data/Camera/CameraConfig.asset` | 300 |
+| Generation | `WeaponsGenerator` → `Data/Weapons/` (Pistol, Shotgun, Rifle, WeaponUpgradeConfig) | 400 |
+| Generation | `PlayerWeaponsGenerator` → `Data/Player/WeaponLoadout.asset` (Player prefab'ına `PlayerGenerator` bağlar) | 450 |
+| Generation | `TestDummiesGenerator` → `Data/Debug/TestDummiesConfig.asset` | 500 |
+| Generation | `FeedbackGenerator` → `Materials/Fx/`, `Data/Feedback/CombatFeedbackConfig.asset`, `Prefabs/Feedback/` (Tracer, Impact, MuzzleFlash) | 600 |
 | Scene | `InputSceneStep` → `[Systems]/Input` (`InputReader`, kapalı `InputDebugLogger`) | 0 |
+| Scene | `TargetingSceneStep` → `[Systems]/TargetRegistry` | 10 |
+| Scene | `RunModifiersSceneStep` → `[Systems]/RunModifiers` (`RunModifiersHost`) | 20 |
+| Scene | `PoolSceneStep` → `[Systems]/Pool` (`PoolService`) | 30 |
+| Scene | `FeedbackSceneStep` → `[Systems]/Feedback` (`FeedbackDirector` + config) | 40 |
 | Scene | `MapSceneStep` → `[Gameplay]/Map` (Ground, BaseArea, Obstacles, Boundary) | 100 |
 | Scene | `LightingSceneStep` → `[Gameplay]/Lighting/Sun` | 200 |
 | Scene | `WavesSceneStep` → `[Gameplay]/SpawnZones` | 300 |
+| Scene | `PlayerSceneStep` → `[Gameplay]/Player` (prefab örneği, `MapLayoutConfig.PlayerSpawnPosition`) | 400 |
+| Scene | `CameraSceneStep` → `[Gameplay]/CameraRig` (`CameraRig`, `CameraPresetHotkey`) + `CameraTarget`, `Main Camera` (Brain), `CinemachineCamera` (Follow) | 500 |
+| Scene | `TestDummiesSceneStep` → `[Gameplay]/TestDummies` (`CombatDebugLogger`) + `Dummy_1..3`. Seçenek kapalıysa hiçbir şey kurmaz | 600 |
 
 ## Servisler ve olaylar
 
@@ -62,6 +81,17 @@ Paket referansları: Unity.AI.Navigation (Enemies, Editor), Unity.InputSystem (P
 | `DamagedEvent` | Olay | Core (`Events/HealthEvents.cs`) | `Health` gönderir: Target, Damage (DamageInfo), AppliedAmount, CurrentHealth, MaxHealth |
 | `DiedEvent` | Olay | Core (`Events/HealthEvents.cs`) | `Health` gönderir, `DamagedEvent`'ten sonra: Target, KillingBlow |
 | `IInputReader` | Servis | Core (`Input/IInputReader.cs`) → `Player.InputReader` | `[Systems]/Input`. Property'ler + C# event'leri (global EventBus değil). `SetMode(InputMode)` |
+| `ITargetRegistry` | Servis | Core (`Targeting/ITargetRegistry.cs`) → `Core.TargetRegistry` | `[Systems]/TargetRegistry`. Mantık saf `TargetSet`'te (testlerde doğrudan kullanılabilir) |
+| `IPlayer` | Servis | Core (`Player/IPlayer.cs`) → `Player.PlayerCharacter` | Oyuncu prefab'ının kökü; Awake'te kaydolur |
+| `ICameraService` | Servis | Core (`Camera/ICameraService.cs`) → `Player.CameraRig` | `[Gameplay]/CameraRig`. `Yaw` hareket/gamepad nişanı için; `Shake` Gün 14'e kadar boş |
+| `IRunModifiers` | Servis | Core (`Stats/IRunModifiers.cs`) → saf `Core.RunModifiers` | `[Systems]/RunModifiers` (`RunModifiersHost` Awake'te oluşturup kaydeder). C# event'leri: `StatChanged(StatType)`, `FlagAdded(PerkFlag)` |
+| `WeaponFiredEvent` | Olay | Core (`Events/CombatEvents.cs`) | `WeaponController` gönderir, tetik başına bir kez: Source, WeaponId, Origin (namlu), Direction (saçılmasız), PelletCount |
+| `ShotHitEvent` | Olay | Core (`Events/CombatEvents.cs`) | `HitscanShooter` gönderir, isabet eden her saçma için (hasar uygulandıktan sonra): Source, Target, TargetType (`HitTargetType`), Point, Normal, Direction, Damage. Iskalama olay göndermez |
+| `ShotTracedEvent` | Olay | Core (`Events/CombatEvents.cs`) | `HitscanShooter` gönderir, **her saçma için** (ıska dahil), isabette o saçmanın `ShotHitEvent`'inden sonra: Source, WeaponId, Start (namlu), End (isabet / menzil sonu), Direction, IsHit. Mermi izi bunu kullanır |
+| `IPoolService` | Servis | Core (`Pooling/IPoolService.cs`) → `Core.PoolService` | `[Systems]/Pool`. `Get(prefab, pos, rot)`, `Get<T>(T prefab, …)`, `Release`, `Prewarm`, `GetStats`. Havuzlanan objeler `IPoolable` (`OnSpawned`/`OnDespawned`) alır; `PooledLifetime` süre sonunda iade eder |
+| `WeaponChangedEvent` | Olay | Core (`Events/CombatEvents.cs`) | `WeaponController`: SlotIndex (0 tabanlı), WeaponId, DisplayName. Oyun başında da bir kez |
+| `AmmoChangedEvent` | Olay | Core (`Events/CombatEvents.cs`) | `WeaponController`, sadece eldeki silah için: WeaponId, Ammo, MagSize (etkili), Reserve, HasInfiniteReserve |
+| `ReloadStartedEvent` / `ReloadFinishedEvent` | Olay | Core (`Events/CombatEvents.cs`) | `WeaponController`: WeaponId + Duration / Completed (false = silah değişince iptal) |
 
 ## Kararlar
 
@@ -139,11 +169,112 @@ Paket referansları: Unity.AI.Navigation (Enemies, Editor), Unity.InputSystem (P
 - Player ve DebugTools'taki yer tutucu `AssemblyInfo.cs`'ler silindi.
 - ⚠️ **MCP ile Play Mode testi:** Unity penceresi odakta değilse Play Mode kare ilerletmez (`Time.frameCount` 1'de kalır). Duman testinde `execute_code` ile `Application.runInBackground = true` yapıldı (sadece o Play oturumu için). Tuşlar sanal cihazlarla (`InputSystem.AddDevice` + `QueueStateEvent`) simüle edildi, test sonunda cihazlar silindi. Not: aynı karede kuyruğa giren fare olayları birleştirilir (scroll toplanır); tekerlek testinde her olayı ayrı çağrıda gönder.
 
+**2026-10-14 · 2.2 Oyuncu hareketi ve nişan**
+- **Kök bileşenin adı `PlayerCharacter`** (`Player` değil): `LastHaven.Player` namespace'iyle çakışırdı; başka namespace'lerde `Player` yazınca namespace'e çözülür.
+- **Dash dokunulmazlığı hasarı gerçekten engelliyor:** Core'a `IDamageFilter` + `Health.DamageFilter` eklendi. `PlayerCharacter` kendini filtre olarak atar: `PlayerMotor.IsInvulnerable` (= atılıyor) iken hasar uygulanmaz ve olay gönderilmez. 4.3'teki 0.3 sn hasar sonrası dokunulmazlık da aynı filtreye eklenecek.
+- **DashModel (saf C#):** Ayarlar her `TryStart`'ta verilir; Play'de data değişse veya 3.1'deki DashCooldown çarpanı gelse de geçerli olur. Hız = mesafe / süre. Son karede süre aşılırsa fazlası kırpılır, toplam mesafe tam çıkar. **Bekleme süresi atılmanın başladığı anda başlar.** Atılma bitmeden yeni atılma başlamaz (bekleme süresi atılma süresinden kısa olsa da).
+- **Atılma yönü:** O karenin hareket yönü; hareket girdisi yoksa baktığı (nişan) yön. `DashPressed` olayı atılmayı ister, atılma `Update`'te başlar. Ölüyken atılma ve yürüme yok; yerçekimi sürer.
+- **Hareket:** `PlanarMath.CameraRelative(input, yaw)`. Yerçekimi `Physics.gravity`'den gelir; yerdeyken dikey hız -2 m/sn tutulur (`isGrounded` kararlı kalsın diye). Kamera yaw'ı 2.3'ten beri `ICameraService.Yaw`'dan gelir.
+- **Nişan düzlemi:** Ayaktan `PlayerData.AimHeight` (1.2 m) yükseklikte. Namlu yüksekliğiyle aynı olunca mermi imlecin altındaki gövde hizasına gider. Üretici `Muzzle`'ı bu yüksekliğe koyar; data değişirse prefab'daki Muzzle elle taşınmalı.
+- **Gamepad nişanı:** Sağ çubuk kameraya göre çevrilir. Çubuk boştaysa oyuncu yürüme yönüne döner, o da yoksa son yönde kalır. Görev metninde yoktu; sağ çubuğu kullanmayan oyuncu da dönebilsin diye eklendi. `AimPoint` = oyuncu + yön × `GamepadAimDistance` (6 m). Fare imleci oyuncuya 0.1 m'den yakınsa yön değişmez. Dönüş anlık.
+- **PlayerAim** `[DefaultExecutionOrder(10)]`: `PlayerMotor`'dan sonra çalışır; o karenin pozisyonunu ve yürüme yönünü kullanır.
+- **PlayerData:** GDD §5'in hepsi (can, hasar sonrası dokunulmazlık, hız, dash, toplama yarıçapı) + nişan ayarları. Yeniden doğma süresi PlayerData'da değil; 6.1'de `GameConfig`'e gelecek.
+- **TargetRegistry:** Tür başına liste. `FindNearest` mesafeyi **yatay düzlemde (XZ)** ölçer, `maxDistance` dahildir. `IsTargetable` false olanları ve yok edilmiş Unity nesnelerini atlar. `GetAll` bellek ayırmaz; hedeflenemeyenler dahil hepsini döndürür. `Register`/`Unregister` bool döner.
+- **Servis + kayıt zamanlaması:** Servisler Start'ta `TryGet` ile alınır; yoksa uyarı loglanır, exception atılmaz. İlk abonelik/kayıt Start'ta yapılır, sonrası `OnEnable`/`OnDisable`'da (`_started` bayrağı). `PlayerCharacter.IsTargetable` = bileşen etkin ve oyuncu canlı.
+- **Prefab:** Kök `Player` (Player layer + tag) üzerinde: CharacterController (boy 2, yarıçap 0.5, merkez y = 1 + skinWidth; görsel kapsül yere otursun diye), `Health`, `PlayerMotor`, `PlayerAim`, `PlayerCharacter`. `Visual/Body` (kapsül) + `Visual/Nose` (küp): collider'sız, `M_Player`. `Muzzle` kökün çocuğu: (0, AimHeight, 0.7). Prefab varsa sadece boş `_data` alanları doldurulur (`EditorAssetUtility.AssignIfMissing` + `SavePrefabAsset`).
+- **Ortak primitive:** `PrimitiveFactory.Create` (Editor/Tools). `SceneBuildContext.CreatePrimitive` artık bunu kullanıyor.
+- **Başlangıç noktası:** `MapLayoutConfig.PlayerSpawnPosition` = (0, 0, -3), merkezin 3 m güneyi. Yeni alan; mevcut asset'te varsayılan değerle gelir.
+- **Geçici sabit kamera** (`CameraSceneStep`): Kamera olmadan fare nişanı test edilemiyordu. GDD §4 izometrik açısı (pitch 50, yaw 45, 22 m, FOV 35), başlangıç noktasına bakar, MainCamera tag'li, AudioListener'lı. 2.3'te Cinemachine kurulumuyla değiştirildi.
+- ⚠️ **Test assembly'sindeki MonoBehaviour GameObject'e eklenemez:** Tests.EditMode sadece Editor platformunda; Unity "editor script" diyerek `AddComponent`'i reddeder. Testte "yok edilmiş Unity nesnesi" gerekiyorsa ScriptableObject kullan (`TargetRegistryTestTarget`).
+- **MCP yokken derleme kontrolü:** Unity'nin ürettiği csproj'lar scratchpad'e kopyalanır, kaynaklar glob ile eklenir ve `dotnet build` ile derlenir. Yeni dosyaları da görür. Unity içi doğrulamanın yerini tutmaz.
+- **MCP duman testi notları:**
+  - ⚠️ `execute_code` editör güncellemesinde çalışır. Oradan okunan `IInputReader.MoveInput` sanal tuş basılıyken bile sıfır görünebilir (editör ve oyun girdi durumu ayrı). Hareketi pozisyon farkından ölç.
+  - Bırakma olayı gönderilmeyen sanal tuş basılı kalır; testten sonra boş state gönder ve cihazları sil.
+  - Kısa olayları (0.18 sn atılma) yakalamak için `Time.timeScale = 0.01` yap, kontrol et, sonra 1'e geri al.
+  - Oyuncuyu ışınlamak için önce CharacterController'ı kapat, pozisyonu ver, sonra aç.
+
+**2026-10-14 · 2.3 Kamera**
+- **Tek CinemachineCamera, sabit açı:** Rotasyon bileşeni yok; CM3 açıyı CinemachineCamera'nın transform'undan alır. `CameraRig.SetPreset` rotasyonu, `CinemachineFollow.FollowOffset`'i (= rotasyon × geri × mesafe) ve lens FOV'unu yazar. Açı hiç değişmediği için W her preset'te ekranın yukarısıdır.
+- **Preset geçişi anlık** (blend yok). F9 geliştirici kısayolu ve ileride ayarlar menüsü için yeterli. Yumuşak geçiş istenirse iki CinemachineCamera + öncelik ile brain blend'ine geçilebilir.
+- **`ICameraService.Yaw` eklendi** (görev listesinde yoktu). Hareket ve gamepad nişanı yaw'ı buradan alır. Kameranın transform açısından okunmaz; hem bir kare gecikme olmaz hem de pitch 90'a yaklaşınca euler açısı bozulmaz. Preset pitch'i bu yüzden 1–89 ile sınırlı.
+- **CinemachineFollow:** `BindingMode.WorldSpace`, `PositionDamping` = (d, d, d), d = `CameraConfig.FollowDamping` = **0.3** (GDD'de yok; tepkili ama yumuşak olsun diye seçildi). Ayarlar runtime'da `CameraRig.Awake`'te config'ten tekrar uygulanır; sahne adımı aynı değerleri editör önizlemesi için de yazar.
+- **Look-ahead:** `CameraTarget` = oyuncu + (nişan noktası − oyuncu) yatayda, uzunluğu en fazla `LookAheadDistance` (3 m) olacak şekilde kırpılır. İmleç yakınsa kayma da azdır. `CameraRig` `[DefaultExecutionOrder(20)]`: `PlayerAim`'den (10) sonra, Update'te çalışır; Brain LateUpdate'te kullanır. Başlangıçta hedef oyuncuya konur ve `PreviousStateIsValid = false` ile sönümlemesiz oturulur.
+- **Kurulum:** `[Gameplay]/CameraRig` (`CameraRig` + `CameraPresetHotkey`) altında `CameraTarget`, `Main Camera` (Camera, AudioListener, CinemachineBrain, MainCamera tag) ve `CinemachineCamera` (CinemachineCamera + CinemachineFollow). Kameralar editörde de varsayılan preset'le başlangıç noktasına bakar. Referanslar `SerializedObject` ile bağlanır.
+- **F9 kısayolu** (`CameraPresetHotkey`): Gövdesi `#if UNITY_EDITOR || DEVELOPMENT_BUILD` içinde; sınıf her build'de var (sahnede "missing script" olmasın). Kendi `InputAction`'ını (`<Keyboard>/f9`) kodda kurar. Oyun girdisi olmadığı için `IInputReader`'a eklenmedi. Her basışta `[Camera] Preset: X` loglar.
+- `BindingMode` `Unity.Cinemachine.TargetTracking` namespace'indedir (ayrı using gerekir).
+- ⚠️ **MCP duman testi:** Input System ayarı `PointersAndKeyboardsRespectGameViewFocus`. Unity/Game view odakta değilken sanal klavye olayları oyuna **gitmez** (2.2'de odak varken çalışmıştı). Test sırasında Unity odakta değilse girdiye bağlı kontrolleri servis/bileşen üzerinden doğrula (ör. `ICameraService.SetPreset`, `CameraPresetHotkey.OnPerformed` reflection ile). Proje ayarını testte değiştirme.
+- ⚠️ Duman testi sırasında kullanıcı Unity'de Play'i aynı anda kullanırsa oturum kapanabilir ve oyuncu kendiliğinden hareket ediyor gibi görünür. Beklenmedik hareket/kapanmada önce `InternalEditorUtility.isApplicationActive`'e ve Editor.log'a bak.
+
+**2026-10-14 · 3.1 Stat sistemi ve silah verisi**
+- **Formül:** Sonuç = (taban + Σflat) × max(0, 1 + Σyüzde). Yüzdeler **toplanır, birbirine çarpılmaz** (Hızlı Tetik ×2 = +%30). PercentAdd değeri **oran** olarak tutulur: 0.15 = +%15, -0.4 = -%40. Çarpan 0'ın altına inmez.
+- **StatType (11):** PlayerDamage, PlayerFireRate, PlayerMagSize, PlayerMaxHealth, DashCooldown, PickupRadius, CoinValue, TurretDamage, TurretFireRate, TurretRange, BarricadeMaxHealth. Hepsi GDD'deki bir perk/market/gece etkisine karşılık gelir. Hareket hızı veya doldurma süresini değiştiren bir etki GDD'de olmadığı için eklenmedi. Enum değerleri açıkça numaralı (SO'larda int saklanır): **sırayı değiştirme, yenisini sona ekle.** `PerkFlag` için de aynısı geçerli.
+- **Silah yükseltmeleri ve taret seviyeleri `IRunModifiers`'ta değil:** Silah yükseltmesi her silaha ayrıdır (3.2 `WeaponRuntime`); taret seviyeleri yapı verisindedir (Gün 9). `IRunModifiers` sadece run genelindeki etkiler içindir: perk'ler, market Mıknatıs, gece olayları.
+- **StatCollection:** Taban değer tutmaz; tüketici kendi data'sından verir (`Get(stat, base)`). Flat ve yüzde toplamları stat başına önbelleklidir; `Get` O(1) çalışır ve bellek ayırmaz. Her ekle/çıkar işleminde etkilenen statın toplamı baştan hesaplanır, float kayması birikmez. `Changed(StatType)` etkilenen her stat için bir kez çağrılır, tüm toplamlar güncellendikten sonra. `RemoveBySource` kaldırılan sayıyı döner. Kaynak id'leri ordinal karşılaştırılır, boş olamaz (`ArgumentException`).
+- **RunModifiers:** Saf C# sınıfı, `IRunModifiers`'ı uygular. `RunModifiersHost` (kayıt bileşeni) Awake'te oluşturup **saf nesneyi** ServiceLocator'a kaydeder, OnDestroy'da siler; yeni sahne = yeni run. Bayraklar bool dizisinde tutulur, kaldırma yok (perk'ler run boyunca kalır). `FlagAdded` sadece ilk eklemede çağrılır. Değişim olayları C# event'i (EventBus değil): tüketiciler az ve servise doğrudan bağlı.
+- **WeaponData:**
+  - `_spreadAngle` koninin **toplam** açısıdır; her mermi ±yarısı kadar sapar (tabanca 2° → ±1°). 3.2'deki HitscanShooter buna uymalı.
+  - `ReserveAmmo` -1 ise sonsuzdur (`InfiniteReserve`, `HasInfiniteReserve`). `FireInterval` = 1 / fireRate.
+  - Market fiyatı ve yükseltme değerleri (§6) WeaponData'ya eklenmedi; market (Gün 10) ve 3.2 kendi verisini kuracak.
+- **Ses/VFX alanları:** `_fireSound` şimdilik `AudioClip`, `_muzzleVfx` `GameObject` (prefab); ikisi de opsiyonel. 14.2'de `SoundData` gelince `_fireSound` tipi değişecek (şu an boş olduğu için veri kaybı olmaz).
+- **Silah asset'leri:** `Data/Weapons/Pistol.asset`, `Shotgun.asset`, `Rifle.asset`; id'ler `pistol`, `shotgun`, `rifle`; adlar Tabanca, Pompalı, Tüfek. Değerler `WeaponsGenerator`'daki GDD §6 tablosundan sadece **ilk oluşturmada** yazılır, sonra dokunulmaz. Mermi izi renkleri GDD'de yok, ayırt edilsin diye seçildi: tabanca açık sarı, pompalı turuncu, tüfek açık camgöbeği. `WeaponsGenerator.LoadOrCreateAll()` diğer üreticilere hazır liste verir.
+- Combat'taki yer tutucu `AssemblyInfo.cs` silindi (artık gerçek kod var).
+
+**2026-10-14 · 3.2 Ateş etme**
+- **Etkili değer:** `IRunModifiers.Get(Player*, WeaponData × yükseltme çarpanı)`. Yükseltmeler sadece hasar, atış hızı ve şarjöre; perk'ler `PlayerDamage`, `PlayerFireRate`, `PlayerMagSize`'a. Doldurma süresi, saçılma, menzil ve saçma sayısı sadece data'dan.
+- **Yükseltmeler:** `WeaponUpgradeConfig` (Combat SO, `Data/Weapons/WeaponUpgradeConfig.asset`), tüm silahlar için ortak; seviyeler silah başına `WeaponRuntime`'da. Seviye artışları **toplanır** (hasar 5. seviyede ×1.5). Maks. seviye GDD'deki fiyat sayısından: 5 / 3 / 3. Fiyatlar eklenmedi (market, Gün 10). `TryUpgrade` ödeme yapmaz. `WeaponUpgradeType` şimdilik Combat'ta; market ihtiyaç duyarsa Core'a taşınır.
+- **Şarjör yuvarlama:** en yakın tam sayı, x.5 yukarı (6 × 1.25 = 7.5 → 8), en az 1. Kapasite artınca mevcut mermi değişmez; dolu şarjör de doldurulabilir hale gelir.
+- **Mermi:** Saçma sayısından bağımsız, atış başına 1 mermi. Sonsuz yedekte `Reserve` 0'dır, `HasInfiniteReserve` true.
+- **Atış zamanlayıcısı:** Bekleme süresi sadece pozitifken azalır; 0'ın altına inen kısım (en fazla bir kare) sonraki atışa devreder. Böylece atış hızı FPS'ten bağımsız (0.07 sn aralık 60 FPS'te ~14.3/sn, devretmese 12/sn olurdu). Devreden süre en fazla bir aralık: takılmadan sonra seri atış olmaz. Karede en fazla 1 atış. Atış hızı perk'lerle 0'a inse de 0.01/sn'ye kırpılır.
+- **Doldurma:** R ile (`TryStartReload`); şarjör boşken bir sonraki `Tick` kendiliğinden başlatır (yedek varsa). Doldururken ateş edilemez, ateş doldurmayı kesmez. **Silah değişince doldurma iptal** (`ReloadFinishedEvent.Completed = false`); boş silaha dönülünce kendiliğinden yeniden başlar. **Sadece eldeki silah Tick edilir:** cepteki silahın atış bekleme süresi durur (hızlı silah değiştirerek bekleme atlanamaz).
+- **Saçılma yatay düzlemde** (dünya yukarı ekseni etrafında): 3D koni pompalının (±9°) saçmalarını 7.6 m'de yere gömerdi. **Katmanlı örnekleme:** koni saçma sayısı kadar dilime bölünür, her saçma kendi diliminde rastgele. Tek saçmada tüm koni.
+- **HitscanShooter:** Saçma başına tek `Physics.Raycast` (delme yok, trigger'lar yok sayılır). Önce hasar (`DamageType.Bullet`), sonra `ShotHitEvent`. Ölü hedefe isabet olay gönderir ama hasarı 0. `ShotHitEvent.Target` = IDamageable'ın objesi (kök), yoksa collider'ın objesi. Sonuç listesi tekrar kullanılır (bellek ayırmaz), bir sonraki `Fire`'a kadar geçerli. Rastgelelik `UnityEngine.Random`.
+- **`HitTargetType`** (Core): Surface / Enemy / Structure / Player, collider layer'ından (`HitTargetTypes.FromLayer`). 3.3'teki vuruş efekti buna bakacak.
+- **`DamageableLookup`** (Core): "Update'te GetComponent yok" kuralı için collider → IDamageable önbelleği (`GetComponentInParent`, null da önbelleğe girer). Yok edilmiş hedef tekrar aranır. ⚠️ Collider'a sonradan IDamageable eklenirse görmez; bileşenler prefab'da hazır olmalı. Düşman yakın dövüşü ve patlamalar da bunu kullanmalı.
+- **`Countdown`** (Core/Timing, saf): doldurma ve kukla yeniden doğması kullanıyor; oyuncu yeniden doğması (6.1) da kullanabilir.
+- **Oyuncu mermisinin maskesi** (`WeaponLoadoutData._hitMask`): Ground | Obstacle | Enemy. Yapılar ve oyuncu yok: mermi kendi barikatının/taretinin üstünden geçer. Default layer'daki görünmez sınır duvarları da yok.
+- **Işın başlangıcı:** Işın oyuncunun ekseninden, namlu yüksekliğinde başlar (namlu − yön × namlunun ileri uzaklığı); menzil o kadar uzar. Oyuncuya yapışık düşman ve namlunun girdiği duvar da vurulur. `WeaponFiredEvent.Origin` görsel için namlunun kendisi.
+- **Yön:** `PlayerAim.AimDirection` (yatay). `WeaponController` `[DefaultExecutionOrder(15)]`: PlayerAim'den (10) sonra.
+- **Silah bileşenleri:** `WeaponController` (MonoBehaviour) sadece girdi, Update ve atış. Silahlar ve olaylar saf `WeaponArsenal`'da (runtime'lar, seçim, `WeaponChanged`/`AmmoChanged`/doldurma olayları); yuva mantığı saf `WeaponSlots`'ta. Yuvalar ve başta açık olanlar `WeaponLoadoutData`'da (`Data/Player/WeaponLoadout.asset`: Tabanca açık, Pompalı, Tüfek). Kilitli yuva seçilemez, tekerlek kilitlileri atlar ve başa sarar. Silah değişimi anlık. Kilitli yuvaya basınca `[Weapon] N. yuva kilitli` logu. Ölüyken ateş ve doldurma yok. `AmmoChangedEvent` sadece eldeki silah için. `WeaponArsenal.Unlock(slot)` hazır (market Gün 10'da `WeaponUnlockRequestedEvent` ile bağlanacak). Test için inspector'da `WeaponController` sağ tık → **Debug/Tüm silahları aç** (Play'de).
+- **Prefab güncelleme:** `PlayerGenerator` var olan Player prefab'ına eksik `WeaponController`'ı **ekliyor** ve boş `_loadout`/`_muzzle`'ı dolduruyor (`EditorAssetUtility.EditPrefab`: `LoadPrefabContents` → düzenle → değişiklik varsa kaydet). Sadece ekleme yapar; var olan bileşen ve ayarlara dokunmaz. Yeni sistemler eski prefab'lara böyle eklenebilir.
+- **Test kuklaları:** `TestDummiesConfig` (editör SO, `Data/Debug/`): açık/kapalı, konumlar, can 100, yeniden doğma 3 sn. Varsayılan konumlar r = 16 m (üs 14 m'nin dışı, engel halkası 18 m'nin içi), doğu-güneydoğuda 2.5 m arayla; oyuncuya ~15 m. Güney daha yakın olurdu ama izometrik kamerada ekranın altında kalıyordu. Kukla: kök (Enemy layer, CapsuleCollider, Health, `TestDummy`) + `Visual` (gri kapsül, collider'sız). Tag'siz, hedef kaydına girmez. Ölünce collider kapanır ve Visual gizlenir. Yeni materyal `M_TestDummy` (#9A9A9A, GDD'de yok).
+- **`CombatDebugLogger`** (DebugTools): HUD gelene kadar silah değişimini ve doldurmayı loglar; mermi ve isabet logları onay kutusuyla (varsayılan kapalı). Test kuklalarıyla aynı seçenekle kurulur (`[Gameplay]/TestDummies` objesinde).
+- **MCP duman testi:** Unity odakta olmadığı için ateş `WeaponController.Fire` reflection ile, girdi olayları `InputReader`'ın event alanları (`WeaponSlotPressed` vb.) reflection ile tetiklendi. Nişan için `PlayerAim` kapatılıp `_aimDirection` yazıldı. Oyuncuyu ışınlarken CharacterController kapatıldı.
+
+**2026-10-14 · 3.3 Havuzlama ve vuruş efektleri**
+- **Mermi izi için yeni olay `ShotTracedEvent`** (Core): Iskalayan saçma `ShotHitEvent` göndermediği için iz çizilemiyordu. `HitscanShooter` artık her saçma için (ıska dahil) bu olayı atar: Start (namlu), End (isabet / menzil sonu), Direction, IsHit, WeaponId. `ShotHitEvent`'in anlamı değişmedi. `HitscanRequest`'e iki opsiyonel alan eklendi: `WeaponId` ve `TracerOrigin` (verilmezse ışın başlangıcı). `WeaponController` bunları dolduruyor (görevde Player yoktu; tek satırlık zorunlu değişiklik). Taretler (Gün 9) aynı alanları verirse izleri kendiliğinden çizilir.
+- **İz rengi:** `TracerPalette` (Feedback) `WeaponData.TracerColor`'ı silah id'siyle (ordinal) eşler; bilinmeyen id `CombatFeedbackConfig.DefaultTracerColor` (beyaz) alır. Silah listesi config'te; üretici eksik silahları ekler.
+- **Namludan geriye düşen iz çizilmez:** Işın oyuncu ekseninden başladığı için yapışık hedefte isabet namlunun gerisinde olabilir. `FeedbackDirector.ShouldDrawTracer`: namludan ileriye en az `MinTracerLength` (0.3 m) uzanmayan iz atlanır.
+- **PoolService:**
+  - Prefab başına `GameObjectPool` (`ObjectPool<PooledInstance>`, `collectionCheck: false`, üst sınır yok). Örnekler `[Systems]/Pool/<prefab adı>` altında durur (etkinken de). Yeni örnek kapalı `_Staging` kabında oluşturulur, kapatılıp asıl kaba taşınır: Awake/OnEnable ilk `Get`'e kadar çalışmaz. Adı prefab adıyla aynı ("(Clone)" yok).
+  - `Get`: konum/rotasyon → `SetActive(true)` → `IPoolable.OnSpawned` (kökte ve çocuklarda, oluşturulurken bir kez toplanır). `Release`: `OnDespawned` → `SetActive(false)` → başka yere taşındıysa kaba geri. Callback istisnaları loglanır, havuz bozulmaz.
+  - `Get<T>(T prefab)`: bileşen örnek başına önbellekli (tekrar GetComponent yok). `Release` obje → kayıt sözlüğüyle (GetComponent yok).
+  - Çift `Release` uyarı + yok sayılır. Havuzdan gelmeyen obje uyarıyla yok edilir. Havuz dışında Destroy edilmiş örnek `Get`'te uyarıyla atlanır. Null prefab hata loglar, null döner.
+  - `Prewarm(prefab, n)`: havuzda **en az n kapalı örnek** olacak şekilde eksikleri oluşturur; `OnSpawned` çağrılmaz. Prewarm sayısı aşılırsa (oynanışta Instantiate) prefab başına **bir kez uyarı** loglanır → config'teki sayıyı artır.
+  - `GetStats(prefab)` → `PoolStats` (Created / Active / Inactive). Duman testinde "ateşte Instantiate yok" kontrolü `Created` sayısıyla yapıldı.
+  - Play dışında (EditMode testleri) Destroy yerine DestroyImmediate.
+- **PooledLifetime:** Süre `OnSpawned`'da ve `OnEnable`'da baştan başlar (sahneye elle konmuş objede de çalışsın), `OnDespawned`'da durur. Bitince `IPoolService.Release`; servis yoksa Destroy. `Progress` (0 → 1) görsellerin solması için; iz ve namlu ışığı ayrı zamanlayıcı tutmaz.
+- **Efekt ayarları prefab'larda, havuz/iz ayarları config'te:** Scene step `[Systems]`'i her seferinde yeniden kurduğu için sahnedeki bileşene yazılan ayar kaybolurdu. `CombatFeedbackConfig` (Feedback SO, `Data/Feedback/`): üç prefab referansı, prewarm (iz 16, vuruş 24, namlu ışığı 4), silah listesi, varsayılan iz rengi, min. iz uzunluğu. 14.1'deki `FeedbackConfig` (sarsıntı, hit-stop) ayrı bir SO olabilir ya da buna eklenebilir.
+- **Prefab'lar** (`Prefabs/Feedback/`), tek katman (kök = görsel; efektte değiştirilecek model yok, CLAUDE.md'deki Visual ayrımı varlık prefab'ları için):
+  - `Tracer`: LineRenderer (dünya uzayı, 2 nokta, kameraya dönük, `M_FxAdditive`) + `PooledLifetime` 0.05 sn + `Tracer` (kalınlık 0.08 m; baş parlak, namlu tarafı %20; ömür boyunca saydamlaşır).
+  - `Impact`: ParticleSystem (döngü yok, playOnAwake yok, yayım kapalı → `Emit`; koni 35°, dünya uzayı, ömür 0.15–0.4 sn, boyut ömür boyunca küçülür, Stretch render) + `PooledLifetime` 0.6 sn + `ImpactEffect`. Obje isabet normaline bakar. Profiller: **et** (düşman ve oyuncu: koyu kırmızı, 12 parçacık, `M_FxAlpha`), **kıvılcım** (yüzey ve yapı: sarı-turuncu, 10 parçacık, hızlı, `M_FxAdditive`). Renk/hız/boyut/yerçekimi/materyal `ImpactProfile`'da, ortak ayarlar ParticleSystem'de.
+  - `MuzzleFlash`: Point Light (sıcak sarı #FFC46B civarı, menzil 5 m, gölgesiz, Realtime) + `PooledLifetime` 0.05 sn + `MuzzleFlash` (şiddet 6 → 0). Namlu konumunda doğar, oyuncuyu takip etmez (0.05 sn).
+  - Değerler GDD'de yok; isteğe göre seçildi. Duman testinde oyun kamerasından (22 m) kıvılcım küçük kaldığı için boyut ve sayı bir kez artırıldı.
+- **FX materyalleri** (`Materials/Fx/`): URP'nin varsayılan parçacık materyalinin (`ParticlesUnlit.mat`, Particles/Unlit + yumuşak daire dokusu) kopyası; `_Surface`/`_Blend` yazılıp `BaseShaderGUI.SetupMaterialBlendMode` çağrılır. `M_FxAdditive` (SrcAlpha/One): iz ve kıvılcım. `M_FxAlpha`: kan. Bunun için Editor asmdef'ine `Unity.RenderPipelines.Universal.Editor` eklendi.
+- **Ek ışıklar:** URP PC asset'inde Additional Lights = Per Pixel, nesne başına 4. Namlu ışığı bu yüzden görünüyor; ayar değiştirilmedi.
+- **`WeaponData.MuzzleVfx` henüz kullanılmıyor:** Görevde istenmedi. Bağlanınca o prefab'ın kendini iade eden bir bileşeni (`PooledLifetime`) olmalı, yoksa havuzdan çıkıp geri dönmez.
+- Feedback'teki yer tutucu `AssemblyInfo.cs` silindi.
+- **MCP duman testi:** Gerçek zamanlı seri atış `EditorApplication.update`'e bağlanan geçici bir lambdayla yapıldı (`TryFire` + reflection ile `Fire`; 8 sn sonra kendini çıkarır). Kısa efektlerin ekran görüntüsü için `Time.timeScale = 0.005`. Yakın plan için `manage_camera screenshot` + `view_position`/`view_target`. Ekran görüntüleri `Temp/Screenshots/`'a (git dışı) kaydedildi.
+- URP, `QualitySettings` üzerinden ilk kez yüklenen `Mobile_RPAsset`'i kendiliğinden yükseltti (`k_AssetVersion` 12 → 13, yeni varsayılan alanlar). İçerik değişikliği değil; olduğu gibi bırakıldı.
+
 ## Bilinen hatalar / TODO
 
 <!-- - [ ] Açıklama (görev numarası) -->
-- [ ] Proje henüz git deposu değil (`git init` yapılmadı, Gün 0 adım 10). Kullanıcı sonraki günlerde yapacak. (1.1)
+- [x] ~~Proje henüz git deposu değil.~~ Depo var (tek commit: "project setup"); sonraki görevlerin dosyalarının çoğu henüz commit'lenmedi (`git status`). (1.1)
 - [ ] Şablondan kalanlar duruyor: `Assets/InputSystem_Actions.inputactions` (kullanılmayacak, girdi kodda), `Assets/Scenes/SampleScene.unity`. İstenirse silinebilir. SampleScene Build Settings'te hâlâ 0. sırada. (1.1, 1.3)
   - ⚠️ `InputSystem_Actions` **project-wide actions** olarak kayıtlı (Project Settings → Input System Package). Runtime'da kendiliğinden açılır. Bizim action'larla çakışmaz ama boşuna çalışır. Silmeden önce oradaki kaydı kaldır. UI Toolkit'in runtime gezinmesi bu asset'in UI haritasını kullanıyor olabilir; karar UI görevlerinde (Gün 10) verilmeli. (2.1)
-- [ ] Game.unity'de kamera yok, Play'de Game view boş görünür. 2.3'te gelecek. (1.3)
 - [ ] Üs alanı yarıçapı `MapLayoutConfig` ile ileride gelecek BaseArea config'inde iki kez tutulacak. Gün 5'te tek kaynağa bağla. (1.3)
+- [x] ~~Ateş görünmez; ıskalayan saçmanın izi için olay yok.~~ 3.3'te `ShotTracedEvent` ve efektlerle çözüldü. (3.2)
+- [ ] `WeaponData.MuzzleVfx` (opsiyonel namlu efekti prefab'ı) hiçbir yerde kullanılmıyor; sadece varsayılan namlu ışığı var. Bağlanınca prefab'da `PooledLifetime` şart. (3.3)
+- [ ] Efekt değerleri (iz kalınlığı, parçacık sayısı/boyutu, ışık şiddeti) sadece ekran görüntüsüyle ayarlandı; gerçek hızda his testi kullanıcıda. Prefab'lardan ayarlanır. (3.3)
+- [ ] İlk MCP duman testinde Play'e girer girmez bir tabanca mermisi harcandı (12 → 11, isabet yok). Sonra `IsFireHeld` ve fare tuşu false'tu; ikinci Play'de tekrar olmadı (12/12). Muhtemelen o sırada oyuna ulaşan bir fare tıklaması. Elle Play'e basınca tekrar ederse incele. (3.2)
+- [ ] Test kuklası konumları `MapLayoutConfig`'ten bağımsız. Üs yarıçapı veya engel halkası değişirse kuklalar üsse ya da engel içine düşebilir; `TestDummiesConfig`'ten elle taşı. (3.2)
