@@ -1,0 +1,17 @@
+{
+    "name": "LastHaven.Waves",
+    "rootNamespace": "LastHaven.Waves",
+    "references": [
+        "LastHaven.Core",
+        "LastHaven.Enemies"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

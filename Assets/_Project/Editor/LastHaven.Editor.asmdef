@@ -1,0 +1,31 @@
+{
+    "name": "LastHaven.Editor",
+    "rootNamespace": "LastHaven.Editor",
+    "references": [
+        "LastHaven.Core",
+        "LastHaven.Combat",
+        "LastHaven.Player",
+        "LastHaven.Enemies",
+        "LastHaven.Waves",
+        "LastHaven.Building",
+        "LastHaven.Economy",
+        "LastHaven.GameFlow",
+        "LastHaven.Progression",
+        "LastHaven.UI",
+        "LastHaven.Audio",
+        "LastHaven.Feedback",
+        "LastHaven.DebugTools",
+        "Unity.AI.Navigation"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

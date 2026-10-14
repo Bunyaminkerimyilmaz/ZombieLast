@@ -1,0 +1,38 @@
+{
+    "name": "LastHaven.Tests.EditMode",
+    "rootNamespace": "LastHaven.Tests.EditMode",
+    "references": [
+        "LastHaven.Core",
+        "LastHaven.Combat",
+        "LastHaven.Player",
+        "LastHaven.Enemies",
+        "LastHaven.Waves",
+        "LastHaven.Building",
+        "LastHaven.Economy",
+        "LastHaven.GameFlow",
+        "LastHaven.Progression",
+        "LastHaven.UI",
+        "LastHaven.Audio",
+        "LastHaven.Feedback",
+        "LastHaven.DebugTools",
+        "LastHaven.Editor",
+        "Unity.InputSystem",
+        "UnityEngine.TestRunner",
+        "UnityEditor.TestRunner"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "nunit.framework.dll"
+    ],
+    "autoReferenced": false,
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

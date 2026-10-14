@@ -1,0 +1,17 @@
+{
+    "name": "LastHaven.Building",
+    "rootNamespace": "LastHaven.Building",
+    "references": [
+        "LastHaven.Core",
+        "LastHaven.Combat"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

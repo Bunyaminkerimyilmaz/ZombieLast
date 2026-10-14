@@ -1,0 +1,24 @@
+{
+    "name": "LastHaven.UI",
+    "rootNamespace": "LastHaven.UI",
+    "references": [
+        "LastHaven.Core",
+        "LastHaven.Combat",
+        "LastHaven.Player",
+        "LastHaven.Enemies",
+        "LastHaven.Waves",
+        "LastHaven.Building",
+        "LastHaven.Economy",
+        "LastHaven.GameFlow",
+        "LastHaven.Progression"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
