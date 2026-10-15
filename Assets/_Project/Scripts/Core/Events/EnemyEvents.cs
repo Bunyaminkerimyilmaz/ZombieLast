@@ -16,7 +16,7 @@ namespace LastHaven.Core
             KilledByPlayer = killedByPlayer;
         }
 
-        /// <summary>Düşmanın öldüğü yer (ayak, dünya).</summary>
+        /// <summary>Düşmanın öldüğü yer (ayak, dünya). Yerden çıkarken ölse de zemin yüzeyindedir.</summary>
         public Vector3 Position { get; }
 
         /// <summary>Düşman tipinin id'si (EnemyData.Id).</summary>

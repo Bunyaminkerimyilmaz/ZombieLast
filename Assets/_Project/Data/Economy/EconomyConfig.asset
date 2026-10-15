@@ -1,0 +1,48 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 25902c61d26695648a4ac3c7bc7c4fdc, type: 3}
+  m_Name: EconomyConfig
+  m_EditorClassIdentifier: LastHaven.Economy::LastHaven.Economy.EconomyConfig
+  _startingMoney: 300
+  _startingFuel: 100
+  _interestRate: 0.1
+  _interestCap: 50
+  _coinLifetime: 12
+  _coinBlinkDuration: 3
+  _minCoinsPerDrop: 1
+  _maxCoinsPerDrop: 5
+  _targetCoinValue: 5
+  _coinPrefab: {fileID: 2798059012890047966, guid: 89bd79e5e01dda942b5f561175805af4, type: 3}
+  _coinPrewarm: 200
+  _coinMotion:
+    _spawnHeight: 0.8
+    _restHeight: 0.3
+    _scatterMinDistance: 0.6
+    _scatterMaxDistance: 1.6
+    _arcHeight: 1.2
+    _arcDuration: 0.45
+    _spinSpeed: 180
+    _blinkFrequency: 6
+    _attractStartSpeed: 4
+    _attractAcceleration: 40
+    _attractMaxSpeed: 25
+    _collectDistance: 0.4
+    _collectHeight: 1
+  _comboWindow: 2.5
+  _comboTiers:
+  - _kills: 5
+    _multiplier: 1.5
+  - _kills: 15
+    _multiplier: 2
+  - _kills: 30
+    _multiplier: 3
+  _sellRefundRate: 0.5

@@ -1,0 +1,182 @@
+/*
+ * Last Haven — ortak tema: renk değişkenleri, yazı boyutları ve ortak sınıflar.
+ * Her ekranın UXML kökü .lh-screen sınıfını taşır; değişkenler oradan alt elementlere geçer.
+ * Varsayılan temayı (.unity-label, .unity-button) ezmek için seçiciler .lh-screen ile başlar.
+ */
+
+.lh-screen {
+    --color-text: rgb(240, 240, 236);
+    --color-text-dim: rgb(168, 176, 188);
+    --color-text-shadow: rgba(0, 0, 0, 0.85);
+    --color-panel: rgba(10, 14, 20, 0.74);
+    --color-panel-border: rgba(255, 255, 255, 0.12);
+    --color-overlay: rgba(4, 6, 10, 0.62);
+    --color-bar-back: rgba(0, 0, 0, 0.6);
+    --color-bar-border: rgba(0, 0, 0, 0.9);
+    --color-health: rgb(214, 66, 66);
+    --color-generator: rgb(236, 196, 64);
+    --color-money: rgb(255, 214, 90);
+    --color-fuel: rgb(240, 150, 70);
+    --color-combo: rgb(255, 120, 72);
+    --color-accent: rgb(244, 180, 64);
+    --color-danger: rgb(232, 80, 72);
+    --color-success: rgb(112, 200, 112);
+    --color-day: rgb(250, 214, 110);
+    --color-dusk: rgb(240, 140, 80);
+    --color-night: rgb(128, 160, 240);
+    --color-dawn: rgb(250, 190, 150);
+    --color-button: rgb(46, 54, 66);
+    --color-button-hover: rgb(66, 78, 94);
+    --color-button-active: rgb(34, 40, 50);
+
+    --font-small: 18px;
+    --font-normal: 24px;
+    --font-large: 34px;
+    --font-big: 52px;
+    --font-huge: 88px;
+
+    --space-small: 6px;
+    --space: 12px;
+    --space-large: 24px;
+    --radius: 6px;
+
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+}
+
+/* Kodun kullandığı görünürlük sınıfı (UIClassNames.Hidden): ekranın kendisinde veya içindeki bir elementte. */
+.lh-screen.hidden,
+.lh-screen .hidden {
+    display: none;
+}
+
+/* --- Yazılar --- */
+
+.lh-screen .label,
+.lh-screen .label-small,
+.lh-screen .label-large,
+.lh-screen .label-big,
+.lh-screen .label-huge {
+    color: var(--color-text);
+    margin: 0;
+    padding: 0;
+    text-shadow: 2px 2px 0 var(--color-text-shadow);
+}
+
+.lh-screen .label {
+    font-size: var(--font-normal);
+}
+
+.lh-screen .label-small {
+    font-size: var(--font-small);
+    color: var(--color-text-dim);
+    -unity-font-style: bold;
+    letter-spacing: 1px;
+}
+
+.lh-screen .label-large {
+    font-size: var(--font-large);
+    -unity-font-style: bold;
+}
+
+.lh-screen .label-big {
+    font-size: var(--font-big);
+    -unity-font-style: bold;
+}
+
+.lh-screen .label-huge {
+    font-size: var(--font-huge);
+    -unity-font-style: bold;
+}
+
+.lh-screen .text-accent {
+    color: var(--color-accent);
+}
+
+.lh-screen .text-danger {
+    color: var(--color-danger);
+}
+
+.lh-screen .text-success {
+    color: var(--color-success);
+}
+
+/* --- Kutular --- */
+
+.lh-screen .panel {
+    background-color: var(--color-panel);
+    border-width: 1px;
+    border-color: var(--color-panel-border);
+    border-radius: var(--radius);
+    padding: var(--space) var(--space-large);
+}
+
+.lh-screen .overlay {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--color-overlay);
+    align-items: center;
+    justify-content: center;
+}
+
+.lh-screen .row {
+    flex-direction: row;
+    align-items: center;
+}
+
+.lh-screen .row-spread {
+    flex-direction: row;
+    align-items: flex-end;
+    justify-content: space-between;
+}
+
+/* --- Barlar: .bar içinde .bar-fill; dolum genişliğini kod yüzde olarak yazar. --- */
+
+.lh-screen .bar {
+    height: 22px;
+    margin-top: var(--space-small);
+    background-color: var(--color-bar-back);
+    border-width: 2px;
+    border-color: var(--color-bar-border);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.lh-screen .bar-fill {
+    width: 100%;
+    height: 100%;
+    background-color: var(--color-health);
+}
+
+.lh-screen .bar-fill--generator {
+    background-color: var(--color-generator);
+}
+
+/* --- Butonlar --- */
+
+.lh-screen .button {
+    font-size: var(--font-large);
+    -unity-font-style: bold;
+    color: var(--color-text);
+    background-color: var(--color-button);
+    border-width: 2px;
+    border-color: var(--color-accent);
+    border-radius: var(--radius);
+    min-width: 280px;
+    margin: var(--space) 0 0 0;
+    padding: var(--space) var(--space-large);
+}
+
+.lh-screen .button:hover {
+    background-color: var(--color-button-hover);
+}
+
+.lh-screen .button:active {
+    background-color: var(--color-button-active);
+}

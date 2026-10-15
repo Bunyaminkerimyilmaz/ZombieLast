@@ -1,0 +1,99 @@
+using LastHaven.Core;
+using UnityEngine;
+using UnityEngine.Rendering;
+
+namespace LastHaven.GameFlow
+{
+    /// <summary>
+    /// [Gameplay]/Lighting: gündüz/gece ışığı (GDD §18). <see cref="PhaseChangedEvent"/>'i dinler; alacakaranlık boyunca gündüzden
+    /// geceye, şafak başında geceden gündüze yumuşak geçer (<see cref="DayNightBlend"/>). Directional light, ambiyans ve sis
+    /// iki <see cref="LightingProfile"/> arasında harmanlanır; gündüz ve gece Global Volume'lerinin weight'leri birlikte kayar.
+    /// Gündüzle başlar. Sadece geçiş sürerken çalışır.
+    /// </summary>
+    [DisallowMultipleComponent]
+    public sealed class DayNightLighting : MonoBehaviour
+    {
+        [Header("Profiller")]
+        [SerializeField, Tooltip("Gündüz ışığı. Üretici bağlar.")]
+        private LightingProfile _dayProfile;
+
+        [SerializeField, Tooltip("Gece ışığı. Üretici bağlar.")]
+        private LightingProfile _nightProfile;
+
+        [SerializeField, Tooltip("Şafak geçiş süresi buradan okunur; alacakaranlık geçişi evre süresini kullanır. Üretici bağlar.")]
+        private GameConfig _config;
+
+        [Header("Sahne")]
+        [SerializeField, Tooltip("Güneş/ay (directional light).")]
+        private Light _sun;
+
+        [SerializeField, Tooltip("Gündüz post-process'i (Global Volume). Weight = 1 − gece oranı.")]
+        private Volume _dayVolume;
+
+        [SerializeField, Tooltip("Gece post-process'i (Global Volume). Weight = gece oranı.")]
+        private Volume _nightVolume;
+
+        private DayNightBlend _blend;
+
+        /// <summary>Uygulanan gece oranı (yumuşatılmış): 0 = gündüz, 1 = gece.</summary>
+        public float NightAmount => _blend != null ? _blend.Eased : 0f;
+
+        /// <summary>Geçiş sürüyor mu.</summary>
+        public bool IsTransitioning => _blend != null && _blend.IsTransitioning;
+
+        private void Awake()
+        {
+            if (_dayProfile == null || _nightProfile == null || _config == null)
+            {
+                Debug.LogError("DayNightLighting: ışık profilleri veya GameConfig atanmamış; Tools/Last Haven/Build Game Scene çalıştır.", this);
+                enabled = false;
+                return;
+            }
+
+            _blend = new DayNightBlend(_config.DawnLightTransitionDuration);
+            Apply();
+        }
+
+        private void OnEnable()
+        {
+            EventBus<PhaseChangedEvent>.Subscribe(OnPhaseChanged);
+        }
+
+        private void OnDisable()
+        {
+            EventBus<PhaseChangedEvent>.Unsubscribe(OnPhaseChanged);
+        }
+
+        private void Update()
+        {
+            if (_blend.Tick(Time.deltaTime))
+            {
+                Apply();
+            }
+        }
+
+        private void OnPhaseChanged(PhaseChangedEvent changed)
+        {
+            if (_blend != null && _blend.OnPhaseChanged(changed.Phase, changed.Duration))
+            {
+                Apply();
+            }
+        }
+
+        private void Apply()
+        {
+            float night = _blend.Eased;
+            LightingValues.Lerp(_dayProfile.Values, _nightProfile.Values, night).ApplyTo(_sun);
+
+            if (_dayVolume != null)
+            {
+                _dayVolume.weight = 1f - night;
+            }
+
+            if (_nightVolume != null)
+            {
+                _nightVolume.weight = night;
+            }
+        }
+    }
+}

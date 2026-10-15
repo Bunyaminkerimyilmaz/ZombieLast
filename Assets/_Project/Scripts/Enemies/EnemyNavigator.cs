@@ -28,6 +28,11 @@ namespace LastHaven.Enemies
         /// <summary>Ajan açık ve NavMesh üzerinde.</summary>
         public bool IsActive => _agent.enabled && _agent.isOnNavMesh;
 
+        /// <summary>
+        /// Ayakların zemindeki konumu: ajan açıkken ajanın yüzey konumu (yerden çıkarken transform gömülüdür), değilse transform.
+        /// </summary>
+        public Vector3 SurfacePosition => IsActive ? _agent.nextPosition : _transform.position;
+
         /// <summary>Ajanın hızı (m/sn); ajan kapalıyken 0. Animasyonun yürüme hızı.</summary>
         public float Speed => IsActive ? _agent.velocity.magnitude : 0f;
 

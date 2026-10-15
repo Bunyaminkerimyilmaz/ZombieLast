@@ -23,6 +23,8 @@ namespace LastHaven.Player
         private PlayerAim _aim;
         private HitFlash _flash;
         private ITargetRegistry _registry;
+        private IRunModifiers _modifiers;
+        private float _pickupRadius;
         private bool _started;
 
         public Transform Transform => transform;
@@ -35,7 +37,8 @@ namespace LastHaven.Player
 
         public bool IsAlive => _health.IsAlive;
 
-        public float PickupRadius => _data != null ? _data.PickupRadius : 0f;
+        /// <summary>PlayerData × <see cref="IRunModifiers"/> PickupRadius; stat değişince yeniden hesaplanır.</summary>
+        public float PickupRadius => _pickupRadius;
 
         public TargetType TargetType => TargetType.Player;
 
@@ -47,6 +50,25 @@ namespace LastHaven.Player
         public bool CanTakeDamage(in DamageInfo damage)
         {
             return !IsInvulnerable;
+        }
+
+        /// <summary>
+        /// Mıknatıs yarıçapı: taban (PlayerData) + düz eklemeler (market +1 m), sonra yüzdeler (Mıknatıs perk'i +%50).
+        /// <paramref name="modifiers"/> null ise taban.
+        /// </summary>
+        public static float CalculatePickupRadius(float baseRadius, IRunModifiers modifiers)
+        {
+            return modifiers != null ? modifiers.Get(StatType.PickupRadius, baseRadius) : baseRadius;
+        }
+
+        /// <summary>
+        /// Yeniden doğma: canı o anki maksimumla doldurur (ölüyse diriltir) ve hasar sonrası dokunulmazlık penceresini kapatır.
+        /// Konum ve poz <see cref="PlayerRespawn"/>'da.
+        /// </summary>
+        public void Revive()
+        {
+            _hitInvulnerability.Reset();
+            _health.SetMax(_health.Max, refill: true);
         }
 
         private void Awake()
@@ -66,6 +88,7 @@ namespace LastHaven.Player
             }
 
             _health.DamageFilter = this;
+            RefreshPickupRadius();
             ServiceLocator.Register<IPlayer>(this);
         }
 
@@ -76,8 +99,11 @@ namespace LastHaven.Player
                 Debug.LogWarning("PlayerCharacter: ITargetRegistry bulunamadı; düşmanlar oyuncuyu hedefleyemeyecek. Sahnede [Systems]/TargetRegistry var mı?", this);
             }
 
+            // Yoksa yarıçap sadece PlayerData'dan (WeaponController zaten uyarır).
+            ServiceLocator.TryGet(out _modifiers);
+
             _started = true;
-            RegisterTarget();
+            Connect();
         }
 
         private void OnEnable()
@@ -85,10 +111,10 @@ namespace LastHaven.Player
             _health.Damaged += OnDamaged;
             _health.Died += OnDied;
 
-            // Servis Start'ta alınır; ilk kaydı Start yapar.
+            // Servisler Start'ta alınır; ilk bağlantıyı Start yapar.
             if (_started)
             {
-                RegisterTarget();
+                Connect();
             }
         }
 
@@ -97,6 +123,10 @@ namespace LastHaven.Player
             _health.Damaged -= OnDamaged;
             _health.Died -= OnDied;
             _registry?.Unregister(this);
+            if (_modifiers != null)
+            {
+                _modifiers.StatChanged -= OnStatChanged;
+            }
         }
 
         private void OnDestroy()
@@ -104,9 +134,28 @@ namespace LastHaven.Player
             ServiceLocator.Unregister<IPlayer>(this);
         }
 
-        private void RegisterTarget()
+        private void Connect()
         {
             _registry?.Register(this);
+            if (_modifiers != null)
+            {
+                _modifiers.StatChanged += OnStatChanged;
+            }
+
+            RefreshPickupRadius();
+        }
+
+        private void OnStatChanged(StatType stat)
+        {
+            if (stat == StatType.PickupRadius)
+            {
+                RefreshPickupRadius();
+            }
+        }
+
+        private void RefreshPickupRadius()
+        {
+            _pickupRadius = CalculatePickupRadius(_data != null ? _data.PickupRadius : 0f, _modifiers);
         }
 
         private void OnDamaged(DamagedEvent damaged)

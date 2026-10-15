@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0e26aa8474c26cd489654e9285da6246, type: 3}
+  m_Name: DayLighting
+  m_EditorClassIdentifier: LastHaven.GameFlow::LastHaven.GameFlow.LightingProfile
+  _sunRotation: {x: 50, y: -30, z: 0}
+  _sunColor: {r: 1, g: 0.96, b: 0.88, a: 1}
+  _sunIntensity: 1.2
+  _ambientColor: {r: 0.5, g: 0.5, b: 0.52, a: 1}
+  _fogEnabled: 1
+  _fogColor: {r: 0.75, g: 0.76, b: 0.78, a: 1}
+  _fogDensity: 0.006
+  _volumeProfile: {fileID: 11400000, guid: 774442e50aef4944992b7a7129dcd748, type: 2}

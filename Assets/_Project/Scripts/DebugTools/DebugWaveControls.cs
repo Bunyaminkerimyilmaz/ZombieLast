@@ -9,7 +9,8 @@ using UnityEngine.InputSystem;
 namespace LastHaven.DebugTools
 {
     /// <summary>
-    /// Gece kısayolları ([Systems]/DebugWaves): F5 sıradaki geceyi hemen başlatır (<see cref="IWaveService"/>), F6 tüm canlı
+    /// Gece kısayolları ([Systems]/DebugWaves): F5 sıradaki geceyi hemen başlatır (<see cref="IWaveService"/>; oyun akışı
+    /// <see cref="IGameStateService"/> varsa geceleri o yönettiği için kapalıdır), F6 tüm canlı
     /// düşmanları öldürür (<see cref="EnemySpawner"/>'ın doğurdukları: dalga + debug spawner). Öldürme normal hasarla yapılır;
     /// ölümler dalga sayacına, olaylara ve ödüllere her zamanki gibi gider. Sol üstte, DebugSpawner panelinin altında durum kutusu.
     /// Sadece editörde ve development build'de çalışır (sınıf ve alanları her build'de var; sahnede "missing script" olmasın).
@@ -30,6 +31,7 @@ namespace LastHaven.DebugTools
         private readonly List<Enemy> _alive = new List<Enemy>();
         private InputAction[] _actions;
         private IWaveService _waves;
+        private IGameStateService _gameFlow;
         private int _nextNightIndex;
         private int _currentNightNumber;
         private string _status = "Gece yok";
@@ -51,6 +53,7 @@ namespace LastHaven.DebugTools
                 Debug.LogWarning("DebugWaveControls: IWaveService bulunamadı; F5 çalışmayacak. Sahnede [Systems]/WaveSpawner var mı?", this);
             }
 
+            ServiceLocator.TryGet(out _gameFlow);
             RefreshPanel();
         }
 
@@ -97,6 +100,13 @@ namespace LastHaven.DebugTools
             if (_waves == null)
             {
                 Debug.LogWarning(Prefix + "F5: IWaveService yok; gece başlatılamadı.", this);
+                return;
+            }
+
+            // Akış dışında başlatılan gece evreleri karıştırır (gündüz ortasında gece, aynı gecenin tekrarı).
+            if (_gameFlow != null)
+            {
+                Debug.LogWarning(Prefix + "F5: Geceleri oyun akışı yönetiyor; gündüzü Enter (Hazırım) ile bitir.", this);
                 return;
             }
 
@@ -181,7 +191,8 @@ namespace LastHaven.DebugTools
         private void RefreshPanel()
         {
             int total = _waves != null ? _waves.TotalNights : 0;
-            string next = _nextNightIndex < total ? $"Gece {_nextNightIndex + 1}/{total} başlat" : "sıradaki gece yok";
+            string next = _gameFlow != null ? "kapalı (akış var: Enter = Hazırım)"
+                : _nextNightIndex < total ? $"Gece {_nextNightIndex + 1}/{total} başlat" : "sıradaki gece yok";
             _panelText = "Gece Kısayolları\n"
                          + "F5   " + next + "\n"
                          + "F6   Tüm canlı düşmanları öldür\n"

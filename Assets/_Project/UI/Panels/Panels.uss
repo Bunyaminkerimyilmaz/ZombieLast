@@ -1,0 +1,55 @@
+/*
+ * Şafak, Oyun Bitti ve Zafer panelleri: ekranı karartan katman + ortada sonuç kutusu.
+ * Seçiciler .lh-screen.lh-panel ile başlar: Theme.uss'teki iki sınıflı kuralları kesin ezsin diye.
+ */
+
+.lh-screen.lh-panel .result-panel {
+    align-items: center;
+    min-width: 640px;
+    padding: 40px 56px;
+}
+
+.lh-screen.lh-panel .result-title {
+    margin-bottom: var(--space-small);
+}
+
+.lh-screen.lh-panel .result-title--dawn {
+    color: var(--color-dawn);
+}
+
+.lh-screen.lh-panel .result-title--game-over {
+    color: var(--color-danger);
+}
+
+.lh-screen.lh-panel .result-title--victory {
+    color: var(--color-success);
+}
+
+.lh-screen.lh-panel .result-subtitle {
+    color: var(--color-text-dim);
+    margin-bottom: var(--space-large);
+}
+
+.lh-screen.lh-panel .result-stats {
+    width: 100%;
+    margin-bottom: var(--space-large);
+}
+
+.lh-screen.lh-panel .stat-row {
+    width: 100%;
+    padding: var(--space-small) 0;
+    border-bottom-width: 1px;
+    border-bottom-color: var(--color-panel-border);
+}
+
+.lh-screen.lh-panel .stat-value {
+    color: var(--color-accent);
+}
+
+.lh-screen.lh-panel .stat-value--money {
+    color: var(--color-money);
+}
+
+.lh-screen.lh-panel .result-hint {
+    margin-top: var(--space);
+}

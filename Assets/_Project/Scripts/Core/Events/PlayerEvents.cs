@@ -46,4 +46,25 @@ namespace LastHaven.Core
 
         public DamageInfo KillingBlow { get; }
     }
+
+    /// <summary>Oyuncu ölümden sonra üste tam canla yeniden doğduğunda gönderilir. HUD can barını yeniler.</summary>
+    public readonly struct PlayerRespawnedEvent : IEvent
+    {
+        public PlayerRespawnedEvent(GameObject player, Vector3 position, float currentHealth, float maxHealth)
+        {
+            Player = player;
+            Position = position;
+            CurrentHealth = currentHealth;
+            MaxHealth = maxHealth;
+        }
+
+        public GameObject Player { get; }
+
+        /// <summary>Doğduğu yer (ayak, dünya).</summary>
+        public Vector3 Position { get; }
+
+        public float CurrentHealth { get; }
+
+        public float MaxHealth { get; }
+    }
 }

@@ -1,0 +1,137 @@
+/*
+ * HUD yerleşimi (1920×1080 referans). Renk ve yazı boyutları Theme.uss değişkenlerinden.
+ * Seçiciler .lh-screen.hud ile başlar: Theme.uss'teki iki sınıflı .lh-screen .label-* kurallarını kesin ezsin diye.
+ */
+
+.lh-screen.hud .hud-top {
+    position: absolute;
+    top: 20px;
+    left: 0;
+    right: 0;
+    align-items: center;
+}
+
+.lh-screen.hud .hud-phase-panel {
+    align-items: center;
+    min-width: 380px;
+}
+
+.lh-screen.hud .hud-phase-name {
+    margin-right: var(--space-large);
+}
+
+.lh-screen.hud .hud-phase-name--day {
+    color: var(--color-day);
+}
+
+.lh-screen.hud .hud-phase-name--dusk {
+    color: var(--color-dusk);
+}
+
+.lh-screen.hud .hud-phase-name--night {
+    color: var(--color-night);
+}
+
+.lh-screen.hud .hud-phase-name--dawn {
+    color: var(--color-dawn);
+}
+
+.lh-screen.hud .hud-phase-name--game-over {
+    color: var(--color-danger);
+}
+
+.lh-screen.hud .hud-phase-name--victory {
+    color: var(--color-success);
+}
+
+.lh-screen.hud .hud-caption {
+    margin-right: var(--space);
+}
+
+.lh-screen.hud .hud-remaining {
+    margin-top: var(--space-small);
+}
+
+/* Sağ üst sütun: jeneratör barı, altında cüzdan (para + yakıt). */
+.lh-screen.hud .hud-top-right {
+    position: absolute;
+    top: 20px;
+    right: 24px;
+    width: 380px;
+}
+
+.lh-screen.hud .hud-wallet {
+    margin-top: var(--space);
+}
+
+.lh-screen.hud .hud-wallet-row {
+    margin-top: var(--space-small);
+}
+
+.lh-screen.hud .hud-money {
+    color: var(--color-money);
+}
+
+.lh-screen.hud .hud-fuel {
+    color: var(--color-fuel);
+}
+
+/* Kombo: sağ orta. Eşik atlanınca kod hud-combo--pulse ekler; transition bitince kaldırır, aynı transition geri küçültür. */
+.lh-screen.hud .hud-combo {
+    position: absolute;
+    right: 24px;
+    top: 50%;
+    translate: 0 -50%;
+    min-width: 220px;
+    align-items: flex-end;
+    transform-origin: right;
+    transition-property: scale;
+    transition-duration: 0.12s;
+    transition-timing-function: ease-out;
+}
+
+.lh-screen.hud .hud-combo--pulse {
+    scale: 1.3 1.3;
+}
+
+.lh-screen.hud .hud-combo-numbers {
+    align-items: flex-end;
+}
+
+.lh-screen.hud .hud-combo-count {
+    color: var(--color-combo);
+}
+
+.lh-screen.hud .hud-combo-multiplier {
+    color: var(--color-money);
+    margin-right: var(--space);
+    margin-bottom: var(--space-small);
+}
+
+.lh-screen.hud .hud-combo-bar {
+    width: 100%;
+    height: 12px;
+}
+
+.lh-screen.hud .bar-fill--combo {
+    background-color: var(--color-combo);
+}
+
+.lh-screen.hud .hud-bottom-left {
+    position: absolute;
+    bottom: 24px;
+    left: 24px;
+    width: 440px;
+}
+
+.lh-screen.hud .hud-bottom-right {
+    position: absolute;
+    bottom: 24px;
+    right: 24px;
+    min-width: 280px;
+    align-items: flex-end;
+}
+
+.lh-screen.hud .hud-ammo {
+    margin-top: var(--space-small);
+}

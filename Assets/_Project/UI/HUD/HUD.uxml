@@ -1,0 +1,73 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <Style src="../Themes/Theme.uss" />
+    <Style src="HUD.uss" />
+    <!-- Element adları HudElementNames.cs ile eşleşmeli (EditMode testi kontrol eder). Metinler burada; kod sadece sayı yazar. -->
+    <ui:VisualElement name="hud" class="lh-screen hud" picking-mode="Ignore">
+        <ui:VisualElement class="hud-top" picking-mode="Ignore">
+            <ui:VisualElement class="panel hud-phase-panel" picking-mode="Ignore">
+                <ui:VisualElement class="row" picking-mode="Ignore">
+                    <ui:Label name="phase-day" text="GÜNDÜZ" class="label-big hud-phase-name hud-phase-name--day hidden" picking-mode="Ignore" />
+                    <ui:Label name="phase-dusk" text="ALACAKARANLIK" class="label-big hud-phase-name hud-phase-name--dusk hidden" picking-mode="Ignore" />
+                    <ui:Label name="phase-night" text="GECE" class="label-big hud-phase-name hud-phase-name--night hidden" picking-mode="Ignore" />
+                    <ui:Label name="phase-dawn" text="ŞAFAK" class="label-big hud-phase-name hud-phase-name--dawn hidden" picking-mode="Ignore" />
+                    <ui:Label name="phase-game-over" text="OYUN BİTTİ" class="label-big hud-phase-name hud-phase-name--game-over hidden" picking-mode="Ignore" />
+                    <ui:Label name="phase-victory" text="ZAFER" class="label-big hud-phase-name hud-phase-name--victory hidden" picking-mode="Ignore" />
+                    <ui:Label name="day-timer" text="2:00" class="label-big hidden" picking-mode="Ignore" />
+                </ui:VisualElement>
+                <ui:VisualElement class="row" picking-mode="Ignore">
+                    <ui:Label text="GECE" class="label-small hud-caption" picking-mode="Ignore" />
+                    <ui:Label name="night-value" text="1/10" class="label-large" picking-mode="Ignore" />
+                </ui:VisualElement>
+                <ui:VisualElement name="remaining-group" class="row hud-remaining hidden" picking-mode="Ignore">
+                    <ui:Label text="KALAN DÜŞMAN" class="label-small hud-caption" picking-mode="Ignore" />
+                    <ui:Label name="remaining-value" text="0" class="label-large text-danger" picking-mode="Ignore" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <ui:VisualElement class="hud-top-right" picking-mode="Ignore">
+            <ui:VisualElement class="panel" picking-mode="Ignore">
+                <ui:VisualElement class="row-spread" picking-mode="Ignore">
+                    <ui:Label text="JENERATÖR" class="label-small" picking-mode="Ignore" />
+                    <ui:Label name="generator-health-value" text="0/0" class="label" picking-mode="Ignore" />
+                </ui:VisualElement>
+                <ui:VisualElement class="bar" picking-mode="Ignore">
+                    <ui:VisualElement name="generator-health-fill" class="bar-fill bar-fill--generator" picking-mode="Ignore" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <ui:VisualElement class="panel hud-wallet" picking-mode="Ignore">
+                <ui:VisualElement class="row-spread" picking-mode="Ignore">
+                    <ui:Label text="PARA" class="label-small" picking-mode="Ignore" />
+                    <ui:Label name="money-value" text="0" class="label-large hud-money" picking-mode="Ignore" />
+                </ui:VisualElement>
+                <ui:VisualElement class="row-spread hud-wallet-row" picking-mode="Ignore">
+                    <ui:Label text="YAKIT" class="label-small" picking-mode="Ignore" />
+                    <ui:Label name="fuel-value" text="0" class="label-large hud-fuel" picking-mode="Ignore" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <!-- Kombo (sağ orta): kombo yokken gizli; eşik atlanınca kod "pulse" sınıfıyla kısa büyütür (HudComboController.PulseClass). -->
+        <ui:VisualElement name="combo-group" class="panel hud-combo hidden" picking-mode="Ignore">
+            <ui:VisualElement class="row hud-combo-numbers" picking-mode="Ignore">
+                <ui:Label name="combo-multiplier" text="×1.5" class="label-big hud-combo-multiplier hidden" picking-mode="Ignore" />
+                <ui:Label name="combo-count" text="0" class="label-huge hud-combo-count" picking-mode="Ignore" />
+            </ui:VisualElement>
+            <ui:Label text="KOMBO" class="label-small" picking-mode="Ignore" />
+            <ui:VisualElement class="bar hud-combo-bar" picking-mode="Ignore">
+                <ui:VisualElement name="combo-window-fill" class="bar-fill bar-fill--combo" picking-mode="Ignore" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <ui:VisualElement class="panel hud-bottom-left" picking-mode="Ignore">
+            <ui:VisualElement class="row-spread" picking-mode="Ignore">
+                <ui:Label text="CAN" class="label-small" picking-mode="Ignore" />
+                <ui:Label name="player-health-value" text="0/0" class="label" picking-mode="Ignore" />
+            </ui:VisualElement>
+            <ui:VisualElement class="bar" picking-mode="Ignore">
+                <ui:VisualElement name="player-health-fill" class="bar-fill" picking-mode="Ignore" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <ui:VisualElement class="panel hud-bottom-right" picking-mode="Ignore">
+            <ui:Label name="weapon-name" text="—" class="label-large" picking-mode="Ignore" />
+            <ui:Label name="ammo-value" text="0 / 0" class="label-big hud-ammo" picking-mode="Ignore" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

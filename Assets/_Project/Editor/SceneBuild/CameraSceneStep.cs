@@ -4,12 +4,13 @@ using Unity.Cinemachine;
 using Unity.Cinemachine.TargetTracking;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Rendering.Universal;
 
 namespace LastHaven.Editor
 {
     /// <summary>
     /// [Gameplay]/CameraRig: <see cref="CameraRig"/> (ICameraService) + F9 kısayolu, altında CameraTarget,
-    /// Main Camera (CinemachineBrain) ve CinemachineCamera (CinemachineFollow, dünya ofseti). Editörde de doğru açıdan
+    /// Main Camera (CinemachineBrain, URP post-process açık) ve CinemachineCamera (CinemachineFollow, dünya ofseti). Editörde de doğru açıdan
     /// görünsün diye kameralar varsayılan preset'le oyuncunun başlangıç noktasına yerleştirilir.
     /// </summary>
     public sealed class CameraSceneStep : ISceneBuildStep
@@ -57,6 +58,9 @@ namespace LastHaven.Editor
 
             var camera = cameraObject.AddComponent<Camera>();
             camera.fieldOfView = preset.FieldOfView;
+
+            // URP kamerada post-process varsayılan kapalı; gün/gece Volume'leri (6.2) görünsün diye açılır.
+            camera.GetUniversalAdditionalCameraData().renderPostProcessing = true;
             cameraObject.AddComponent<AudioListener>();
             cameraObject.AddComponent<CinemachineBrain>();
             return camera;

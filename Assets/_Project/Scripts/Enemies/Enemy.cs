@@ -210,6 +210,8 @@ namespace LastHaven.Enemies
                 _collider.enabled = false;
             }
 
+            // Yerden çıkarken öldüyse transform gömülü; jetonlar yüzeye düşsün. BeginDeath ajanı kapatmadan önce alınır.
+            Vector3 deathPosition = _navigator.SurfacePosition;
             _navigator.BeginDeath();
             SetTarget(null);
             _machine.Kill();
@@ -221,7 +223,7 @@ namespace LastHaven.Enemies
             GameObject source = died.KillingBlow.Source;
             bool killedByPlayer = source != null && source.CompareTag(GameTags.Player);
             EventBus<EnemyKilledEvent>.Raise(new EnemyKilledEvent(
-                transform.position, _data.Id, _data.MoneyReward, _data.XpReward, killedByPlayer));
+                deathPosition, _data.Id, _data.MoneyReward, _data.XpReward, killedByPlayer));
         }
     }
 }

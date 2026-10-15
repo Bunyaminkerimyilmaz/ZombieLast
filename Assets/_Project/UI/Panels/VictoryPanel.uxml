@@ -1,0 +1,25 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <Style src="../Themes/Theme.uss" />
+    <Style src="Panels.uss" />
+    <!-- Element adları PanelElementNames.cs ile eşleşmeli; GameOverPanel.uxml ile aynı adlar (RunEndPanelController).
+         Kök gizli başlar (hidden); kod gerektiğinde gösterir. UI Builder'da önizlemek için kökten "hidden" sınıfını geçici kaldır. -->
+    <ui:VisualElement name="victory-panel" class="lh-screen lh-panel hidden">
+        <ui:VisualElement class="overlay">
+            <ui:VisualElement class="panel result-panel">
+                <ui:Label text="ZAFER" class="label-huge result-title result-title--victory" />
+                <ui:Label text="Tahliye geldi! Üssü son geceye kadar korudun." class="label result-subtitle" />
+                <ui:VisualElement class="result-stats">
+                    <ui:VisualElement class="row-spread stat-row">
+                        <ui:Label text="Atlatılan gece" class="label" />
+                        <ui:Label name="run-end-night-value" text="10/10" class="label-large stat-value" />
+                    </ui:VisualElement>
+                    <ui:VisualElement class="row-spread stat-row">
+                        <ui:Label text="Toplam öldürme" class="label" />
+                        <ui:Label name="total-kills-value" text="0" class="label-large stat-value" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+                <ui:Button name="restart-button" text="Yeniden Başlat" class="button" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

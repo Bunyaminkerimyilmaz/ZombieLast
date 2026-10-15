@@ -1,0 +1,42 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <Style src="../Themes/Theme.uss" />
+    <Style src="Panels.uss" />
+    <!-- Element adları PanelElementNames.cs ile eşleşmeli (EditMode testi kontrol eder). Para = bu gece toplanan jetonlar.
+         Kök gizli başlar (hidden); kod gerektiğinde gösterir. UI Builder'da önizlemek için kökten "hidden" sınıfını geçici kaldır. -->
+    <ui:VisualElement name="dawn-panel" class="lh-screen lh-panel hidden">
+        <ui:VisualElement class="overlay">
+            <ui:VisualElement class="panel result-panel">
+                <ui:Label text="ŞAFAK" class="label-huge result-title result-title--dawn" />
+                <ui:Label text="Gece atlatıldı. Üs ayakta." class="label result-subtitle" />
+                <ui:VisualElement class="result-stats">
+                    <ui:VisualElement class="row-spread stat-row">
+                        <ui:Label text="Atlatılan gece" class="label" />
+                        <ui:Label name="dawn-night-value" text="1/10" class="label-large stat-value" />
+                    </ui:VisualElement>
+                    <ui:VisualElement class="row-spread stat-row">
+                        <ui:Label text="Bu gece öldürülen" class="label" />
+                        <ui:Label name="night-kills-value" text="0" class="label-large stat-value" />
+                    </ui:VisualElement>
+                    <ui:VisualElement class="row-spread stat-row">
+                        <ui:Label text="Toplanan para" class="label" />
+                        <ui:Label name="night-money-value" text="0" class="label-large stat-value stat-value--money" />
+                    </ui:VisualElement>
+                    <ui:VisualElement class="row-spread stat-row">
+                        <ui:Label text="En yüksek kombo" class="label" />
+                        <ui:Label name="night-best-combo-value" text="0" class="label-large stat-value" />
+                    </ui:VisualElement>
+                    <ui:VisualElement class="row-spread stat-row">
+                        <ui:Label text="Şafak faizi" class="label" />
+                        <ui:Label name="interest-value" text="+0" class="label-large stat-value stat-value--money" />
+                    </ui:VisualElement>
+                    <ui:VisualElement class="row-spread stat-row">
+                        <ui:Label text="Toplam öldürme" class="label" />
+                        <ui:Label name="total-kills-value" text="0" class="label-large stat-value" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+                <ui:Button name="continue-button" text="Devam" class="button" />
+                <ui:Label text="Enter / Start (basılı tut) ile de devam edilir" class="label-small result-hint" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>
