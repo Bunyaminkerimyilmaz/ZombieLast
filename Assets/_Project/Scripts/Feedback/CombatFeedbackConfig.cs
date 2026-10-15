@@ -5,7 +5,7 @@ using UnityEngine;
 namespace LastHaven.Feedback
 {
     /// <summary>
-    /// Atış efektleri (<see cref="FeedbackDirector"/>): prefab'lar, havuz ön ısıtma sayıları ve iz renkleri.
+    /// Atış ve yapı yıkılma efektleri (<see cref="FeedbackDirector"/>): prefab'lar, havuz ön ısıtma sayıları ve iz renkleri.
     /// Asset'i üretici oluşturur: <c>Data/Feedback/CombatFeedbackConfig.asset</c>. Efektlerin kendi ayarları prefab'larında.
     /// </summary>
     public sealed class CombatFeedbackConfig : ScriptableObject
@@ -20,6 +20,9 @@ namespace LastHaven.Feedback
         [SerializeField, Tooltip("Namlu ışığı (nokta ışık).")]
         private MuzzleFlash _muzzleFlashPrefab;
 
+        [SerializeField, Tooltip("Yapı yıkılınca moloz (ParticleSystem, mesh parçalar).")]
+        private DebrisEffect _debrisPrefab;
+
         [Header("Havuz (oyun başında önceden oluşturulur)")]
         [SerializeField, Min(0), Tooltip("Pompalı tek atışta 8 iz çıkarır.")]
         private int _tracerPrewarm = 16;
@@ -29,6 +32,9 @@ namespace LastHaven.Feedback
 
         [SerializeField, Min(0)]
         private int _muzzleFlashPrewarm = 4;
+
+        [SerializeField, Min(0), Tooltip("Aynı anda yıkılabilecek yapı sayısı (efekt ~1.2 sn sürer).")]
+        private int _debrisPrewarm = 4;
 
         [Header("Mermi izi")]
         [SerializeField, Tooltip("İz rengi bu silahların verisinden (Tracer Color) alınır; silah id'siyle eşleşir.")]
@@ -54,6 +60,11 @@ namespace LastHaven.Feedback
         public int ImpactPrewarm => _impactPrewarm;
 
         public int MuzzleFlashPrewarm => _muzzleFlashPrewarm;
+
+        /// <summary>Null olabilir.</summary>
+        public DebrisEffect DebrisPrefab => _debrisPrefab;
+
+        public int DebrisPrewarm => _debrisPrewarm;
 
         public IReadOnlyList<WeaponData> Weapons => _weapons;
 

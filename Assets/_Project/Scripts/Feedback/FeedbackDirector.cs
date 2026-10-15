@@ -4,9 +4,9 @@ using UnityEngine;
 namespace LastHaven.Feedback
 {
     /// <summary>
-    /// Oyun olaylarını görsel efektlere bağlar ([Systems]/Feedback). Şimdilik atış efektleri:
-    /// <see cref="WeaponFiredEvent"/> → namlu ışığı, <see cref="ShotTracedEvent"/> → mermi izi, <see cref="ShotHitEvent"/> → vuruş efekti.
-    /// Efektler <see cref="IPoolService"/>'ten alınır ve oyun başında ön ısıtılır. Combat bu sınıfı bilmez.
+    /// Oyun olaylarını görsel efektlere bağlar ([Systems]/Feedback): <see cref="WeaponFiredEvent"/> → namlu ışığı,
+    /// <see cref="ShotTracedEvent"/> → mermi izi, <see cref="ShotHitEvent"/> → vuruş efekti, <see cref="StructureDestroyedEvent"/> →
+    /// moloz. Efektler <see cref="IPoolService"/>'ten alınır ve oyun başında ön ısıtılır. Combat ve Building bu sınıfı bilmez.
     /// </summary>
     [DisallowMultipleComponent]
     public sealed class FeedbackDirector : MonoBehaviour
@@ -46,6 +46,7 @@ namespace LastHaven.Feedback
             Prewarm(_config.TracerPrefab, _config.TracerPrewarm);
             Prewarm(_config.ImpactPrefab, _config.ImpactPrewarm);
             Prewarm(_config.MuzzleFlashPrefab, _config.MuzzleFlashPrewarm);
+            Prewarm(_config.DebrisPrefab, _config.DebrisPrewarm);
         }
 
         private void OnEnable()
@@ -53,6 +54,7 @@ namespace LastHaven.Feedback
             EventBus<WeaponFiredEvent>.Subscribe(OnWeaponFired);
             EventBus<ShotTracedEvent>.Subscribe(OnShotTraced);
             EventBus<ShotHitEvent>.Subscribe(OnShotHit);
+            EventBus<StructureDestroyedEvent>.Subscribe(OnStructureDestroyed);
         }
 
         private void OnDisable()
@@ -60,6 +62,7 @@ namespace LastHaven.Feedback
             EventBus<WeaponFiredEvent>.Unsubscribe(OnWeaponFired);
             EventBus<ShotTracedEvent>.Unsubscribe(OnShotTraced);
             EventBus<ShotHitEvent>.Unsubscribe(OnShotHit);
+            EventBus<StructureDestroyedEvent>.Unsubscribe(OnStructureDestroyed);
         }
 
         private void OnWeaponFired(WeaponFiredEvent fired)
@@ -92,6 +95,18 @@ namespace LastHaven.Feedback
             Vector3 normal = hit.Normal.sqrMagnitude > 0f ? hit.Normal : -hit.Direction;
             ImpactEffect impact = _pool.Get(_config.ImpactPrefab, hit.Point, Quaternion.LookRotation(normal));
             impact.Play(hit.TargetType);
+        }
+
+        private void OnStructureDestroyed(StructureDestroyedEvent destroyed)
+        {
+            if (_pool == null || _config.DebrisPrefab == null)
+            {
+                return;
+            }
+
+            Bounds bounds = destroyed.Bounds;
+            DebrisEffect debris = _pool.Get(_config.DebrisPrefab, bounds.center, Quaternion.identity);
+            debris.Play(bounds);
         }
 
         private void Prewarm(Component prefab, int count)

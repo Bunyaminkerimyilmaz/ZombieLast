@@ -9,8 +9,9 @@ using Object = UnityEngine.Object;
 namespace LastHaven.Editor
 {
     /// <summary>
-    /// Atış efekti prefab'ları (<c>Prefabs/Feedback/</c>): Tracer, Impact, MuzzleFlash. Varsa dokunulmaz; yoksa oluşturulur.
-    /// Efekt prefab'ları tek katmandır (kök = görsel); mantık sadece görseli sürer, değiştirilecek model yoktur.
+    /// Efekt prefab'ları (<c>Prefabs/Feedback/</c>): Tracer, Impact, MuzzleFlash (atış), Debris (yapı yıkılma; ayarları
+    /// <see cref="DebrisPrefab"/>'ta). Varsa dokunulmaz; yoksa oluşturulur. Efekt prefab'ları tek katmandır (kök = görsel);
+    /// mantık sadece görseli sürer, değiştirilecek model yoktur.
     /// </summary>
     public static class FeedbackPrefabs
     {
@@ -18,6 +19,7 @@ namespace LastHaven.Editor
         public const string TracerPath = Folder + "/Tracer.prefab";
         public const string ImpactPath = Folder + "/Impact.prefab";
         public const string MuzzleFlashPath = Folder + "/MuzzleFlash.prefab";
+        public const string DebrisPath = Folder + "/Debris.prefab";
 
         private const string LifetimeFieldName = "_lifetime";
 
@@ -52,6 +54,27 @@ namespace LastHaven.Editor
         public static MuzzleFlash LoadOrCreateMuzzleFlash()
         {
             return LoadOrCreate<MuzzleFlash>(MuzzleFlashPath, BuildMuzzleFlash);
+        }
+
+        public static DebrisEffect LoadOrCreateDebris()
+        {
+            return LoadOrCreate<DebrisEffect>(DebrisPath, DebrisPrefab.Build);
+        }
+
+        /// <summary>Efektin kendini havuza iade süresini yazar.</summary>
+        internal static void SetLifetime(PooledLifetime lifetime, float seconds)
+        {
+            var serialized = new SerializedObject(lifetime);
+            serialized.FindProperty(LifetimeFieldName).floatValue = seconds;
+            serialized.ApplyModifiedPropertiesWithoutUndo();
+        }
+
+        internal static void DisableShadowsAndProbes(Renderer renderer)
+        {
+            renderer.shadowCastingMode = ShadowCastingMode.Off;
+            renderer.receiveShadows = false;
+            renderer.lightProbeUsage = LightProbeUsage.Off;
+            renderer.reflectionProbeUsage = ReflectionProbeUsage.Off;
         }
 
         private static T LoadOrCreate<T>(string path, Func<GameObject> build) where T : Component
@@ -156,21 +179,6 @@ namespace LastHaven.Editor
             SetLifetime(root.AddComponent<PooledLifetime>(), MuzzleFlashLifetime);
             root.AddComponent<MuzzleFlash>();
             return root;
-        }
-
-        private static void SetLifetime(PooledLifetime lifetime, float seconds)
-        {
-            var serialized = new SerializedObject(lifetime);
-            serialized.FindProperty(LifetimeFieldName).floatValue = seconds;
-            serialized.ApplyModifiedPropertiesWithoutUndo();
-        }
-
-        private static void DisableShadowsAndProbes(Renderer renderer)
-        {
-            renderer.shadowCastingMode = ShadowCastingMode.Off;
-            renderer.receiveShadows = false;
-            renderer.lightProbeUsage = LightProbeUsage.Off;
-            renderer.reflectionProbeUsage = ReflectionProbeUsage.Off;
         }
     }
 }

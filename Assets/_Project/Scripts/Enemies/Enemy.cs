@@ -6,9 +6,9 @@ namespace LastHaven.Enemies
 {
     /// <summary>
     /// Düşman prefab'ının kök bileşeni: NavMeshAgent + <see cref="Health"/> + havuz. Mantık saf C#'tadır:
-    /// hedef seçimi <see cref="TargetSelector"/>'de, davranış <see cref="EnemyStateMachine"/>'de; bu sınıf onlara gövde olur.
-    /// Havuzdan her çıkışta değerler <see cref="EnemyData"/>'dan yeniden kurulur. Ölünce <see cref="EnemyKilledEvent"/> gönderir.
-    /// Animasyonlar (yürüme hızı, saldırı, ölüm) <see cref="AnimationDriver"/> üzerinden; vuruş tepkisi <see cref="EnemyHitReaction"/>'da.
+    /// hedef seçimi <see cref="TargetSelector"/>'de (<see cref="EnemyTargeting"/> üzerinden), davranış <see cref="EnemyStateMachine"/>'de;
+    /// bu sınıf onlara gövde olur. Havuzdan her çıkışta değerler <see cref="EnemyData"/>'dan yeniden kurulur. Ölünce
+    /// <see cref="EnemyKilledEvent"/> gönderir. Animasyonlar <see cref="AnimationDriver"/> üzerinden; vuruş tepkisi <see cref="EnemyHitReaction"/>'da.
     /// </summary>
     [DisallowMultipleComponent]
     [RequireComponent(typeof(NavMeshAgent), typeof(Health))]
@@ -17,13 +17,12 @@ namespace LastHaven.Enemies
         [SerializeField, Tooltip("Bu düşmanın tipi (GDD §7). Üretici bağlar.")]
         private EnemyData _data;
 
-        private readonly TrackedTarget _target = new TrackedTarget();
         private Health _health;
         private AnimationDriver _animation;
         private Collider _collider;
         private EnemyNavigator _navigator;
+        private EnemyTargeting _targeting;
         private EnemyStateMachine _machine;
-        private TargetSelector _selector;
         private IPoolService _pool;
         private Vector3 _baseScale;
         private bool _servicesResolved;
@@ -37,11 +36,14 @@ namespace LastHaven.Enemies
         public bool IsAlive => _spawned && !_machine.IsDead;
 
         /// <summary>Seçili ve hedeflenebilir hedef; yoksa null.</summary>
-        public ITargetable Target => _target.Target;
+        public ITargetable Target => _targeting.Target.Target;
 
-        public bool HasTarget => _target.IsValid;
+        /// <summary>GDD §7 kural 4 etkinse yolu tıkalı olan asıl hedef (seçili hedef o zaman engeldir); değilse null.</summary>
+        public ITargetable BlockedTarget => _targeting.BlockedTarget;
 
-        public float DistanceToTarget => _target.DistanceFrom(transform.position);
+        public bool HasTarget => _targeting.Target.IsValid;
+
+        public float DistanceToTarget => _targeting.Target.DistanceFrom(transform.position);
 
         public void OnSpawned()
         {
@@ -52,16 +54,16 @@ namespace LastHaven.Enemies
         {
             _spawned = false;
             _navigator.Deactivate();
-            SetTarget(null);
+            _targeting.Clear();
         }
 
         void IEnemyBody.SetEmergence(float progress) => _navigator.SetEmergence(progress);
 
-        void IEnemyBody.MoveToTarget() => _navigator.MoveTo(_target.Position);
+        void IEnemyBody.MoveToTarget() => _navigator.MoveTo(_targeting.Target.Position);
 
         void IEnemyBody.Halt() => _navigator.Halt();
 
-        void IEnemyBody.FaceTarget(float deltaTime) => _navigator.FaceTowards(_target.Position, deltaTime);
+        void IEnemyBody.FaceTarget(float deltaTime) => _navigator.FaceTowards(_targeting.Target.Position, deltaTime);
 
         void IEnemyBody.SetSink(float progress) => _navigator.SetSink(progress);
 
@@ -72,13 +74,7 @@ namespace LastHaven.Enemies
                 _animation.TriggerAttack();
             }
 
-            if (!_target.TryGetHit(transform.position, transform.forward, out IDamageable damageable, out Vector3 hitPoint, out Vector3 direction))
-            {
-                return;
-            }
-
-            float amount = MeleeDamage.Calculate(_data.Damage, _target.Target.TargetType, _data.StructureDamageMultiplier);
-            damageable.TakeDamage(new DamageInfo(amount, DamageType.Melee, gameObject, hitPoint, direction));
+            _targeting.TryStrike(transform.position, transform.forward, _data, gameObject);
         }
 
         void IEnemyBody.Despawn()
@@ -98,6 +94,7 @@ namespace LastHaven.Enemies
             _animation = GetComponent<AnimationDriver>();
             _collider = GetComponent<Collider>();
             _navigator = new EnemyNavigator(GetComponent<NavMeshAgent>());
+            _targeting = new EnemyTargeting(_navigator);
             _machine = new EnemyStateMachine(this);
             _baseScale = transform.localScale;
 
@@ -137,8 +134,7 @@ namespace LastHaven.Enemies
             float deltaTime = Time.deltaTime;
             if (!_machine.IsDead)
             {
-                _selector.Tick(deltaTime, transform.position);
-                SetTarget(_selector.Current);
+                _targeting.Tick(deltaTime, transform.position);
             }
 
             _machine.Tick(deltaTime);
@@ -165,11 +161,10 @@ namespace LastHaven.Enemies
                 _collider.enabled = true;
             }
 
-            _navigator.Activate(_data.MoveSpeed, _data.BurrowDepth * _data.Scale, _data.RepathDistance);
+            _navigator.Activate(_data.MoveSpeed, _data.BurrowDepth * _data.Scale, _data.RepathDistance, _data.PickAvoidancePriority());
 
             TargetSelectorSettings targeting = _data.CreateTargetSelectorSettings();
-            _selector.Reset(targeting, Random.Range(0f, targeting.EvaluationInterval));
-            SetTarget(null);
+            _targeting.Reset(targeting, Random.Range(0f, targeting.EvaluationInterval), _data.AttackRange);
             _machine.Begin(_data.CreateBehaviourSettings());
         }
 
@@ -181,21 +176,8 @@ namespace LastHaven.Enemies
             }
 
             _servicesResolved = true;
-            if (!ServiceLocator.TryGet(out ITargetRegistry registry))
-            {
-                Debug.LogWarning("Enemy: ITargetRegistry bulunamadı; düşman hedef seçemeyecek. Sahnede [Systems]/TargetRegistry var mı?", this);
-            }
-
             ServiceLocator.TryGet(out _pool);
-            _selector = new TargetSelector(registry, _data.CreateTargetSelectorSettings());
-        }
-
-        private void SetTarget(ITargetable target)
-        {
-            if (_target.Set(target))
-            {
-                _navigator.InvalidatePath();
-            }
+            _targeting.Initialize(_data.CreateTargetSelectorSettings(), this);
         }
 
         private void OnDied(DiedEvent died)
@@ -213,17 +195,14 @@ namespace LastHaven.Enemies
             // Yerden çıkarken öldüyse transform gömülü; jetonlar yüzeye düşsün. BeginDeath ajanı kapatmadan önce alınır.
             Vector3 deathPosition = _navigator.SurfacePosition;
             _navigator.BeginDeath();
-            SetTarget(null);
+            _targeting.Clear();
             _machine.Kill();
             if (_animation != null)
             {
                 _animation.TriggerDie();
             }
 
-            GameObject source = died.KillingBlow.Source;
-            bool killedByPlayer = source != null && source.CompareTag(GameTags.Player);
-            EventBus<EnemyKilledEvent>.Raise(new EnemyKilledEvent(
-                deathPosition, _data.Id, _data.MoneyReward, _data.XpReward, killedByPlayer));
+            EnemyDeathReport.Raise(_data, deathPosition, died.KillingBlow);
         }
     }
 }

@@ -36,13 +36,17 @@ namespace LastHaven.Enemies
         /// <summary>Ajanın hızı (m/sn); ajan kapalıyken 0. Animasyonun yürüme hızı.</summary>
         public float Speed => IsActive ? _agent.velocity.magnitude : 0f;
 
-        /// <summary>Havuzdan çıkışta: ajanı açar, bulunduğu noktaya yerleştirir ve durdurur.</summary>
-        public void Activate(float speed, float burrowDepth, float repathDistance)
+        /// <summary>
+        /// Havuzdan çıkışta: ajanı açar, bulunduğu noktaya yerleştirir ve durdurur. <paramref name="avoidancePriority"/> (0–99)
+        /// kalabalıkta kimin yol vereceğini belirler.
+        /// </summary>
+        public void Activate(float speed, float burrowDepth, float repathDistance, int avoidancePriority)
         {
             _burrowDepth = burrowDepth;
             _repathSqrDistance = repathDistance * repathDistance;
             _hasDestination = false;
 
+            _agent.avoidancePriority = avoidancePriority;
             _agent.enabled = true;
             if (!_agent.Warp(_transform.position))
             {
@@ -61,6 +65,22 @@ namespace LastHaven.Enemies
         {
             _agent.enabled = false;
             _hasDestination = false;
+        }
+
+        /// <summary>
+        /// Şu anki yol yarım mı (<see cref="NavMeshPathStatus.PathPartial"/>: hedefe ulaşmıyor, ajan gidebildiği en yakın yere
+        /// gider). Öyleyse yolun bittiği nokta. Yol hesaplanıyorsa veya ajan kapalıysa false.
+        /// </summary>
+        public bool TryGetPartialPathEnd(out Vector3 end)
+        {
+            end = default;
+            if (!IsActive || !_hasDestination || _agent.pathPending || _agent.pathStatus != NavMeshPathStatus.PathPartial)
+            {
+                return false;
+            }
+
+            end = _agent.pathEndPosition;
+            return true;
         }
 
         /// <summary>Yolu bir sonraki <see cref="MoveTo"/>'da yeniden hesaplatır (hedef değişince).</summary>

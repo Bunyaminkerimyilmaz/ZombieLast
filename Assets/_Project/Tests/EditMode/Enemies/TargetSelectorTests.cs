@@ -7,7 +7,7 @@ using Object = UnityEngine.Object;
 
 namespace LastHaven.Tests.EditMode
 {
-    /// <summary>TargetSelector: GDD §7 hedef seçim kuralları 1–3 ve 0.5 sn'lik değerlendirme zamanlaması.</summary>
+    /// <summary>TargetSelector: GDD §7 hedef seçim kuralları 1–4 ve 0.5 sn'lik değerlendirme zamanlaması.</summary>
     public class TargetSelectorTests
     {
         private const float Interval = 0.5f;
@@ -256,6 +256,174 @@ namespace LastHaven.Tests.EditMode
             selector.Reset(Tank, 0.1f);
             Assert.IsNull(selector.Current);
             Assert.AreSame(generator, selector.Evaluate(Vector3.zero), "Tank aggro'su 3 m: 5 m'deki oyuncu seçilmez.");
+        }
+
+        // --- Kural 4: yol tıkalı (PathPartial) → yolun sonuna en yakın yapı ---
+
+        [Test]
+        public void Evaluate_BlockedPathToGenerator_TargetsStructureNearestToPathEnd()
+        {
+            FakeTarget generator = Register(TargetType.Generator, Vector3.zero);
+            Register(TargetType.Barricade, new Vector3(3f, 0f, 18f)); // Düşmana yakın ama yolun sonuna uzak.
+            FakeTarget wall = Register(TargetType.Barricade, new Vector3(0f, 0f, 6f));
+            var selector = new TargetSelector(_registry, Walker);
+            var enemy = new Vector3(0f, 0f, 20f);
+
+            Assert.AreSame(generator, selector.Evaluate(enemy, Blocked(new Vector3(0f, 0f, 7f))),
+                "Seçili hedef yokken yol bilgisi asıl hedefin değil: önce jeneratöre yol hesaplanır.");
+            Assert.IsNull(selector.BlockedTarget);
+
+            Assert.AreSame(wall, selector.Evaluate(enemy, Blocked(new Vector3(0f, 0f, 7f))), "Jeneratöre giden yol tıkalı.");
+            Assert.AreSame(generator, selector.BlockedTarget);
+        }
+
+        [Test]
+        public void Evaluate_KeepsBlockerWhileDesiredTargetIsUnchanged()
+        {
+            FakeTarget generator = Register(TargetType.Generator, Vector3.zero);
+            FakeTarget wall = Register(TargetType.Barricade, new Vector3(0f, 0f, 6f));
+            TargetSelector selector = BlockedSelector(Walker, new Vector3(0f, 0f, 20f), new Vector3(0f, 0f, 7f));
+            Assert.AreSame(wall, selector.Current);
+
+            // Yol artık engele gidiyor (tamam); jeneratöre dönülseydi düşman ikisi arasında gidip gelirdi.
+            Assert.AreSame(wall, selector.Evaluate(new Vector3(0f, 0f, 8f), PathInfo.None));
+            Assert.AreSame(wall, selector.Evaluate(new Vector3(0f, 0f, 8f)));
+            Assert.AreSame(generator, selector.BlockedTarget);
+        }
+
+        [Test]
+        public void Tick_BlockerDestroyed_ReturnsToDesiredThenFindsNextWall()
+        {
+            FakeTarget generator = Register(TargetType.Generator, Vector3.zero);
+            FakeTarget outer = Register(TargetType.Barricade, new Vector3(0f, 0f, 6f));
+            FakeTarget inner = Register(TargetType.Barricade, new Vector3(0f, 0f, 4f));
+            var enemy = new Vector3(0f, 0f, 7f);
+            TargetSelector selector = BlockedSelector(Walker, new Vector3(0f, 0f, 20f), new Vector3(0f, 0f, 7f));
+            Assert.AreSame(outer, selector.Current);
+
+            outer.IsTargetable = false;
+            Assert.IsTrue(selector.Tick(0.01f, enemy, Blocked(new Vector3(0f, 0f, 6.5f))), "Kırılan engel beklemeden bırakılır.");
+            Assert.AreSame(generator, selector.Current, "Eski yol engele aitti: önce asıl hedefe dönülür.");
+            Assert.IsNull(selector.BlockedTarget);
+
+            selector.Evaluate(enemy, Blocked(new Vector3(0f, 0f, 5f)));
+            Assert.AreSame(inner, selector.Current, "İkinci duvar.");
+        }
+
+        [Test]
+        public void Evaluate_DesiredTargetChanges_DropsBlocker()
+        {
+            Register(TargetType.Generator, Vector3.zero);
+            FakeTarget wall = Register(TargetType.Barricade, new Vector3(0f, 0f, 6f));
+            FakeTarget innerWall = Register(TargetType.Barricade, new Vector3(-6f, 0f, 0f));
+            FakeTarget player = Register(TargetType.Player, new Vector3(-3f, 0f, 3f));
+            TargetSelector selector = BlockedSelector(Walker, new Vector3(0f, 0f, 20f), new Vector3(0f, 0f, 7f));
+            Assert.AreSame(wall, selector.Current);
+
+            // Oyuncu aggro'ya girdi (kural 1): engel bırakılır, oyuncuya yol hesaplanır.
+            var enemy = new Vector3(-3f, 0f, 7f);
+            Assert.AreSame(player, selector.Evaluate(enemy, Blocked(new Vector3(0f, 0f, 7f))));
+            Assert.IsNull(selector.BlockedTarget);
+
+            // Oyuncuya giden yol da tıkalı: o yolun sonuna en yakın yapı.
+            Assert.AreSame(innerWall, selector.Evaluate(enemy, Blocked(new Vector3(-6.5f, 0f, 1f))));
+            Assert.AreSame(player, selector.BlockedTarget);
+        }
+
+        [Test]
+        public void Evaluate_UnblockedPath_UsesRulesOneToThree()
+        {
+            FakeTarget generator = Register(TargetType.Generator, Vector3.zero);
+            Register(TargetType.Barricade, new Vector3(0f, 0f, 6f));
+            var selector = new TargetSelector(_registry, Walker);
+            var enemy = new Vector3(0f, 0f, 20f);
+
+            selector.Evaluate(enemy, PathInfo.None);
+            Assert.AreSame(generator, selector.Evaluate(enemy, PathInfo.None));
+            Assert.AreSame(generator, selector.Evaluate(enemy, PathInfo.FromPartialPath(new Vector3(0f, 0f, 1.2f), 0.2f, 1.5f)),
+                "Yarım yol menzil içinde bitiyor: tıkalı değil.");
+            Assert.IsNull(selector.BlockedTarget);
+        }
+
+        [Test]
+        public void Evaluate_TankPrefersNearestBarricade_AndPathEndingAtItIsNoBlock()
+        {
+            // GDD §7: Tank 15 m içindeki en yakın barikatı tercih eder (kural 2). Carve'lı barikatın merkezine yol yarım kalır ama
+            // yolun sonuna en yakın yapı hedefin kendisidir: kural 4 bir şey değiştirmez.
+            Register(TargetType.Generator, Vector3.zero);
+            FakeTarget inner = Register(TargetType.Barricade, new Vector3(0f, 0f, 3f));
+            FakeTarget outer = Register(TargetType.Barricade, new Vector3(0f, 0f, 8f));
+            var enemy = new Vector3(0f, 0f, 16f);
+            var selector = new TargetSelector(_registry, Tank);
+
+            Assert.AreSame(outer, selector.Evaluate(enemy, PathInfo.None), "Tank en yakın barikatı tercih eder.");
+
+            // Dış barikat kırıldı; sıradaki en yakın barikat.
+            outer.IsTargetable = false;
+            FakeTarget ring = Register(TargetType.Barricade, new Vector3(3f, 0f, 8f));
+            Assert.AreSame(ring, selector.Evaluate(new Vector3(3f, 0f, 16f), PathInfo.None));
+            ring.IsTargetable = false;
+            Assert.AreSame(inner, selector.Evaluate(enemy, PathInfo.None));
+            Assert.AreSame(inner, selector.Evaluate(enemy, Blocked(new Vector3(0f, 0f, 3.9f))),
+                "Yolun sonuna en yakın yapı hedefin kendisi: engel yok.");
+            Assert.IsNull(selector.BlockedTarget);
+        }
+
+        [Test]
+        public void SelectBlockingStructure_SkipsTrapsAndPlayer_CountsTurretAndGenerator()
+        {
+            var end = new Vector3(0f, 0f, 7f);
+            Register(TargetType.Trap, end);
+            Register(TargetType.Player, end);
+            FakeTarget turret = Register(TargetType.Turret, new Vector3(1f, 0f, 7f));
+            FakeTarget barricade = Register(TargetType.Barricade, new Vector3(4f, 0f, 7f));
+            FakeTarget generator = Register(TargetType.Generator, Vector3.zero);
+
+            Assert.AreSame(turret, BlockedPathRule.SelectBlockingStructure(_registry, end), "Tuzak üzerinden geçilir; yolu tıkamaz.");
+
+            turret.IsTargetable = false;
+            Assert.AreSame(barricade, BlockedPathRule.SelectBlockingStructure(_registry, end));
+
+            barricade.IsTargetable = false;
+            Assert.AreSame(generator, BlockedPathRule.SelectBlockingStructure(_registry, end), "Mesafe sınırı yok.");
+            Assert.IsNull(BlockedPathRule.SelectBlockingStructure(null, end));
+        }
+
+        [Test]
+        public void PathInfo_BlockedOnlyWhenEndIsOutOfAttackRange()
+        {
+            Assert.IsFalse(PathInfo.None.IsBlocked);
+            Assert.IsFalse(PathInfo.FromPartialPath(Vector3.zero, 1.5f, 1.5f).IsBlocked, "Menzil sınırı dahil: oradan vurulur.");
+            Assert.IsTrue(PathInfo.FromPartialPath(Vector3.one, 1.6f, 1.5f).IsBlocked);
+            Assert.AreEqual(Vector3.one, PathInfo.FromPartialPath(Vector3.one, 5f, 1.5f).End);
+        }
+
+        [Test]
+        public void Reset_ClearsBlocker()
+        {
+            Register(TargetType.Generator, Vector3.zero);
+            Register(TargetType.Barricade, new Vector3(0f, 0f, 6f));
+            TargetSelector selector = BlockedSelector(Walker, new Vector3(0f, 0f, 20f), new Vector3(0f, 0f, 7f));
+            Assert.IsNotNull(selector.BlockedTarget);
+
+            selector.Reset(Walker, 0f);
+
+            Assert.IsNull(selector.BlockedTarget);
+            Assert.IsNull(selector.Current);
+        }
+
+        private static PathInfo Blocked(Vector3 end)
+        {
+            return PathInfo.FromPartialPath(end, 10f, 1.5f);
+        }
+
+        // Asıl hedefe yol hesaplanmış ve tıkalı çıkmış seçici: engel seçili.
+        private TargetSelector BlockedSelector(in TargetSelectorSettings settings, Vector3 enemy, Vector3 pathEnd)
+        {
+            var selector = new TargetSelector(_registry, settings);
+            selector.Evaluate(enemy, PathInfo.None);
+            selector.Evaluate(enemy, Blocked(pathEnd));
+            return selector;
         }
 
         private ITargetable Select(in TargetSelectorSettings settings, Vector3 position)

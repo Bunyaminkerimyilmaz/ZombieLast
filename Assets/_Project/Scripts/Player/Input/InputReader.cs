@@ -90,6 +90,19 @@ namespace LastHaven.Player
 
         private void BindEvents()
         {
+            // Cihaz takibi her action'ın İLK dinleyicisi: tuşun kendi dinleyicisi modu değiştirip haritayı kapatırsa (B → inşa
+            // modu, Enter → alacakaranlık) sonradan okunan context.control geçersizdir (IndexOutOfRangeException). Haritanın
+            // actionTriggered'ı action dinleyicilerinden sonra çağrıldığı için kullanılmıyor.
+            for (int i = 0; i < _actions.Maps.Count; i++)
+            {
+                foreach (InputAction action in _actions.Maps[i].actions)
+                {
+                    action.started += TrackDevice;
+                    action.performed += TrackDevice;
+                    action.canceled += TrackDevice;
+                }
+            }
+
             BindPressed(Names.Reload, () => ReloadPressed?.Invoke());
             BindPressed(Names.Dash, () => DashPressed?.Invoke());
             BindPressed(Names.ToggleBuildMode, () => BuildModePressed?.Invoke());
@@ -114,11 +127,6 @@ namespace LastHaven.Player
             });
 
             ForEachAction(Names.AimPointer, action => action.performed += OnAimPointer);
-
-            for (int i = 0; i < _actions.Maps.Count; i++)
-            {
-                _actions.Maps[i].actionTriggered += TrackDevice;
-            }
         }
 
         /// <summary>Adı geçen action'ı içeren her haritada <paramref name="bind"/>'ı çalıştırır (kurulumda bir kez).</summary>

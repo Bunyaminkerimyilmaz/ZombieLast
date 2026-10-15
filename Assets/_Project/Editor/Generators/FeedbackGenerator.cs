@@ -7,8 +7,8 @@ using UnityEngine;
 namespace LastHaven.Editor
 {
     /// <summary>
-    /// Atış efektleri: FX materyalleri, <see cref="CombatFeedbackConfig"/> (<c>Data/Feedback/</c>) ve
-    /// <see cref="FeedbackPrefabs"/> (Tracer, Impact, MuzzleFlash). Varsa dokunulmaz; sadece config'teki boş prefab referansları
+    /// Atış ve yıkılma efektleri: FX materyalleri, <see cref="CombatFeedbackConfig"/> (<c>Data/Feedback/</c>) ve
+    /// <see cref="FeedbackPrefabs"/> (Tracer, Impact, MuzzleFlash, Debris). Varsa dokunulmaz; sadece config'teki boş prefab referansları
     /// doldurulur ve iz rengi listesinde olmayan silahlar eklenir.
     /// </summary>
     public sealed class FeedbackGenerator : IGenerationStep
@@ -47,7 +47,8 @@ namespace LastHaven.Editor
             CombatFeedbackConfig config = LoadOrCreateConfig();
             int filled = Assign(config, "_tracerPrefab", FeedbackPrefabs.LoadOrCreateTracer())
                          + Assign(config, "_impactPrefab", FeedbackPrefabs.LoadOrCreateImpact())
-                         + Assign(config, "_muzzleFlashPrefab", FeedbackPrefabs.LoadOrCreateMuzzleFlash());
+                         + Assign(config, "_muzzleFlashPrefab", FeedbackPrefabs.LoadOrCreateMuzzleFlash())
+                         + Assign(config, "_debrisPrefab", FeedbackPrefabs.LoadOrCreateDebris());
             if (filled > 0)
             {
                 AssetDatabase.SaveAssetIfDirty(config);

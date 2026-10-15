@@ -95,6 +95,12 @@ namespace LastHaven.Enemies
         [SerializeField, Min(0.05f), Tooltip("Hedef son yol hedefinden bu kadar uzaklaşınca yol yeniden hesaplanır (m).")]
         private float _repathDistance = 0.5f;
 
+        [SerializeField, Range(AvoidancePriority.Min, AvoidancePriority.Max), Tooltip("Kaçınma önceliği alt sınırı (NavMeshAgent.avoidancePriority; düşük = diğerleri yol verir). Her doğuşta [alt, üst] aralığından rastgele: aynı öncelikli ajanlar barikat önünde birbirini kilitlemesin.")]
+        private int _minAvoidancePriority = 30;
+
+        [SerializeField, Range(AvoidancePriority.Min, AvoidancePriority.Max), Tooltip("Kaçınma önceliği üst sınırı (dahil).")]
+        private int _maxAvoidancePriority = 70;
+
         [Header("Ses ve efekt (opsiyonel)")]
         [SerializeField, Tooltip("Opsiyonel saldırı sesi. Boşsa sessiz.")]
         private AudioClip _attackSound;
@@ -159,6 +165,16 @@ namespace LastHaven.Enemies
         public float DisengageMargin => _disengageMargin;
 
         public float RepathDistance => _repathDistance;
+
+        public int MinAvoidancePriority => _minAvoidancePriority;
+
+        public int MaxAvoidancePriority => _maxAvoidancePriority;
+
+        /// <summary>Doğuş için rastgele kaçınma önceliği (<see cref="AvoidancePriority.Pick"/>).</summary>
+        public int PickAvoidancePriority()
+        {
+            return AvoidancePriority.Pick(_minAvoidancePriority, _maxAvoidancePriority, Random.value);
+        }
 
         /// <summary>Null olabilir.</summary>
         public AudioClip AttackSound => _attackSound;

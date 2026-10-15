@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 329d775e054eee3488d357243b7f8853, type: 3}
+  m_Name: BuildConfig
+  m_EditorClassIdentifier: LastHaven.Building::LastHaven.Building.BuildConfig
+  _slots:
+  - {fileID: 11400000, guid: b08bda0286bab634796da4f0ad64c6e4, type: 2}
+  _structurePrewarm: 12
+  _cellSize: 1
+  _generatorHalfSize: 1
+  _generatorClearance: 2
+  _ghostMaterial: {fileID: 2100000, guid: fe28913b15a9a004e868e911c6341202, type: 2}
+  _validColor: {r: 0.25, g: 1, b: 0.4, a: 0.45}
+  _invalidColor: {r: 1, g: 0.25, b: 0.2, a: 0.45}
+  _gamepadPlacementDistance: 3
+  _highlightColor: {r: 1, g: 0.85, b: 0.3, a: 0.35}
+  _highlightScale: 1.04
+  _blockingLayers:
+    serializedVersion: 2
+    m_Bits: 2432
+  _blockingCheckHeight: 2

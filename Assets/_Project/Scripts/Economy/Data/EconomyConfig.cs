@@ -1,14 +1,16 @@
 using System.Collections.Generic;
+using LastHaven.Core;
 using UnityEngine;
 
 namespace LastHaven.Economy
 {
     /// <summary>
     /// Ekonomi ayarları (GDD §10). Asset'i üretici oluşturur: <c>Data/Economy/EconomyConfig.asset</c>.
-    /// Erken hazır bonusu burada değil, <c>GameConfig</c>'te (GameFlow hesaplar, <see cref="Core.EarlyReadyEvent"/> taşır).
-    /// Jeton alanlarını <see cref="CoinDropper"/>, kombo alanlarını <see cref="ComboService"/>, satış alanını Gün 8 kullanır.
+    /// Erken hazır bonusu burada değil, <c>GameConfig</c>'te (GameFlow hesaplar, <see cref="EarlyReadyEvent"/> taşır).
+    /// Jeton alanlarını <see cref="CoinDropper"/>, kombo alanlarını <see cref="ComboService"/> kullanır. Satış oranı diğer
+    /// modüllere <see cref="IEconomyRules"/> olarak açılır (kaydı <see cref="WalletService"/> yapar; Building satışta kullanır).
     /// </summary>
-    public sealed class EconomyConfig : ScriptableObject
+    public sealed class EconomyConfig : ScriptableObject, IEconomyRules
     {
         [Header("Başlangıç (GDD §10)")]
         [SerializeField, Min(0), Tooltip("Run başındaki para.")]
@@ -97,6 +99,12 @@ namespace LastHaven.Economy
         public IReadOnlyList<ComboTier> ComboTiers => _comboTiers;
 
         public float SellRefundRate => _sellRefundRate;
+
+        /// <summary>Satış iadesi (GDD §10): harcananın <see cref="SellRefundRate"/> oranı, aşağı yuvarlı.</summary>
+        public int GetSellRefund(int totalSpent)
+        {
+            return new SellRefundRule(_sellRefundRate).Calculate(totalSpent);
+        }
 
         /// <summary>Faiz kuralı (o anki değerlerle).</summary>
         public InterestRule CreateInterestRule()

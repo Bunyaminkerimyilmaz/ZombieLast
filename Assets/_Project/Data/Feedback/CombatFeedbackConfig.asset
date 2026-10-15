@@ -15,9 +15,11 @@ MonoBehaviour:
   _tracerPrefab: {fileID: 6087627969972966377, guid: 74ae4e883693e944881398b359d057e8, type: 3}
   _impactPrefab: {fileID: 3566405711815185995, guid: 079d5ebee7ebb484bad07d107cf5e6ac, type: 3}
   _muzzleFlashPrefab: {fileID: 8861395792130334704, guid: 33d801e0d28213543ab22a4d51d795d8, type: 3}
+  _debrisPrefab: {fileID: 1982724232414044156, guid: 528b132f7cbb6d14b9de8124710e51c8, type: 3}
   _tracerPrewarm: 16
   _impactPrewarm: 24
   _muzzleFlashPrewarm: 4
+  _debrisPrewarm: 4
   _weapons:
   - {fileID: 11400000, guid: 77077437a72965740855faafb92a63e9, type: 2}
   - {fileID: 11400000, guid: b91b99ae08ed1294c9386a582dab3809, type: 2}

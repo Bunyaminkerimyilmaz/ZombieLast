@@ -58,7 +58,7 @@ namespace LastHaven.Editor
         /// <summary>
         /// Prefab'ı yükler; yoksa oluşturur. Varsa sadece eksikleri tamamlar: boş PlayerData referansları,
         /// eksik <see cref="WeaponController"/> ve onun boş referansları, eksik vuruş hissi bileşenleri, eksik <see cref="PlayerRespawn"/>,
-        /// eksik fener.
+        /// eksik fener, eksik <see cref="Interactor"/> (8.3).
         /// Kullanıcının diğer ayarlarına dokunulmaz.
         /// Sahne adımı buradan alır; Generate Prefabs çalışmamış olsa da prefab oluşur.
         /// </summary>
@@ -75,7 +75,8 @@ namespace LastHaven.Editor
             int changes = EditorAssetUtility.EditPrefab(
                 PrefabPath,
                 root => AssignData(root, data) + EnsureWeaponController(root, data, loadout) + EnsureFeedback(root)
-                        + VisualFeedbackSetup.EnsureComponent<PlayerRespawn>(root) + PlayerFlashlight.Ensure(root));
+                        + VisualFeedbackSetup.EnsureComponent<PlayerRespawn>(root) + PlayerFlashlight.Ensure(root)
+                        + VisualFeedbackSetup.EnsureComponent<Interactor>(root));
             if (changes > 0)
             {
                 Debug.Log($"[Last Haven] Player: {PrefabPath} içinde {changes} eksik bileşen/referans tamamlandı.");
@@ -117,6 +118,7 @@ namespace LastHaven.Editor
                 EnsureFeedback(root);
                 root.AddComponent<PlayerRespawn>();
                 PlayerFlashlight.Ensure(root);
+                root.AddComponent<Interactor>();
 
                 EditorAssetUtility.EnsureFolder(PrefabFolder);
                 GameObject prefab = PrefabUtility.SaveAsPrefabAsset(root, PrefabPath);

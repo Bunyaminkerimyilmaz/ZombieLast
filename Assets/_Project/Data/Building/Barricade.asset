@@ -1,0 +1,39 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a7f9c2003a8dda247a2163730baacb05, type: 3}
+  m_Name: Barricade
+  m_EditorClassIdentifier: LastHaven.Building::LastHaven.Building.BuildableData
+  _id: barricade
+  _displayName: Barikat
+  _description: "Zombilerin yolunu keser; etraf\u0131ndan dola\u015F\u0131rlar. U
+    ile metale ve betona y\xFCkseltilir."
+  _icon: {fileID: 0}
+  _footprint: {x: 3, y: 1}
+  _levels:
+  - _displayName: "Ah\u015Fap"
+    _cost: 50
+    _maxHealth: 300
+    _material: {fileID: 2100000, guid: ad51b5f536b94ee4092edfc94937eef3, type: 2}
+    _stats: []
+  - _displayName: Metal
+    _cost: 120
+    _maxHealth: 800
+    _material: {fileID: 2100000, guid: 9d63bec45de8315438dc74b5391d9223, type: 2}
+    _stats: []
+  - _displayName: Beton
+    _cost: 300
+    _maxHealth: 2000
+    _material: {fileID: 2100000, guid: c9ba14585dfcb924fa9f446353b2e740, type: 2}
+    _stats: []
+  _prefab: {fileID: 8133208213930984990, guid: 5945e7c12a3991d40aa6e7b79ae0c6e7, type: 3}
+  _carvesNavMesh: 1
+  _targetType: 2

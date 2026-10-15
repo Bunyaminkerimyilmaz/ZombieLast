@@ -7,7 +7,7 @@ namespace LastHaven.Economy
     /// [Systems]/Economy: run başında <see cref="EconomyConfig"/>'in başlangıç değerleriyle bir <see cref="Wallet"/> oluşturur ve
     /// <see cref="IWallet"/> olarak kaydeder. Cüzdanın C# olaylarını <see cref="MoneyChangedEvent"/> / <see cref="FuelChangedEvent"/>
     /// olarak duyurur. <see cref="DawnEvent"/>'te faizi öder (<see cref="InterestPaidEvent"/>), <see cref="EarlyReadyEvent"/>'te
-    /// bonusu ekler. Sahne yeniden yüklenince (yeni run) sıfırlanır.
+    /// bonusu ekler. Config'i <see cref="IEconomyRules"/> olarak da kaydeder (satış iadesi). Sahne yeniden yüklenince (yeni run) sıfırlanır.
     /// </summary>
     [DisallowMultipleComponent]
     public sealed class WalletService : MonoBehaviour
@@ -35,6 +35,7 @@ namespace LastHaven.Economy
             _wallet = new Wallet(_config.StartingMoney, _config.StartingFuel);
             _income = new WalletIncome(_wallet, _config.CreateInterestRule());
             ServiceLocator.Register<IWallet>(_wallet);
+            ServiceLocator.Register<IEconomyRules>(_config);
         }
 
         private void OnEnable()
@@ -67,6 +68,7 @@ namespace LastHaven.Economy
             if (_wallet != null)
             {
                 ServiceLocator.Unregister<IWallet>(_wallet);
+                ServiceLocator.Unregister<IEconomyRules>(_config);
             }
         }
 
