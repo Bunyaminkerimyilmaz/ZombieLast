@@ -1,0 +1,41 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d1dd6a4aad1da60439d33a99dd0fd28e, type: 3}
+  m_Name: Walker
+  m_EditorClassIdentifier: LastHaven.Enemies::LastHaven.Enemies.EnemyData
+  _id: walker
+  _displayName: "Y\xFCr\xFCyen"
+  _maxHealth: 60
+  _moveSpeed: 2.2
+  _damage: 10
+  _attackRate: 1
+  _attackRange: 1.5
+  _structureDamageMultiplier: 1
+  _aggroRadius: 6
+  _hasPreferredTarget: 0
+  _preferredTarget: 2
+  _preferredTargetRadius: 15
+  _moneyReward: 10
+  _xpReward: 1
+  _knockbackResistance: 0
+  _scale: 1
+  _prefab: {fileID: 2343423251943282518, guid: e39966e4655af2f45bc26d4428ef49ef, type: 3}
+  _spawnDuration: 0.5
+  _retargetInterval: 0.5
+  _corpseDuration: 2
+  _sinkDuration: 1
+  _burrowDepth: 2.2
+  _disengageMargin: 0.3
+  _repathDistance: 0.5
+  _attackSound: {fileID: 0}
+  _deathSound: {fileID: 0}
+  _deathVfx: {fileID: 0}

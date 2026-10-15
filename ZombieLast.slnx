@@ -1,5 +1,6 @@
 ﻿<Solution>
   <Project Path="LastHaven.Core.csproj" />
+  <Project Path="LastHaven.Enemies.csproj" />
   <Project Path="LastHaven.Player.csproj" />
   <Project Path="LastHaven.Progression.csproj" />
   <Project Path="LastHaven.Feedback.csproj" />
@@ -12,6 +13,5 @@
   <Project Path="LastHaven.GameFlow.csproj" />
   <Project Path="LastHaven.Economy.csproj" />
   <Project Path="LastHaven.Audio.csproj" />
-  <Project Path="LastHaven.Enemies.csproj" />
   <Project Path="LastHaven.UI.csproj" />
 </Solution>

@@ -1,0 +1,41 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d1dd6a4aad1da60439d33a99dd0fd28e, type: 3}
+  m_Name: Tank
+  m_EditorClassIdentifier: LastHaven.Enemies::LastHaven.Enemies.EnemyData
+  _id: tank
+  _displayName: Tank
+  _maxHealth: 400
+  _moveSpeed: 1.6
+  _damage: 35
+  _attackRate: 0.6
+  _attackRange: 2
+  _structureDamageMultiplier: 2
+  _aggroRadius: 3
+  _hasPreferredTarget: 1
+  _preferredTarget: 2
+  _preferredTargetRadius: 15
+  _moneyReward: 60
+  _xpReward: 5
+  _knockbackResistance: 1
+  _scale: 1
+  _prefab: {fileID: 1214518430493628997, guid: 7fa0de58f706c324fa2d3f6c9c950159, type: 3}
+  _spawnDuration: 0.5
+  _retargetInterval: 0.5
+  _corpseDuration: 2
+  _sinkDuration: 1
+  _burrowDepth: 3.5200002
+  _disengageMargin: 0.3
+  _repathDistance: 0.5
+  _attackSound: {fileID: 0}
+  _deathSound: {fileID: 0}
+  _deathVfx: {fileID: 0}

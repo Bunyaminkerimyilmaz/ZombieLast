@@ -105,6 +105,9 @@ GameObject:
   - component: {fileID: 7002514884204143846}
   - component: {fileID: 8146402228274086875}
   - component: {fileID: 809492331708695756}
+  - component: {fileID: 1009926295982458875}
+  - component: {fileID: 1785814851286194416}
+  - component: {fileID: 6107186551711200051}
   m_Layer: 7
   m_Name: Player
   m_TagString: Player
@@ -220,6 +223,55 @@ MonoBehaviour:
   m_EditorClassIdentifier: LastHaven.Player::LastHaven.Player.WeaponController
   _loadout: {fileID: 11400000, guid: 128b484a49de73b45b88363b489f065f, type: 2}
   _muzzle: {fileID: 5258139956924134493}
+--- !u!114 &1009926295982458875
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3648926223191454246}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7a94fdb96d9755c468ee4c68a53aedfe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: LastHaven.Core::LastHaven.Core.AnimationDriver
+  _visual: {fileID: 503632181869833554}
+  _procedural:
+    _lungeDistance: 0.35
+    _lungeDuration: 0.2
+    _shakeAmplitude: 0.08
+    _shakeDuration: 0.15
+    _shakeFrequency: 25
+    _toppleAngle: 90
+    _toppleDuration: 0.4
+    _toppleLift: 0.5
+--- !u!114 &1785814851286194416
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3648926223191454246}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0396aced9a24f8e4194ba1c3d7b1413f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: LastHaven.Player::LastHaven.Player.PlayerAnimation
+--- !u!114 &6107186551711200051
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3648926223191454246}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73a50c8669d863a409283ff6c7559d16, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: LastHaven.Core::LastHaven.Core.HitFlash
+  _visual: {fileID: 503632181869833554}
+  _color: {r: 1, g: 0.12, b: 0.12, a: 1}
+  _duration: 0.15
 --- !u!1 &5433735704821789898
 GameObject:
   m_ObjectHideFlags: 0

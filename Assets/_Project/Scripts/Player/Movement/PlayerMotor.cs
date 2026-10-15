@@ -34,6 +34,9 @@ namespace LastHaven.Player
 
         public float DashCooldownRemaining => _dash.CooldownRemaining;
 
+        /// <summary>Son karedeki gerçek yatay hız (m/sn); duvara takılınca düşer. Animasyonun yürüme hızı.</summary>
+        public float Speed { get; private set; }
+
         /// <summary>Bu karenin kameraya göre çevrilmiş yürüme yönü (yatay, uzunluk 0..1).</summary>
         public Vector3 MoveDirection => _moveDirection;
 
@@ -107,6 +110,10 @@ namespace LastHaven.Player
 
             _verticalVelocity += Physics.gravity.y * deltaTime;
             _controller.Move(horizontal + Vector3.up * (_verticalVelocity * deltaTime));
+
+            Vector3 velocity = _controller.velocity;
+            velocity.y = 0f;
+            Speed = velocity.magnitude;
         }
 
         private void TryDash()

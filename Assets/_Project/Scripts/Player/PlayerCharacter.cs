@@ -5,7 +5,9 @@ namespace LastHaven.Player
 {
     /// <summary>
     /// Oyuncu prefab'ının kök bileşeni: canı PlayerData'dan kurar, <see cref="IPlayer"/> servisi olarak kaydolur ve
-    /// kendini <see cref="ITargetRegistry"/>'ye <see cref="TargetType.Player"/> olarak ekler. Atılma sırasında hasarı engeller.
+    /// kendini <see cref="ITargetRegistry"/>'ye <see cref="TargetType.Player"/> olarak ekler. Atılma sırasında ve hasar aldıktan
+    /// sonraki kısa pencerede (GDD §5: 0.3 sn) hasarı engeller. Hasarda kırmızı flaş (<see cref="HitFlash"/>) ve
+    /// <see cref="PlayerDamagedEvent"/>, ölümde <see cref="PlayerDiedEvent"/> gönderir.
     /// </summary>
     /// <remarks>Adı "Player" değil: <c>LastHaven.Player</c> namespace'iyle çakışırdı.</remarks>
     [DisallowMultipleComponent]
@@ -15,9 +17,11 @@ namespace LastHaven.Player
         [SerializeField, Tooltip("Oyuncu ayarları (GDD §5).")]
         private PlayerData _data;
 
+        private readonly HitInvulnerability _hitInvulnerability = new HitInvulnerability();
         private Health _health;
         private PlayerMotor _motor;
         private PlayerAim _aim;
+        private HitFlash _flash;
         private ITargetRegistry _registry;
         private bool _started;
 
@@ -37,9 +41,12 @@ namespace LastHaven.Player
 
         public bool IsTargetable => isActiveAndEnabled && _health.IsAlive;
 
+        /// <summary>Atılıyor veya hasar sonrası dokunulmazlık penceresinde.</summary>
+        public bool IsInvulnerable => _motor.IsInvulnerable || _hitInvulnerability.IsActive(Time.time);
+
         public bool CanTakeDamage(in DamageInfo damage)
         {
-            return !_motor.IsInvulnerable;
+            return !IsInvulnerable;
         }
 
         private void Awake()
@@ -47,6 +54,7 @@ namespace LastHaven.Player
             _health = GetComponent<Health>();
             _motor = GetComponent<PlayerMotor>();
             _aim = GetComponent<PlayerAim>();
+            _flash = GetComponent<HitFlash>();
 
             if (_data != null)
             {
@@ -74,6 +82,9 @@ namespace LastHaven.Player
 
         private void OnEnable()
         {
+            _health.Damaged += OnDamaged;
+            _health.Died += OnDied;
+
             // Servis Start'ta alınır; ilk kaydı Start yapar.
             if (_started)
             {
@@ -83,6 +94,8 @@ namespace LastHaven.Player
 
         private void OnDisable()
         {
+            _health.Damaged -= OnDamaged;
+            _health.Died -= OnDied;
             _registry?.Unregister(this);
         }
 
@@ -94,6 +107,27 @@ namespace LastHaven.Player
         private void RegisterTarget()
         {
             _registry?.Register(this);
+        }
+
+        private void OnDamaged(DamagedEvent damaged)
+        {
+            if (_data != null)
+            {
+                _hitInvulnerability.Trigger(Time.time, _data.HitInvulnerabilityDuration);
+            }
+
+            if (_flash != null)
+            {
+                _flash.Flash();
+            }
+
+            EventBus<PlayerDamagedEvent>.Raise(new PlayerDamagedEvent(
+                gameObject, damaged.Damage, damaged.AppliedAmount, damaged.CurrentHealth, damaged.MaxHealth));
+        }
+
+        private void OnDied(DiedEvent died)
+        {
+            EventBus<PlayerDiedEvent>.Raise(new PlayerDiedEvent(gameObject, transform.position, died.KillingBlow));
         }
     }
 }

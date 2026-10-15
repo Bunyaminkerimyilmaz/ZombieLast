@@ -9,6 +9,7 @@ namespace LastHaven.Editor
     /// PlayerData asset'i ve Player prefab'ı (GDD §5, §18).
     /// Kök: CharacterController + mantık bileşenleri, Player layer ve tag. "Visual": mavi kapsül + burun küpü (collider yok).
     /// "Muzzle": Visual dışında, nişan yüksekliğinde; WeaponController mermileri buradan atar.
+    /// Vuruş hissi (4.3): AnimationDriver + PlayerAnimation ve kırmızı HitFlash.
     /// Varsa dokunulmaz; sadece eksik bileşen ve boş referanslar tamamlanır.
     /// </summary>
     public sealed class PlayerGenerator : IGenerationStep
@@ -16,7 +17,7 @@ namespace LastHaven.Editor
         public const string DataPath = "Assets/_Project/Data/Player/PlayerData.asset";
         public const string PrefabFolder = "Assets/_Project/Prefabs/Player";
         public const string PrefabPath = PrefabFolder + "/Player.prefab";
-        public const string VisualName = "Visual";
+        public const string VisualName = VisualRoot.Name;
         public const string MuzzleName = "Muzzle";
 
         private const string DataFieldName = "_data";
@@ -30,6 +31,10 @@ namespace LastHaven.Editor
 
         // Namlu gövde yüzeyinin biraz önünde; yüksekliği PlayerData.AimHeight'tan gelir.
         private const float MuzzleForward = 0.7f;
+
+        // Hasar flaşı GDD'de yok (sadece "kırmızı"): mavi gövdede net seçilsin, dokunulmazlıktan (0.3 sn) kısa sürsün.
+        private const float HitFlashDuration = 0.15f;
+        private static readonly Color HitFlashColor = new Color(1f, 0.12f, 0.12f);
 
         private static readonly Vector3 NosePosition = new Vector3(0f, 1.5f, 0.45f);
         private static readonly Vector3 NoseScale = new Vector3(0.3f, 0.2f, 0.4f);
@@ -51,7 +56,8 @@ namespace LastHaven.Editor
 
         /// <summary>
         /// Prefab'ı yükler; yoksa oluşturur. Varsa sadece eksikleri tamamlar: boş PlayerData referansları,
-        /// eksik <see cref="WeaponController"/> ve onun boş referansları. Kullanıcının diğer ayarlarına dokunulmaz.
+        /// eksik <see cref="WeaponController"/> ve onun boş referansları, eksik vuruş hissi bileşenleri.
+        /// Kullanıcının diğer ayarlarına dokunulmaz.
         /// Sahne adımı buradan alır; Generate Prefabs çalışmamış olsa da prefab oluşur.
         /// </summary>
         public static GameObject LoadOrCreatePrefab()
@@ -65,7 +71,7 @@ namespace LastHaven.Editor
             }
 
             int changes = EditorAssetUtility.EditPrefab(
-                PrefabPath, root => AssignData(root, data) + EnsureWeaponController(root, data, loadout));
+                PrefabPath, root => AssignData(root, data) + EnsureWeaponController(root, data, loadout) + EnsureFeedback(root));
             if (changes > 0)
             {
                 Debug.Log($"[Last Haven] Player: {PrefabPath} içinde {changes} eksik bileşen/referans tamamlandı.");
@@ -104,6 +110,7 @@ namespace LastHaven.Editor
 
                 BuildVisual(root.transform);
                 EnsureWeaponController(root, data, loadout);
+                EnsureFeedback(root);
 
                 EditorAssetUtility.EnsureFolder(PrefabFolder);
                 GameObject prefab = PrefabUtility.SaveAsPrefabAsset(root, PrefabPath);
@@ -163,6 +170,17 @@ namespace LastHaven.Editor
             changes += EditorAssetUtility.AssignIfMissing(weapons, LoadoutFieldName, loadout) ? 1 : 0;
             changes += EditorAssetUtility.AssignIfMissing(weapons, MuzzleFieldName, muzzle) ? 1 : 0;
             return changes;
+        }
+
+        /// <summary>
+        /// Vuruş hissi bileşenlerini eksikse ekler: AnimationDriver (devrilme yüksekliği = gövde yarıçapı), PlayerAnimation,
+        /// kırmızı HitFlash. Visual'dan sonra çağrılmalı. Değişiklik sayısını döndürür.
+        /// </summary>
+        private static int EnsureFeedback(GameObject root)
+        {
+            return VisualFeedbackSetup.EnsureAnimationDriver(root, BodyRadius)
+                   + VisualFeedbackSetup.EnsureComponent<PlayerAnimation>(root)
+                   + VisualFeedbackSetup.EnsureHitFlash(root, HitFlashColor, HitFlashDuration);
         }
 
         /// <summary>Kökteki oyuncu bileşenlerinin boş PlayerData alanlarını doldurur; doldurulan sayısını döndürür.</summary>

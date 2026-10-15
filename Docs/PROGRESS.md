@@ -4,9 +4,9 @@
 
 ## Durum
 
-- **Son tamamlanan görev:** Gün 3 · 3.3
-- **Sıradaki görev:** Gün 4 · 4.1
-- **Kilometre taşı:** 🏁 M1 (yürü, nişan al, ateş et) kod tarafında tamam; kullanıcının elle testi ve commit'i bekleniyor
+- **Son tamamlanan görev:** Gün 4 · 4.3
+- **Sıradaki görev:** Gün 5 · 5.1
+- **Kilometre taşı:** 🏁 M1 (yürü, nişan al, ateş et) commit'lendi (`16b04a8`). Gün 4 bitti: düşmanlar oyunda (F1–F4 ile doğuyor), vuruş hissi var
 
 ## Tamamlanan görevler
 
@@ -21,6 +21,9 @@
 | 3.1 Stat sistemi ve silah verisi | Core/Stats: `StatType` (11 stat), `StatModifier` (Flat / PercentAdd + kaynak id), saf `StatCollection`, `PerkFlag`, `IRunModifiers` + saf `RunModifiers` + `RunModifiersHost` (kayıt bileşeni). Combat: `WeaponData`. `WeaponsGenerator` (Pistol, Shotgun, Rifle; GDD §6), `RunModifiersSceneStep`. 22 yeni EditMode testi (toplam 193) | `Scripts/Core/Stats/`, `Scripts/Combat/Weapons/WeaponData.cs`, `Editor/Generators/WeaponsGenerator.cs`, `Editor/SceneBuild/RunModifiersSceneStep.cs`, `Data/Weapons/*.asset`, `Tests/EditMode/Core/{StatCollection,RunModifiers}Tests.cs` |
 | 3.2 Ateş etme | Core: `CombatEvents` (6 olay), `HitTargetType` + `HitTargetTypes.FromLayer`, `DamageableLookup` (collider → IDamageable önbelleği), saf `Countdown`. Combat: saf `WeaponRuntime`, `WeaponUpgradeType`, `WeaponUpgradeConfig`, `HitscanShooter` + `HitscanRequest` + `ShotResult`, saf `SpreadPattern`. Player: `WeaponLoadoutData` + `WeaponSlotDefinition`, saf `WeaponSlots` ve `WeaponArsenal`, `WeaponController`. DebugTools: `TestDummy`, `CombatDebugLogger`. `PlayerWeaponsGenerator`, `TestDummiesGenerator` (+ açma/kapama menüsü), `TestDummiesConfig`, `TestDummiesSceneStep`; `PlayerGenerator` var olan prefab'a eksik `WeaponController`'ı ekliyor. 54 yeni EditMode testi (toplam 247) | `Scripts/Core/Events/CombatEvents.cs`, `Core/Damage/{HitTargetType,DamageableLookup}.cs`, `Core/Timing/Countdown.cs`, `Scripts/Combat/{Weapons,Hitscan}/`, `Scripts/Player/Weapons/`, `Scripts/Player/Data/{WeaponLoadoutData,WeaponSlotDefinition}.cs`, `Scripts/DebugTools/{TestDummy,CombatDebugLogger}.cs`, `Editor/Generators/{PlayerWeapons,TestDummies}Generator.cs`, `Editor/SceneBuild/TestDummies*`, `Data/Player/WeaponLoadout.asset`, `Data/Weapons/WeaponUpgradeConfig.asset`, `Data/Debug/TestDummiesConfig.asset`, `Tests/EditMode/Combat/` |
 | 3.3 Havuzlama ve vuruş efektleri | Core/Pooling: `IPoolService`, `IPoolable`, `PoolStats`, `PoolService` (`ObjectPool<T>` ile prefab başına `GameObjectPool` + `PooledInstance`), `PooledLifetime`. Core: `ShotTracedEvent` (saçma başına iz olayı; `HitscanRequest`'e `WeaponId` + `TracerOrigin`). Feedback: `Tracer` (LineRenderer), `ImpactEffect` + `ImpactProfile` (ParticleSystem; et/kıvılcım), `MuzzleFlash` (nokta ışık), `TracerPalette`, `CombatFeedbackConfig`, `FeedbackDirector`. Editor: `FxMaterials` (additive/alpha), `FeedbackPrefabs`, `FeedbackGenerator`, `PoolSceneStep`, `FeedbackSceneStep`. 24 yeni EditMode testi (toplam 271) | `Scripts/Core/Pooling/`, `Core/Events/CombatEvents.cs`, `Scripts/Combat/Hitscan/`, `Scripts/Feedback/`, `Editor/Generators/{Feedback*,FxMaterials}.cs`, `Editor/SceneBuild/{Pool,Feedback}SceneStep.cs`, `Data/Feedback/CombatFeedbackConfig.asset`, `Prefabs/Feedback/{Tracer,Impact,MuzzleFlash}.prefab`, `Materials/Fx/M_Fx{Additive,Alpha}.mat`, `Tests/EditMode/{Core/PoolServiceTests,Feedback/CombatFeedbackTests}.cs` |
+| 4.1 Düşman temeli ve hedefleme | Core: `EnemyKilledEvent`, `TargetTypes.IsStructure`. Enemies: `EnemyData` (GDD §7 + zamanlama/gezinme ayarları), saf `TargetSelector` + `TargetSelectorSettings` (kural 1–3, 0.5 sn, rastgele faz), saf `EnemyStateMachine` + `IEnemyBody` + 4 durum (Spawning/Chasing/Attacking/Dead) + `EnemyBehaviourSettings`, `MeleeDamage`, `TargetDistance`, `TargetComponentCache`, `TrackedTarget`, `EnemyNavigator`, `Enemy` (kök: NavMeshAgent + Health + IPoolable + IEnemyBody), geçici `GeneratorPlaceholder`. Editor: `GeneratorPlaceholderSceneStep`. Prefab/data üretimi yok (4.2). 33 yeni EditMode testi (toplam 304) | `Scripts/Core/Events/EnemyEvents.cs`, `Core/Targeting/TargetType.cs`, `Scripts/Enemies/{Enemy,EnemyNavigator,GeneratorPlaceholder}.cs`, `Scripts/Enemies/{Data,Targeting,States,Combat}/`, `Editor/SceneBuild/GeneratorPlaceholderSceneStep.cs`, `Tests/EditMode/Enemies/` |
+| 4.2 Düşman tipleri ve debug spawner | Core: `IEnemySpawner` (string id ile). Enemies: `EnemySpawner` (servis; havuz + `NavMesh.SamplePosition` + rastgele yön; oyun başında ön ısıtma), `EnemySpawnerConfig` + `EnemyPoolEntry`, saf `EnemyTypeLookup`. DebugTools: `DebugSpawner` (F1–F4 + OnGUI listesi, sadece editör/dev build). Editor: `EnemyDefinitions` (GDD §7/§18 tablosu), `EnemyPrefabs`, `EnemiesGenerator`, `EnemySpawnerSceneStep`, `DebugSpawnerSceneStep`. Walker/Runner/Tank data + prefab. 28 yeni EditMode testi (toplam 332) | `Scripts/Core/Enemies/IEnemySpawner.cs`, `Scripts/Enemies/Spawning/`, `Scripts/DebugTools/DebugSpawner.cs`, `Editor/Generators/{EnemiesGenerator,EnemyDefinitions,EnemyPrefabs}.cs`, `Editor/SceneBuild/{EnemySpawner,DebugSpawner}SceneStep.cs`, `Data/Enemies/{Walker,Runner,Tank,EnemySpawnerConfig}.asset`, `Prefabs/Enemies/{Walker,Runner,Tank}.prefab`, `Tests/EditMode/Enemies/EnemyTypeLookupTests.cs`, `Tests/EditMode/Generation/EnemyGenerationTests.cs` |
+| 4.3 Vuruş hissi ve AnimationDriver | Core: `AnimParams`, `AnimationDriver` (Animator varsa parametre, yoksa prosedürel yedek) + `AnimatorParameters`, saf `ProceduralPose` + `ProceduralPoseSettings` (öne atılma, sarsılma, devrilme), `HitFlash` + `FlashTarget` (MaterialPropertyBlock), `VisualRoot`, `PlayerEvents` (`PlayerDamagedEvent`, `PlayerDiedEvent`). Enemies: saf `Knockback` ve `HealthBarLayout`, `EnemyHitReaction` (flaş + vuruş animasyonu + geri itilme), `EnemyHealthBar` (billboard, 3 sn); `EnemyData`'ya geri itilme mesafesi/süresi; `Enemy` saldırı/hız/ölümü sürücüye verir. Player: saf `HitInvulnerability`, `PlayerAnimation`; `PlayerCharacter` 0.3 sn dokunulmazlık + kırmızı flaş + olaylar; `PlayerMotor.Speed`. Editor: `VisualFeedbackSetup`, `HealthBarMaterials`, `EnemyHealthBarBuilder`; düşman ve oyuncu üreticileri var olan prefab'lara eksik bileşenleri ekliyor. 45 yeni EditMode testi (toplam 377) | `Scripts/Core/Animation/`, `Scripts/Core/Visuals/`, `Scripts/Core/Events/PlayerEvents.cs`, `Scripts/Enemies/Feedback/`, `Scripts/Player/{Animation,Damage}/`, `Editor/Generators/{VisualFeedbackSetup,HealthBarMaterials,EnemyHealthBarBuilder}.cs`, `Materials/HealthBar/`, `Tests/EditMode/Core/{ProceduralPose,AnimationDriver,HitFlash}Tests.cs`, `Tests/EditMode/Enemies/{Knockback,HealthBarLayout}Tests.cs`, `Tests/EditMode/Player/HitInvulnerabilityTests.cs` |
 
 ## Assembly'ler
 
@@ -33,11 +36,11 @@
 | LastHaven.Waves | Core, Enemies |
 | LastHaven.Building | Core, Combat |
 | LastHaven.Economy / GameFlow / Progression | Core |
-| LastHaven.UI / Audio / Feedback / DebugTools | 9 oynanış modülü (Core…Progression); birbirlerini referans almaz |
+| LastHaven.UI / Audio / Feedback / DebugTools | 9 oynanış modülü (Core…Progression); birbirlerini referans almaz. DebugTools ayrıca Unity.InputSystem (F-tuşu kısayolları) |
 | LastHaven.Editor (sadece Editor) | 13 modülün hepsi, Unity.AI.Navigation, Unity.Cinemachine, Unity.RenderPipelines.Universal.Editor |
 | LastHaven.Tests.EditMode | 13 modülün hepsi + LastHaven.Editor + Unity.InputSystem + UnityEngine/UnityEditor.TestRunner + nunit.framework.dll; `UNITY_INCLUDE_TESTS` |
 
-Paket referansları: Unity.AI.Navigation (Enemies, Editor), Unity.InputSystem (Player, Tests.EditMode), Unity.Cinemachine (Player, Editor), Unity.RenderPipelines.Universal.Editor (Editor; FX materyalinde `BaseShaderGUI.SetupMaterialBlendMode` için). Runtime URP referansı henüz yok; ihtiyaç olan görevde eklenecek.
+Paket referansları: Unity.AI.Navigation (Enemies, Editor), Unity.InputSystem (Player, DebugTools, Tests.EditMode), Unity.Cinemachine (Player, Editor), Unity.RenderPipelines.Universal.Editor (Editor; FX materyalinde `BaseShaderGUI.SetupMaterialBlendMode` için). Runtime URP referansı henüz yok; ihtiyaç olan görevde eklenecek.
 
 ## Editör menüleri
 
@@ -45,8 +48,8 @@ Paket referansları: Unity.AI.Navigation (Enemies, Editor), Unity.InputSystem (P
 |---|---|
 | `Tools/Last Haven/Rebuild All` | Sırayla: Setup Project → Generate Default Data → Generate Prefabs → Build Game Scene |
 | `Tools/Last Haven/Setup Project` | `GameLayers.All`'ı TagManager'a sabit indekslerle, `GameTags.Custom`'ı tag olarak yazar. Her değişikliği loglar |
-| `Tools/Last Haven/Generate Default Data` | Tüm `IGenerationStep.GenerateData()`: yer tutucu materyaller, `MapLayoutConfig`, `PlayerData`, `CameraConfig`, silahlar + `WeaponUpgradeConfig` (`Data/Weapons/`), `WeaponLoadout`, `TestDummiesConfig`, FX materyalleri (`Materials/Fx/`), `CombatFeedbackConfig`. Varsa dokunmaz |
-| `Tools/Last Haven/Generate Prefabs` | Tüm `IGenerationStep.GeneratePrefabs()`: Player prefab'ı, efekt prefab'ları (`Prefabs/Feedback/`). Varsa sadece eksikleri tamamlar (boş data/prefab referansları, eksik `WeaponController` ve referansları) |
+| `Tools/Last Haven/Generate Default Data` | Tüm `IGenerationStep.GenerateData()`: yer tutucu materyaller, `MapLayoutConfig`, `PlayerData`, `CameraConfig`, silahlar + `WeaponUpgradeConfig` (`Data/Weapons/`), `WeaponLoadout`, `TestDummiesConfig`, FX materyalleri (`Materials/Fx/`), `CombatFeedbackConfig`, düşman verileri + `EnemySpawnerConfig` (`Data/Enemies/`), can barı materyalleri (`Materials/HealthBar/`). Varsa dokunmaz (config'e sadece eksik tipler eklenir) |
+| `Tools/Last Haven/Generate Prefabs` | Tüm `IGenerationStep.GeneratePrefabs()`: Player prefab'ı, efekt prefab'ları (`Prefabs/Feedback/`), düşman prefab'ları (`Prefabs/Enemies/`). Varsa sadece eksikleri tamamlar (boş data/prefab referansları, eksik `WeaponController` ve referansları, eksik vuruş hissi bileşenleri ve can barı) |
 | `Tools/Last Haven/Build Game Scene` | Game.unity'yi açar/oluşturur, `[Systems]` ve `[Gameplay]`'i silip tüm `ISceneBuildStep`'lerle kurar, kaydeder, Build Settings'e ekler. `[Environment]`'a dokunmaz |
 | `Tools/Last Haven/Options/Build Test Dummies` | Onay kutulu seçenek: test kuklaları sahneye kurulsun mu (`TestDummiesConfig._enabled`). Değiştirince Build Game Scene'i çalıştır |
 
@@ -62,17 +65,21 @@ Paket referansları: Unity.AI.Navigation (Enemies, Editor), Unity.InputSystem (P
 | Generation | `PlayerWeaponsGenerator` → `Data/Player/WeaponLoadout.asset` (Player prefab'ına `PlayerGenerator` bağlar) | 450 |
 | Generation | `TestDummiesGenerator` → `Data/Debug/TestDummiesConfig.asset` | 500 |
 | Generation | `FeedbackGenerator` → `Materials/Fx/`, `Data/Feedback/CombatFeedbackConfig.asset`, `Prefabs/Feedback/` (Tracer, Impact, MuzzleFlash) | 600 |
+| Generation | `EnemiesGenerator` → `Data/Enemies/` (Walker, Runner, Tank, EnemySpawnerConfig), `Materials/HealthBar/` (2 materyal), `Prefabs/Enemies/` (Walker, Runner, Tank) | 700 |
 | Scene | `InputSceneStep` → `[Systems]/Input` (`InputReader`, kapalı `InputDebugLogger`) | 0 |
 | Scene | `TargetingSceneStep` → `[Systems]/TargetRegistry` | 10 |
 | Scene | `RunModifiersSceneStep` → `[Systems]/RunModifiers` (`RunModifiersHost`) | 20 |
 | Scene | `PoolSceneStep` → `[Systems]/Pool` (`PoolService`) | 30 |
 | Scene | `FeedbackSceneStep` → `[Systems]/Feedback` (`FeedbackDirector` + config) | 40 |
+| Scene | `EnemySpawnerSceneStep` → `[Systems]/EnemySpawner` (`EnemySpawner` + config) | 50 |
 | Scene | `MapSceneStep` → `[Gameplay]/Map` (Ground, BaseArea, Obstacles, Boundary) | 100 |
 | Scene | `LightingSceneStep` → `[Gameplay]/Lighting/Sun` | 200 |
+| Scene | `GeneratorPlaceholderSceneStep` → `[Gameplay]/GeneratorPlaceholder` (GEÇİCİ; Gün 5'te silinecek) | 250 |
 | Scene | `WavesSceneStep` → `[Gameplay]/SpawnZones` | 300 |
 | Scene | `PlayerSceneStep` → `[Gameplay]/Player` (prefab örneği, `MapLayoutConfig.PlayerSpawnPosition`) | 400 |
 | Scene | `CameraSceneStep` → `[Gameplay]/CameraRig` (`CameraRig`, `CameraPresetHotkey`) + `CameraTarget`, `Main Camera` (Brain), `CinemachineCamera` (Follow) | 500 |
 | Scene | `TestDummiesSceneStep` → `[Gameplay]/TestDummies` (`CombatDebugLogger`) + `Dummy_1..3`. Seçenek kapalıysa hiçbir şey kurmaz | 600 |
+| Scene | `DebugSpawnerSceneStep` → `[Systems]/DebugSpawner` (`DebugSpawner`; F1–F3 verileri, F4 için 4 `SpawnZone`) | 700 |
 
 ## Servisler ve olaylar
 
@@ -92,6 +99,10 @@ Paket referansları: Unity.AI.Navigation (Enemies, Editor), Unity.InputSystem (P
 | `WeaponChangedEvent` | Olay | Core (`Events/CombatEvents.cs`) | `WeaponController`: SlotIndex (0 tabanlı), WeaponId, DisplayName. Oyun başında da bir kez |
 | `AmmoChangedEvent` | Olay | Core (`Events/CombatEvents.cs`) | `WeaponController`, sadece eldeki silah için: WeaponId, Ammo, MagSize (etkili), Reserve, HasInfiniteReserve |
 | `ReloadStartedEvent` / `ReloadFinishedEvent` | Olay | Core (`Events/CombatEvents.cs`) | `WeaponController`: WeaponId + Duration / Completed (false = silah değişince iptal) |
+| `EnemyKilledEvent` | Olay | Core (`Events/EnemyEvents.cs`) | `Enemy` gönderir, ölüm anında (ceset batmadan önce): Position, EnemyId, MoneyReward, XpReward (taban, int), KilledByPlayer (öldüren hasarın kaynağı `Player` tag'li mi) |
+| `IEnemySpawner` | Servis | Core (`Enemies/IEnemySpawner.cs`) → `Enemies.EnemySpawner` | `[Systems]/EnemySpawner`. `Spawn(enemyId, position)` → kök obje veya null (uyarıyla). Enemies'i gören modüller için ayrıca `EnemySpawner.Spawn(EnemyData, position)` → `Enemy` |
+| `PlayerDamagedEvent` | Olay | Core (`Events/PlayerEvents.cs`) | `PlayerCharacter` gönderir, uygulanan her hasarda (dokunulmazlıkla engellenen gönderilmez): Player, Damage, AppliedAmount, CurrentHealth, MaxHealth. Aynı vuruşun `DamagedEvent`'i de gelir |
+| `PlayerDiedEvent` | Olay | Core (`Events/PlayerEvents.cs`) | `PlayerCharacter` gönderir, `PlayerDamagedEvent`'ten sonra: Player, Position, KillingBlow |
 
 ## Kararlar
 
@@ -266,6 +277,129 @@ Paket referansları: Unity.AI.Navigation (Enemies, Editor), Unity.InputSystem (P
 - **MCP duman testi:** Gerçek zamanlı seri atış `EditorApplication.update`'e bağlanan geçici bir lambdayla yapıldı (`TryFire` + reflection ile `Fire`; 8 sn sonra kendini çıkarır). Kısa efektlerin ekran görüntüsü için `Time.timeScale = 0.005`. Yakın plan için `manage_camera screenshot` + `view_position`/`view_target`. Ekran görüntüleri `Temp/Screenshots/`'a (git dışı) kaydedildi.
 - URP, `QualitySettings` üzerinden ilk kez yüklenen `Mobile_RPAsset`'i kendiliğinden yükseltti (`k_AssetVersion` 12 → 13, yeni varsayılan alanlar). İçerik değişikliği değil; olduğu gibi bırakıldı.
 
+**2026-10-15 · 4.1 Düşman temeli ve hedefleme**
+- **Yerleşim:** Hepsi Enemies'te; Core'a sadece `EnemyKilledEvent` ve `TargetTypes.IsStructure` (Player dışındaki her tür yapı) eklendi. Geçici `GeneratorPlaceholder` da Enemies'te (sadece Core'a bağlı; Gün 5'te silinecek).
+- **EnemyData:**
+  - `TargetType?` Unity'de serileşmediği için `_hasPreferredTarget` + `_preferredTarget` tutulur; `PreferredTarget` property'si nullable döner. Ödüller `int`.
+  - GDD'de olmayan ayarlar da data'da, varsayılanlarıyla: `spawnDuration` 0.5, `retargetInterval` 0.5, `corpseDuration` 2, `sinkDuration` 1 (GDD'de yok), `burrowDepth` 2.2 m (ölçekle çarpılır), `disengageMargin` 0.3 m, `repathDistance` 0.5 m.
+  - Ses/VFX: `attackSound`, `deathSound` (AudioClip), `deathVfx` (GameObject); henüz kullanılmıyor. `Prefab` alanının tipi `Enemy`.
+  - **Ölçek:** Spawn'da kökün ölçeği = prefab kökünün ölçeği × `Scale`. 4.2'de GDD §18 ölçekleri Visual'a verildi, `Scale` 1 kaldı.
+- **Durum makinesi:** `EnemyStateMachine` (saf) + 4 `internal` durum sınıfı. Unity'ye `IEnemyBody` köprüsüyle dokunur; `Enemy` bunu uygular, testler sahte gövde kullanır. Durum nesneleri düşman başına bir kez oluşur ve havuz döngülerinde yeniden kullanılır. `Begin` saldırı beklemesini sıfırlar ve Spawning'den başlatır.
+- **Yerden çıkma:** Ajan açık ama `updatePosition = false`; kök `burrowDepth` derinlikten yüzeye çıkar. Bitince transform ajan konumuna oturur ve `updatePosition = true` olur. `baseOffset` kullanılmadı, çünkü ölçekle nasıl davrandığı belirsiz. Spawning sırasında hasar alınabilir.
+- **Hedef seçimi** (`TargetSelector.Select`, statik ve saf):
+  1. Aggro yarıçapındaki en yakın oyuncu.
+  2. Tercih edilen türün yarıçap içindeki en yakını.
+  3. En yakın jeneratör (mesafe sınırı yok).
+
+  Sınırlar dahil, mesafe XZ'de ölçülür.
+  - `Tick`: Aralık dolunca değerlendirir, faz korunur. İlk değerlendirme `Random.Range(0, interval)` sonra.
+  - Seçili hedef hedeflenemez olursa (öldü veya yok edildi) aralığı beklemeden yeniden değerlendirir. Hiç hedef yoksa her frame değil, aralıkta bakar.
+  - Spawning'de de çalışır (düşman yüzeye çıkınca hedef hazır olur), Dead'de durur.
+- **Saldırı menzili hedefin yüzeyine ölçülür:** Mesafe, düşmanın merkezinden hedef collider'ının AABB'sine yatay uzaklıktır; collider yoksa hedefin merkezine. Merkeze ölçülseydi 2×2 jeneratörde 1.5 m'lik menzil asla dolmazdı. Izgara yapıları 90°'lik adımlarla döndüğü için AABB tam ayak izidir. Düşman `≤ attackRange`'te saldırıya geçer, `> attackRange + disengageMargin`'de kovalamaya döner.
+- **Saldırı hızı:** `AttackCooldown` makinededir ve düşman ölü değilken her durumda azalır. Menzile ilk girişte hemen vurur. Menzilden çıkıp tekrar girmek beklemeyi sıfırlamaz. 0'ın altına inen süre devretmez (en fazla 1 kare kayma; 1 saldırı/sn'de ~%1.6).
+- **Hasar:** `MeleeDamage.Calculate` hedef yapıysa `structureDamageMultiplier` uygular. `DamageInfo`:
+  - tür `Melee`, kaynak düşman objesi
+  - vuruş noktası: hedef AABB'sinin düşmana en yakın noktası (gövde ortası yüksekliğinde)
+  - yön yatay
+- **Hedef bileşenleri:** `TargetComponentCache` (statik) ITargetable'ı IDamageable ve Collider'a (`GetComponentInParent`) eşler; hedef değişince bir kez çağrılır. `TrackedTarget` mesafe ve vuruş noktasını hesaplar.
+- **Gezinme** (`EnemyNavigator`, düz C#):
+  - `SetDestination` sadece şu durumlarda çağrılır: hedef değişti, yol yok veya hedef son yol hedefinden `repathDistance`'tan fazla kaydı.
+  - Halt: `isStopped` + hız 0 + `updateRotation` kapalı. Attacking'de düşman yerinde, ajanın `angularSpeed`'iyle döner.
+  - Ajan kapalıyken metotlar bir şey yapmaz. Warp başarısızsa uyarı loglanır.
+- **Ölüm:** `Health.Died` geldiğinde:
+  1. Collider ve ajan kapanır, hedef bırakılır.
+  2. Dead durumuna geçilir ve `EnemyKilledEvent` gönderilir.
+  3. Ceset 2 sn bekler, 1 sn'de `burrowDepth` kadar batar, sonra `IPoolService.Release` (havuz yoksa Destroy).
+
+  Devrilme animasyonu 4.3'te (AnimationDriver).
+- **Sahneye elle konmuş düşman** Start'ta kendini spawn eder. Havuzdan gelmediği için ölünce PoolService onu uyarıyla yok eder.
+- **GeneratorPlaceholder:**
+  - `[Gameplay]/GeneratorPlaceholder`, (0,0,0), Structure layer, Generator tag.
+  - BoxCollider 2×2×2, Health (1500, bileşen alanında; GeneratorData Gün 5'te), sarı küp Visual. Ölünce log basar.
+  - NavMeshObstacle var ama **carve yok**; ajanlar yerel kaçınmayla etrafından geçer. Carve olsaydı hedef noktası (merkez) NavMesh dışında kalırdı.
+- **MCP:** Bu oturumda Claude Code'un MCP araçları başlangıçta bağlanamadı (ECONNREFUSED). Sunucu ayaktaydı; araçlar scratchpad'deki bir betikle `curl` üzerinden doğrudan JSON-RPC olarak çağrıldı (`initialize` → `mcp-session-id` başlığı → `tools/call`). `execute_code` CodeDom (C# 6) ile derliyor.
+- **Duman testi:** Play'de geçici bir şablon (çalışma anında oluşturulan EnemyData + Enemy) `PoolService` ile 3 kez çekildi. Doğrulananlar:
+  - Yerden çıkma (y −2.12 → 0.08).
+  - Kuzey/batı düşmanları jeneratöre, oyuncuya 5 m'deki düşman oyuncuya gitti (1.49 m'de durup 10 hasar/sn).
+  - Oyuncu ölünce hedef jeneratöre döndü; 6 m'ye giren düşman oyuncuya döndü.
+  - Üçü de jeneratör yüzeyine ≤ 1.5 m'den vurdu.
+  - Ölüm: ajan ve collider kapandı, `EnemyKilledEvent` (KilledByPlayer true/false) geldi, ~3 sn sonra y −2.12'de havuza döndü.
+  - Havuzdan yeniden çekilen düşmanda yeni örnek oluşmadı; temiz başladı.
+  - Konsolda hata veya uyarı yok.
+
+**2026-10-15 · 4.2 Düşman tipleri ve debug spawner**
+- **`IEnemySpawner` string id alır** (`Spawn(string enemyId, Vector3)` → `GameObject` / null): Core `EnemyData`'yı göremez; CLAUDE.md'deki "modüller arası veri referansı = string id" kuralı. Görevdeki `Spawn(EnemyData, position)` `EnemySpawner`'da ayrıca public (`Enemy` döner); id'li sürüm buna yönlenir. Waves (5.2) `NightData`'daki `EnemyData.Id`'yi verecek.
+- **Tip listesi `EnemySpawnerConfig`'te** (`Data/Enemies/`): satır başına `EnemyData` + ön ısıtma sayısı, NavMesh'e yerleştirme mesafesi 3 m. Listede olmayan id doğurulamaz (uyarı). Id eşlemesi saf `EnemyTypeLookup` (ordinal; boş/tekrar eden id atlanır ve uyarılır). Üretici config'e eksik tipleri ekler; Gün 12'deki tipler `EnemyDefinitions`'a eklenince kendiliğinden gelir.
+- **Ön ısıtma** (GDD'de yok): Yürüyen 40, Koşucu 15, Tank 5 → oyun başında 60 örnek. Aşılırsa havuz prefab başına bir kez uyarır; dalgalar (5.2/5.3) gelince gerekirse config'ten artır.
+- **Yerleştirme:** `NavMesh.SamplePosition(nokta, 3 m, AllAreas)`; bulunamazsa uyarı + null. Yön rastgele (Y ekseni); düşman yürümeye başlayınca yola döner. Havuz servisi yoksa Instantiate'e düşülmez, uyarı + null. Servis `Start`'tan önce çağrılsa da havuzu tembel alır.
+- **Ölçek Visual'da, `EnemyData.Scale` = 1** (4.1'deki ⚠️ notu çözüldü): Gövde ölçeği `Visual/Body` kapsülünde; kökteki CapsuleCollider ve NavMeshAgent yarıçap/boyu gövdeye göre üretici tarafından yazılır. Kullanıcı modeli değiştirirse ölçü kaybolmaz; `Scale` runtime çarpanı olarak boşta kalır.
+  - Koşucu "ince kapsül (×0.8)": sadece genişlik (0.8, 1, 0.8) → yarıçap 0.4, boy 2.
+  - Tank "büyük kapsül (×1.6)": eşit (1.6) → yarıçap 0.8, boy 3.2.
+  - Gömülme derinliği gövde boyunun 1.1 katı (Yürüyen/Koşucu 2.2, Tank 3.52); Tank yerden çıkarken toprağın üstünde görünmesin diye.
+- **Tank verisi:** aggro 3 m, tercih Barikat (15 m), yapılara ×2, `knockbackResistance` 1 (geri itilmez). Diğerleri aggro 6, direnç 0.
+- **Prefab** (`Prefabs/Enemies/<Tip>.prefab`): kök Enemy layer + **Enemy tag**; NavMeshAgent (açısal hız 540°/sn, ivme 20 m/sn², durma mesafesi 0; hız spawn'da veriden), CapsuleCollider (trigger değil; hitscan trigger'ları yok sayar), Health, Enemy. `Visual/Body` collider'sız kapsül, GDD §18 materyali. Rigidbody yok (görevde yok). Ajan değerleri GDD'de yok: varsayılan 120°/sn ve 8 m/sn² Koşucu'yu köşelerde savuruyordu. Prefab varsa sadece boş `Enemy._data` ve `EnemyData._prefab` doldurulur.
+- **DebugSpawner** (DebugTools, `[Systems]/DebugSpawner`):
+  - Gövdesi `#if UNITY_EDITOR || DEVELOPMENT_BUILD`; serileşen alanlar (veriler, `_edgeCount` 20, `_edgeZones`) her build'de var (serileşme düzeni değişmesin).
+  - Kısayollar kendi `InputAction`'larıyla (F1–F4); oyun girdisi olmadığı için `IInputReader`'a eklenmedi. Bunun için DebugTools asmdef'ine `Unity.InputSystem` eklendi.
+  - İmleç noktası: `Mouse.current` → `ICameraService.Camera` ışını → zemin/engel (`NavMeshBakeMask`), değmezse y = 0 düzlemi. Engelin üstüne tıklanırsa SamplePosition en yakın zemine indirir.
+  - F4: 4 `SpawnZone`'dan biri rastgele, 20 nokta bölgenin dairesi içinde düzgün rastgele. Hepsi aynı anda doğar.
+  - Sol üst OnGUI kutusu; metin Awake'te bir kez kurulur (ad `EnemyData.DisplayName`'den).
+  - Her basışta `[Debug] ...` logu; imleç harita dışındaysa `EnemySpawner` uyarısı.
+- **Duman testi** (MCP; Unity odakta olmadığı için kısayol metotları reflection ile, imleç `InputState.Change(mouse.position, …)` ile):
+  - Ön ısıtma 40/15/5; 20 + 4 + 4 doğuşa rağmen havuzda yeni örnek oluşmadı (Created sabit).
+  - F4 → 20 Yürüyen Doğu bölgesinde; F1–F3 imleç noktasına (−8, 6), (9, 9), (−12, −10).
+  - Engel arkasındaki Tank'ın düz yolu engelle kapalı, yolu 4 köşeli; duvar arkasındaki Yürüyen dolaşıp jeneratöre ulaştı. Koşucu 6 m'ye giren oyuncuya döndü.
+  - Saldırılar: kalabalık jeneratörü (1500) ~10 sn'de, Koşucu oyuncuyu öldürdü. Tank vuruşu 70 (35 × 2), 1.67 sn arayla.
+  - İki tabanca atışı Koşucu'yu öldürdü (35 → 15 → 0); `EnemyKilledEvent` (12 para, 1 XP, KilledByPlayer true); ~3 sn sonra havuza döndü.
+  - ⚠️ `execute_code` ile `Application.runInBackground = true` editörde **`ProjectSettings.asset`'e yazılıyor** (PlayerSettings). Testten sonra `PlayerSettings.runInBackground = false` + `SaveAssets` ile geri alındı. Sonraki testlerde de geri al.
+
+**2026-10-15 · 4.3 Vuruş hissi ve AnimationDriver**
+- **Yerleşim:** `AnimationDriver` ve `HitFlash` Core'da, çünkü hem Enemies hem Player kullanıyor. `VisualRoot.Name` ("Visual") tek kaynak; `PlayerGenerator.VisualName` artık ona bağlı.
+- **AnimationDriver** (kökte):
+  - `_visual` alanı üretici tarafından bağlanır; boşsa `Visual` çocuğu aranır.
+  - **Ya Animator ya yedek.** Animator sadece controller'ı atanmışsa kullanılır. Animator'u olup controller'ı olmayan model yedekle oynar (Gün 16'daki "controller'sız prefab" uyarısıyla uyumlu).
+  - Animator modunda controller'da olmayan parametre sessizce atlanır (`AnimatorParameters`, liste controller başına bir kez okunur).
+  - `Speed` gerçek yatay hızdır (m/sn): oyuncuda `CharacterController.velocity`, düşmanda `agent.velocity`. Blend tree eşikleri m/sn ile kurulmalı (Yürüyen 2.2, Koşucu 5, oyuncu 6).
+  - `SetSpeed`, `SetDashing`, `TriggerFire`, `TriggerReload` sadece Animator'a yazılır; görevde yedekleri istenmediği için prosedürel karşılıkları yok.
+- **Prosedürel yedek** (`ProceduralPose`, saf). Visual'ın ebeveyn uzayındaki dinlenme pozuna eklenir; dönüş Visual'ın orijini (ayaklar) etrafındadır. Değerler GDD'de yok, `AnimationDriver._procedural`'da ayarlanır:
+  - Öne atılma: 0.35 m, 0.2 sn, sinüs (git-gel). Saldırı denemesinde oynar.
+  - Sarsılma: yana 0.08 m, 25 Hz, 0.15 sn, sönümlü.
+  - Devrilme: 90°, 0.4 sn, t² (düşüş gibi hızlanır). Yön her ölümde rastgele. `ResetPose`'a kadar yatık kalır.
+  - Devrilirken Visual `toppleLift` kadar kalkar. Üretici bunu gövde yarıçapına eşitler (Yürüyen 0.5, Koşucu 0.4, Tank 0.8, oyuncu 0.5); yatan kapsül yarı yarıya yere gömülmesin diye.
+  - Yeni vuruş/saldırı oynayanı baştan başlatır; atılma, sarsılma ve devrilme üst üste binebilir.
+  - Havuzdan çıkışta (`IPoolable.OnSpawned`) poz ve Animator (`Rebind`) sıfırlanır. **Oyuncu yeniden doğarken (6.1) `AnimationDriver.ResetPose()` ve `HitInvulnerability` sıfırlanmalı.**
+- **HitFlash:**
+  - Visual altındaki renderer'larda `_BaseColor` ve/veya `_EmissionColor` MaterialPropertyBlock ile yazılır. İkisi de olmayan renderer listeye girmez. Bitince `SetPropertyBlock(null)`; materyale dokunulmaz.
+  - Yer tutucu materyallerde `_EMISSION` kapalı olduğu için flaşı `_BaseColor` sağlar: ışıklı beyaz/kırmızı, parlama değil. ⚠️ Dokulu modellerde (`_BaseMap`) beyaz `_BaseColor` dokuyu değiştirmez; flaş görünmeyebilir (16.1'de bakılacak).
+  - Renk ve süre prefab'da. Düşman: beyaz, 0.08 sn (GDD §7). Oyuncu: kırmızı (1, 0.12, 0.12), 0.15 sn (GDD'de sadece "kırmızı" yazıyor; dokunulmazlıktan kısa seçildi).
+  - Yeni flaş süreyi baştan başlatır. Öldüren vuruş da flaşlar.
+- **Geri itilme:**
+  - Mesafe ve süre `EnemyData`'da: `_knockbackDistance` 0.3 m (GDD §7), `_knockbackDuration` 0.1 sn (GDD'de yok). Etkili mesafe = mesafe × (1 − `knockbackResistance`); Tank 1 → itilmez.
+  - Yön `DamageInfo.HitDirection`'ın yatay kısmı; yatayda sıfırsa itilmez.
+  - Her kare `agent.Move` + `agent.velocity = 0`: ajan itmeye karşı yürümez; itme bitince kendi ivmesiyle yeniden hızlanır.
+  - **Yeni vuruş itmeyi baştan başlatır, üst üste eklemez.** Pompalının 8 saçması 0.3 m iter, 2.4 m değil. Tüfek serisi (10 atış/sn) düşmanı sürekli ~3 m/sn geride tutar; düşman ~0.4 sn'de öldüğü için dengeyi bozmuyor. His testinde fazla gelirse süre veya mesafe `EnemyData`'dan ayarlanır.
+  - Yerden çıkarken (Spawning) ve ölüyken itilmez. Öldüren vuruş itmez; devrilme `Enemy`'de.
+- **EnemyHitReaction** ayrı bileşen. `Enemy` zaten ~220 satır; vuruş tepkisi (flaş, `TriggerHit`, itme) oraya taşındı. `Enemy` sadece saldırı/hız/ölüm çağrılarını yapar.
+- **Can barı** (`EnemyHealthBar`):
+  - Kökün çocuğu `HealthBar`, Visual dışında; flaş ve devrilme etkilemez. Başın 0.35 m üstünde.
+  - Arka plan + dolgu quad'ları, URP/Unlit (`Materials/HealthBar/`): koyu gri / kırmızı. Gölgesiz, collider'sız.
+  - Boyutlar: dolgu 0.9 × 0.1 m, kenar 0.02 m (GDD'de yok; oyun kamerasından ~70 px).
+  - Billboard kameraya paralel (rotasyon = kamera rotasyonu). Kamera `ICameraService`'ten ilk gösterimde alınır.
+  - Görünürlük renderer'ların `enabled`'ı ile; obje kapatılmaz, abonelik kopmasın diye. Her hasarda 3 sn baştan başlar.
+  - **Ölünce hemen gizlenir** (görev metninde yoktu; cesedin üstünde boş bar kalmasın diye). Havuza dönüş ve havuzdan çıkışta da gizlenir.
+- **Oyuncu dokunulmazlığı** (`HitInvulnerability`, saf): zaman damgasıyla (`Time.time`) çalışır, Update sırasına bağlı değil. `PlayerCharacter.IsInvulnerable` = atılıyor VEYA pencere içinde; `IDamageFilter` bunu kullanır. Engellenen hasar olay, flaş ve animasyon üretmez.
+- **PlayerAnimation:** `Speed` ve `IsDashing` her kare. `TriggerFire`, `WeaponFiredEvent.Source == oyuncu` ise. `TriggerReload`, `ReloadStartedEvent`'te (olayda kaynak yok; şimdilik sadece oyuncu dolduruyor). Hasar alınca `TriggerHit`, ölünce `TriggerDie`. Öldüren vuruşta sadece Die.
+- **`RequireComponent(AnimationDriver)` kullanılmadı** (`Enemy`'de denendi, geri alındı). Unity, var olan prefab'lara gerekli bileşeni yüklerken kendiliğinden ve varsayılan ayarlarla ekliyor; üretici ise ayarları sadece ilk eklemede yazıyor. Bu yüzden `Enemy` sürücüyü null kontrolüyle kullanıyor. `PlayerAnimation` RequireComponent ile istiyor, ama üretici sürücüyü ondan önce ekliyor. ⚠️ Yeni bir `RequireComponent` eklerken bu tuzağa dikkat et.
+- **Var olan prefab'lar** (`EditPrefab`): oyuncuya 5, her düşmana 6 eksik bileşen/referans eklendi. İkinci Rebuild All'da 0 değişiklik (idempotent).
+- **Duman testi** (MCP; `Time.timeScale` 0.02–0.1 ile kısa efektler yakalandı, saldırı ve ölüm `EditorApplication.update` izleyicisiyle kare kare kaydedildi):
+  - Yürüyen vurulunca flaş başladı ve bitince blok temizlendi; sarsılma bitince Visual dinlenme pozuna döndü.
+  - Hasar yönünde tam 0.300 m itildi.
+  - Can barı göründü (40/60 → 0.67), kamerayla aynı açıda (50°, 45°), 3 sn sonra gizlendi.
+  - Saldırıda Visual 0.35 m öne atıldı. Ölünce devrildi: 0.2 sn'de ~23°, 0.5 sn'de yatay, Koşucu'da 0.4 m kalkık. Havuza dönen örnekte poz, flaş ve bar temiz.
+  - Tank: flaş ve sarsılma var, itilme yok.
+  - Oyuncu: 10 `PlayerDamagedEvent` + 1 `PlayerDiedEvent`, devrildi, Muzzle kökte kaldı. Diriltilince (`SetMax` + `ResetPose`) ilk vuruşta kırmızı flaş; aynı karedeki 2. vuruş engellendi; 0.3 sn sonra hasar yeniden işledi.
+  - Konsolda hata/uyarı yok. `runInBackground` geri alındı; ProjectSettings'te değişiklik yok.
+
 ## Bilinen hatalar / TODO
 
 <!-- - [ ] Açıklama (görev numarası) -->
@@ -278,3 +412,14 @@ Paket referansları: Unity.AI.Navigation (Enemies, Editor), Unity.InputSystem (P
 - [ ] Efekt değerleri (iz kalınlığı, parçacık sayısı/boyutu, ışık şiddeti) sadece ekran görüntüsüyle ayarlandı; gerçek hızda his testi kullanıcıda. Prefab'lardan ayarlanır. (3.3)
 - [ ] İlk MCP duman testinde Play'e girer girmez bir tabanca mermisi harcandı (12 → 11, isabet yok). Sonra `IsFireHeld` ve fare tuşu false'tu; ikinci Play'de tekrar olmadı (12/12). Muhtemelen o sırada oyuna ulaşan bir fare tıklaması. Elle Play'e basınca tekrar ederse incele. (3.2)
 - [ ] Test kuklası konumları `MapLayoutConfig`'ten bağımsız. Üs yarıçapı veya engel halkası değişirse kuklalar üsse ya da engel içine düşebilir; `TestDummiesConfig`'ten elle taşı. (3.2)
+- [ ] `GeneratorPlaceholder` ve `GeneratorPlaceholderSceneStep` Gün 5'te (5.1) silinecek. Gerçek jeneratörde carve kullanılırsa `SetDestination(merkez)` NavMesh dışını hedefler; yol kısmi (`PathPartial`) çıkabilir ve kural 4 (Gün 8) ile karışabilir. O görevde dene. (4.1)
+- [ ] Düşman ve oyuncu fiziksel olarak çarpışmaz (NavMeshAgent collider'lara bakmaz). Canlı oyuncuda sorun yok, düşman 1.5 m'de duruyor. Ama yoluna çıkan **ölü** oyuncunun CharacterController'ı düşman collider'ından itiliyor (duman testinde ~2 m kaydı). 6.1'de yeniden doğma gelince bak. (4.1)
+- [ ] `TargetComponentCache` yok edilen hedeflerin kayıtlarını silmiyor; sadece Play başında temizleniyor. Barikatlar havuzlanırsa sorun yok. Yıkılınca Destroy ediliyorlarsa (Gün 8) kayıtlar run boyunca birikir. (4.1)
+- [ ] NavMesh tek ajan tipiyle (Humanoid, yarıçap 0.5) bake ediliyor; Tank'ın ajan yarıçapı 0.8. Yol bulma 0.5'e göre olduğu için Tank engel köşelerine ~0.3 m girebilir (sadece görsel; collider'lar birbirini itmez). Rahatsız ederse 2. ajan tipi + ikinci NavMeshSurface gerekir. (4.2)
+- [ ] Düşmanlarda Rigidbody yok. Diken tuzağı (9.3) trigger ile çalışacaksa tuzağa ya da düşmana kinematik Rigidbody gerekir. (4.2)
+- [ ] F4'teki 20 Yürüyen aynı anda doğuyor ve ilk saniyelerde yerel kaçınmayla birbirini itiyor; dalga sistemi (5.2) aralıklı doğuracak. (4.2)
+- [ ] Oyuncu ölünce Visual devrik kalıyor, dokunulmazlık penceresi açık kalabilir. Yeniden doğmada (6.1) `AnimationDriver.ResetPose()` çağır ve `PlayerCharacter`'daki `HitInvulnerability`'yi sıfırla (şu an dışarıya açık bir sıfırlama metodu yok; 6.1'de ekle). (4.3)
+- [ ] Hit flash `_BaseColor` ile çalışıyor; dokulu modellerde (beyaz `_BaseColor` = değişiklik yok) görünmeyebilir. Emisyonu açık materyalde parlar. 16.1'de farklı shader'larla doğrula. (4.3)
+- [ ] `ReloadStartedEvent`'te kaynak yok; `PlayerAnimation` her doldurmayı oyuncunun sayıyor. Taretler doldurma olayı gönderirse (Gün 9) olaya kaynak ekle. (4.3)
+- [ ] `Enemy.cs` ~225 satır (sınır ~200). Yeni davranış eklenirken (Gün 8/12) bölünmeli; aday: ölüm/ödül kısmı. (4.3)
+- [ ] `ZombieLast.slnx` `.gitignore`'da ama depoda takipli; Unity her derlemede proje sırasını değiştiriyor. İstenirse `git rm --cached ZombieLast.slnx` ile takipten çıkarılabilir. (4.1)
