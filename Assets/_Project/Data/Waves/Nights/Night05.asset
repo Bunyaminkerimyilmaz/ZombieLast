@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 669b1f66f5de3d5469233898147fe3e8, type: 3}
+  m_Name: Night05
+  m_EditorClassIdentifier: LastHaven.Waves::LastHaven.Waves.NightData
+  _nightNumber: 5
+  _groups:
+  - _enemy: {fileID: 11400000, guid: 7331b7f776de279499c6a220d615707b, type: 2}
+    _count: 40
+    _spawnInterval: 0.7
+    _startDelay: 0
+    _directions: 00000000010000000200000003000000
+  - _enemy: {fileID: 11400000, guid: e066442053c05f6449d10af0c514cda8, type: 2}
+    _count: 10
+    _spawnInterval: 0.9
+    _startDelay: 0
+    _directions: 00000000010000000200000003000000
+  _modifier: {fileID: 0}
+  _bossData: {fileID: 0}
+  _bossStartDelay: 13.6
+  _bossDirection: 0

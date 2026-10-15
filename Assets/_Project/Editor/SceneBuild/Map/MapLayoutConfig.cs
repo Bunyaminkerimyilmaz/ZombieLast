@@ -13,10 +13,6 @@ namespace LastHaven.Editor
         [SerializeField, Min(10f), Tooltip("Kare zeminin kenar uzunluğu (m). Merkez (0,0,0).")]
         private float _mapSize = 80f;
 
-        [Header("Üs alanı")]
-        [SerializeField, Min(1f), Tooltip("Zeminde farklı renkle gösterilen üs dairesinin yarıçapı (m).")]
-        private float _baseAreaRadius = 14f;
-
         [Header("Spawn bölgeleri")]
         [SerializeField, Min(0f), Tooltip("Spawn bölgesi merkezinin harita merkezine uzaklığı (m).")]
         private float _spawnZoneDistance = 33f;
@@ -64,8 +60,6 @@ namespace LastHaven.Editor
 
         public float MapSize => _mapSize;
 
-        public float BaseAreaRadius => _baseAreaRadius;
-
         public float SpawnZoneDistance => _spawnZoneDistance;
 
         public float SpawnZoneRadius => _spawnZoneRadius;
@@ -95,12 +89,15 @@ namespace LastHaven.Editor
             return direction.ToVector3() * _spawnZoneDistance;
         }
 
-        /// <summary>Engel konamayacak alanlar: üs alanı ve dört spawn bölgesi.</summary>
-        public List<ExclusionZone> CreateObstacleExclusions()
+        /// <summary>
+        /// Engel konamayacak alanlar: harita merkezindeki üs alanı ve dört spawn bölgesi.
+        /// Üs yarıçapı <c>BaseAreaConfig</c>'ten gelir (tek kaynak).
+        /// </summary>
+        public List<ExclusionZone> CreateObstacleExclusions(float baseAreaRadius)
         {
             var zones = new List<ExclusionZone>(CompassDirections.All.Count + 1)
             {
-                new ExclusionZone(Vector2.zero, _baseAreaRadius),
+                new ExclusionZone(Vector2.zero, baseAreaRadius),
             };
 
             for (int i = 0; i < CompassDirections.All.Count; i++)

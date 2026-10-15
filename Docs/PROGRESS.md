@@ -4,9 +4,9 @@
 
 ## Durum
 
-- **Son tamamlanan görev:** Gün 4 · 4.3
-- **Sıradaki görev:** Gün 5 · 5.1
-- **Kilometre taşı:** 🏁 M1 (yürü, nişan al, ateş et) commit'lendi (`16b04a8`). Gün 4 bitti: düşmanlar oyunda (F1–F4 ile doğuyor), vuruş hissi var
+- **Son tamamlanan görev:** Gün 5 · 5.3
+- **Sıradaki görev:** Gün 6 · 6.1
+- **Kilometre taşı:** 🏁 M1 (yürü, nişan al, ateş et) commit'lendi (`16b04a8`). Gün 4 commit'lendi (`dbab558`). Gerçek jeneratör ve üs alanı oyunda. 10 gecenin verisi hazır (Gün 12 içeriği hariç); F5 ile geceler başlatılıyor. Validate Project menüsü var
 
 ## Tamamlanan görevler
 
@@ -24,6 +24,9 @@
 | 4.1 Düşman temeli ve hedefleme | Core: `EnemyKilledEvent`, `TargetTypes.IsStructure`. Enemies: `EnemyData` (GDD §7 + zamanlama/gezinme ayarları), saf `TargetSelector` + `TargetSelectorSettings` (kural 1–3, 0.5 sn, rastgele faz), saf `EnemyStateMachine` + `IEnemyBody` + 4 durum (Spawning/Chasing/Attacking/Dead) + `EnemyBehaviourSettings`, `MeleeDamage`, `TargetDistance`, `TargetComponentCache`, `TrackedTarget`, `EnemyNavigator`, `Enemy` (kök: NavMeshAgent + Health + IPoolable + IEnemyBody), geçici `GeneratorPlaceholder`. Editor: `GeneratorPlaceholderSceneStep`. Prefab/data üretimi yok (4.2). 33 yeni EditMode testi (toplam 304) | `Scripts/Core/Events/EnemyEvents.cs`, `Core/Targeting/TargetType.cs`, `Scripts/Enemies/{Enemy,EnemyNavigator,GeneratorPlaceholder}.cs`, `Scripts/Enemies/{Data,Targeting,States,Combat}/`, `Editor/SceneBuild/GeneratorPlaceholderSceneStep.cs`, `Tests/EditMode/Enemies/` |
 | 4.2 Düşman tipleri ve debug spawner | Core: `IEnemySpawner` (string id ile). Enemies: `EnemySpawner` (servis; havuz + `NavMesh.SamplePosition` + rastgele yön; oyun başında ön ısıtma), `EnemySpawnerConfig` + `EnemyPoolEntry`, saf `EnemyTypeLookup`. DebugTools: `DebugSpawner` (F1–F4 + OnGUI listesi, sadece editör/dev build). Editor: `EnemyDefinitions` (GDD §7/§18 tablosu), `EnemyPrefabs`, `EnemiesGenerator`, `EnemySpawnerSceneStep`, `DebugSpawnerSceneStep`. Walker/Runner/Tank data + prefab. 28 yeni EditMode testi (toplam 332) | `Scripts/Core/Enemies/IEnemySpawner.cs`, `Scripts/Enemies/Spawning/`, `Scripts/DebugTools/DebugSpawner.cs`, `Editor/Generators/{EnemiesGenerator,EnemyDefinitions,EnemyPrefabs}.cs`, `Editor/SceneBuild/{EnemySpawner,DebugSpawner}SceneStep.cs`, `Data/Enemies/{Walker,Runner,Tank,EnemySpawnerConfig}.asset`, `Prefabs/Enemies/{Walker,Runner,Tank}.prefab`, `Tests/EditMode/Enemies/EnemyTypeLookupTests.cs`, `Tests/EditMode/Generation/EnemyGenerationTests.cs` |
 | 4.3 Vuruş hissi ve AnimationDriver | Core: `AnimParams`, `AnimationDriver` (Animator varsa parametre, yoksa prosedürel yedek) + `AnimatorParameters`, saf `ProceduralPose` + `ProceduralPoseSettings` (öne atılma, sarsılma, devrilme), `HitFlash` + `FlashTarget` (MaterialPropertyBlock), `VisualRoot`, `PlayerEvents` (`PlayerDamagedEvent`, `PlayerDiedEvent`). Enemies: saf `Knockback` ve `HealthBarLayout`, `EnemyHitReaction` (flaş + vuruş animasyonu + geri itilme), `EnemyHealthBar` (billboard, 3 sn); `EnemyData`'ya geri itilme mesafesi/süresi; `Enemy` saldırı/hız/ölümü sürücüye verir. Player: saf `HitInvulnerability`, `PlayerAnimation`; `PlayerCharacter` 0.3 sn dokunulmazlık + kırmızı flaş + olaylar; `PlayerMotor.Speed`. Editor: `VisualFeedbackSetup`, `HealthBarMaterials`, `EnemyHealthBarBuilder`; düşman ve oyuncu üreticileri var olan prefab'lara eksik bileşenleri ekliyor. 45 yeni EditMode testi (toplam 377) | `Scripts/Core/Animation/`, `Scripts/Core/Visuals/`, `Scripts/Core/Events/PlayerEvents.cs`, `Scripts/Enemies/Feedback/`, `Scripts/Player/{Animation,Damage}/`, `Editor/Generators/{VisualFeedbackSetup,HealthBarMaterials,EnemyHealthBarBuilder}.cs`, `Materials/HealthBar/`, `Tests/EditMode/Core/{ProceduralPose,AnimationDriver,HitFlash}Tests.cs`, `Tests/EditMode/Enemies/{Knockback,HealthBarLayout}Tests.cs`, `Tests/EditMode/Player/HitInvulnerabilityTests.cs` |
+| 5.1 Jeneratör ve üs alanı | Core: `IBaseArea`, `IPowerService`, `BaseEvents` (`GeneratorDestroyedEvent`, `PowerChangedEvent`). Building: `GeneratorData` (GDD §12), `Generator` (Health + ITargetable + IPowerService; güç hep var), `BaseLights` (4 nokta ışık, güç olayıyla aç/kapa), `BaseAreaConfig` (GDD §11 yarıçapı, tek kaynak), `BaseArea` (IBaseArea servisi), saf `BaseAreaMath`. Editor: `BaseGenerator`, `GeneratorPrefab`, `BaseSceneStep`; üs dairesi `MapSceneStep`'ten taşındı, `MapLayoutConfig._baseAreaRadius` silindi. `GeneratorPlaceholder` ve adımı silindi. 16 yeni EditMode testi (toplam 393) | `Scripts/Core/Base/`, `Scripts/Core/Events/BaseEvents.cs`, `Scripts/Building/{Base,Generator}/`, `Editor/Generators/{BaseGenerator,GeneratorPrefab}.cs`, `Editor/SceneBuild/BaseSceneStep.cs`, `Data/Base/{GeneratorData,BaseAreaConfig}.asset`, `Prefabs/Base/Generator.prefab`, `Tests/EditMode/Building/BaseAreaTests.cs`, `Tests/EditMode/Generation/BaseGenerationTests.cs` |
+| 5.2 Dalga sistemi | Core: `IWaveService` (0 tabanlı gece indeksi), `NightInfo` + `NightEnemyInfo` (istihbarat), `WaveEvents` (`NightStartedEvent`, `WaveProgressEvent`, `NightCompletedEvent`). Waves: `SpawnGroup`, `NightData` (gruplar, opsiyonel olay ve boss), asgari `NightModifierData` (id, ad, açıklama), `WaveConfig` (gece listesi, tavan 120), saf `WaveRunner` + `WaveGroup` + `WaveSpawnRequest`, `WavePlan` (NightData → gruplar / NightInfo), `SpawnZoneSet`, `SpawnZone.GetRandomPoint`, `WaveSpawner` (IWaveService). Editor: `WavesGenerator` (`Data/Waves/WaveConfig.asset`), `WavesSceneStep` artık `[Systems]/WaveSpawner`'ı da kuruyor. 39 yeni EditMode testi (toplam 432) | `Scripts/Core/Waves/`, `Scripts/Core/Events/WaveEvents.cs`, `Scripts/Waves/{Data,Running}/`, `Scripts/Waves/{WaveSpawner,SpawnZoneSet}.cs`, `Editor/Generators/WavesGenerator.cs`, `Editor/SceneBuild/WavesSceneStep.cs`, `Data/Waves/WaveConfig.asset`, `Tests/EditMode/Waves/` |
+| 5.3 10 gecenin verisi ve doğrulama | Waves: `SpawnGroupValidation` (grup kuralı tek kaynak; `WavePlan` kullanıyor). Enemies: `EnemySpawner.GetAlive` (doğurduğu canlı düşmanlar). Editor: `NightDefinitions` (GDD §8 tablosu + tip başına zamanlama), `NightDataFiller` ("eksikse ekle"), `WaveContentLookup` (id → EnemyData/NightModifierData, projeden), `WavesGenerator` 10 NightData + config bağlama + TODO logu; Validate Project altyapısı (`IValidationStep`, `ValidationReport`, `ValidationReportWriter`, `ProjectValidator`) + `NightDataValidator` + `WavesValidationStep` → konsol + `Docs/VALIDATION_REPORT.md`; `DebugWavesSceneStep`. DebugTools: `DebugWaveControls` (F5 sıradaki gece, F6 tüm canlıları öldür, durum paneli), `DebugHotkeys` (ortak F-tuşu action'ı; `DebugSpawner` da kullanıyor). 66 yeni EditMode testi (toplam 498) | `Scripts/Waves/Data/SpawnGroupValidation.cs`, `Scripts/Enemies/Spawning/EnemySpawner.cs`, `Scripts/DebugTools/{DebugWaveControls,DebugHotkeys}.cs`, `Editor/Generators/{NightDefinitions,NightDataFiller,WaveContentLookup,WavesGenerator}.cs`, `Editor/Validation/`, `Editor/SceneBuild/DebugWavesSceneStep.cs`, `Data/Waves/Nights/Night01..10.asset`, `Docs/VALIDATION_REPORT.md`, `Tests/EditMode/Generation/NightGenerationTests.cs`, `Tests/EditMode/Validation/` |
 
 ## Assembly'ler
 
@@ -48,9 +51,10 @@ Paket referansları: Unity.AI.Navigation (Enemies, Editor), Unity.InputSystem (P
 |---|---|
 | `Tools/Last Haven/Rebuild All` | Sırayla: Setup Project → Generate Default Data → Generate Prefabs → Build Game Scene |
 | `Tools/Last Haven/Setup Project` | `GameLayers.All`'ı TagManager'a sabit indekslerle, `GameTags.Custom`'ı tag olarak yazar. Her değişikliği loglar |
-| `Tools/Last Haven/Generate Default Data` | Tüm `IGenerationStep.GenerateData()`: yer tutucu materyaller, `MapLayoutConfig`, `PlayerData`, `CameraConfig`, silahlar + `WeaponUpgradeConfig` (`Data/Weapons/`), `WeaponLoadout`, `TestDummiesConfig`, FX materyalleri (`Materials/Fx/`), `CombatFeedbackConfig`, düşman verileri + `EnemySpawnerConfig` (`Data/Enemies/`), can barı materyalleri (`Materials/HealthBar/`). Varsa dokunmaz (config'e sadece eksik tipler eklenir) |
-| `Tools/Last Haven/Generate Prefabs` | Tüm `IGenerationStep.GeneratePrefabs()`: Player prefab'ı, efekt prefab'ları (`Prefabs/Feedback/`), düşman prefab'ları (`Prefabs/Enemies/`). Varsa sadece eksikleri tamamlar (boş data/prefab referansları, eksik `WeaponController` ve referansları, eksik vuruş hissi bileşenleri ve can barı) |
+| `Tools/Last Haven/Generate Default Data` | Tüm `IGenerationStep.GenerateData()`: yer tutucu materyaller, `MapLayoutConfig`, `PlayerData`, `CameraConfig`, silahlar + `WeaponUpgradeConfig` (`Data/Weapons/`), `WeaponLoadout`, `TestDummiesConfig`, FX materyalleri (`Materials/Fx/`), `CombatFeedbackConfig`, düşman verileri + `EnemySpawnerConfig` (`Data/Enemies/`), can barı materyalleri (`Materials/HealthBar/`), `GeneratorData` + `BaseAreaConfig` (`Data/Base/`), `WaveConfig` + 10 gece (`Data/Waves/`, `Data/Waves/Nights/`). Varsa dokunmaz (config'e sadece eksik tipler eklenir; gecelere eksik gruplar, boş boss/olay referansları, `WaveConfig`'e boş gece satırları). Gün 12 içeriği için tek satırlık `TODO (Gün 12)` logu basar |
+| `Tools/Last Haven/Generate Prefabs` | Tüm `IGenerationStep.GeneratePrefabs()`: Player prefab'ı, efekt prefab'ları (`Prefabs/Feedback/`), düşman prefab'ları (`Prefabs/Enemies/`), jeneratör (`Prefabs/Base/Generator.prefab`). Varsa sadece eksikleri tamamlar (boş data/prefab referansları, eksik `WeaponController` ve referansları, eksik vuruş hissi bileşenleri ve can barı, eksik üs ışıkları) |
 | `Tools/Last Haven/Build Game Scene` | Game.unity'yi açar/oluşturur, `[Systems]` ve `[Gameplay]`'i silip tüm `ISceneBuildStep`'lerle kurar, kaydeder, Build Settings'e ekler. `[Environment]`'a dokunmaz |
+| `Tools/Last Haven/Validate Project` | Tüm `IValidationStep`'leri çalıştırır (salt okur). Sorunları konsola (hata kırmızı, uyarı sarı; tıklanınca asset seçilir) ve `Docs/VALIDATION_REPORT.md`'ye yazar. Şimdilik sadece gece verisi (5.3) |
 | `Tools/Last Haven/Options/Build Test Dummies` | Onay kutulu seçenek: test kuklaları sahneye kurulsun mu (`TestDummiesConfig._enabled`). Değiştirince Build Game Scene'i çalıştır |
 
 **Adım sıraları** (araya ekleme için 100'lük boşluk):
@@ -66,20 +70,24 @@ Paket referansları: Unity.AI.Navigation (Enemies, Editor), Unity.InputSystem (P
 | Generation | `TestDummiesGenerator` → `Data/Debug/TestDummiesConfig.asset` | 500 |
 | Generation | `FeedbackGenerator` → `Materials/Fx/`, `Data/Feedback/CombatFeedbackConfig.asset`, `Prefabs/Feedback/` (Tracer, Impact, MuzzleFlash) | 600 |
 | Generation | `EnemiesGenerator` → `Data/Enemies/` (Walker, Runner, Tank, EnemySpawnerConfig), `Materials/HealthBar/` (2 materyal), `Prefabs/Enemies/` (Walker, Runner, Tank) | 700 |
+| Generation | `BaseGenerator` → `Data/Base/` (GeneratorData, BaseAreaConfig), `Prefabs/Base/Generator.prefab` (`GeneratorPrefab`) | 800 |
+| Generation | `WavesGenerator` → `Data/Waves/WaveConfig.asset` + `Data/Waves/Nights/Night01..10.asset` (`NightDefinitions`; içerik `Data/` altındaki EnemyData/NightModifierData'dan id ile) | 900 |
+| Validation | `WavesValidationStep` → "Gece verisi (NightData)": WaveConfig + projedeki tüm NightData | 900 |
 | Scene | `InputSceneStep` → `[Systems]/Input` (`InputReader`, kapalı `InputDebugLogger`) | 0 |
 | Scene | `TargetingSceneStep` → `[Systems]/TargetRegistry` | 10 |
 | Scene | `RunModifiersSceneStep` → `[Systems]/RunModifiers` (`RunModifiersHost`) | 20 |
 | Scene | `PoolSceneStep` → `[Systems]/Pool` (`PoolService`) | 30 |
 | Scene | `FeedbackSceneStep` → `[Systems]/Feedback` (`FeedbackDirector` + config) | 40 |
 | Scene | `EnemySpawnerSceneStep` → `[Systems]/EnemySpawner` (`EnemySpawner` + config) | 50 |
-| Scene | `MapSceneStep` → `[Gameplay]/Map` (Ground, BaseArea, Obstacles, Boundary) | 100 |
+| Scene | `MapSceneStep` → `[Gameplay]/Map` (Ground, Obstacles, Boundary; engel dışlama yarıçapı `BaseAreaConfig`'ten) | 100 |
 | Scene | `LightingSceneStep` → `[Gameplay]/Lighting/Sun` | 200 |
-| Scene | `GeneratorPlaceholderSceneStep` → `[Gameplay]/GeneratorPlaceholder` (GEÇİCİ; Gün 5'te silinecek) | 250 |
-| Scene | `WavesSceneStep` → `[Gameplay]/SpawnZones` | 300 |
+| Scene | `BaseSceneStep` → `[Gameplay]/Base` (`BaseArea` + config) + `AreaDisk` (zemindeki üs dairesi) + `Generator` (prefab örneği, merkezde) | 250 |
+| Scene | `WavesSceneStep` → `[Gameplay]/SpawnZones` (4 `SpawnZone`) + `[Systems]/WaveSpawner` (`WaveSpawner` + `WaveConfig` + 4 bölge) | 300 |
 | Scene | `PlayerSceneStep` → `[Gameplay]/Player` (prefab örneği, `MapLayoutConfig.PlayerSpawnPosition`) | 400 |
 | Scene | `CameraSceneStep` → `[Gameplay]/CameraRig` (`CameraRig`, `CameraPresetHotkey`) + `CameraTarget`, `Main Camera` (Brain), `CinemachineCamera` (Follow) | 500 |
 | Scene | `TestDummiesSceneStep` → `[Gameplay]/TestDummies` (`CombatDebugLogger`) + `Dummy_1..3`. Seçenek kapalıysa hiçbir şey kurmaz | 600 |
 | Scene | `DebugSpawnerSceneStep` → `[Systems]/DebugSpawner` (`DebugSpawner`; F1–F3 verileri, F4 için 4 `SpawnZone`) | 700 |
+| Scene | `DebugWavesSceneStep` → `[Systems]/DebugWaves` (`DebugWaveControls`; F6 için `[Systems]/EnemySpawner`) | 710 |
 
 ## Servisler ve olaylar
 
@@ -100,9 +108,17 @@ Paket referansları: Unity.AI.Navigation (Enemies, Editor), Unity.InputSystem (P
 | `AmmoChangedEvent` | Olay | Core (`Events/CombatEvents.cs`) | `WeaponController`, sadece eldeki silah için: WeaponId, Ammo, MagSize (etkili), Reserve, HasInfiniteReserve |
 | `ReloadStartedEvent` / `ReloadFinishedEvent` | Olay | Core (`Events/CombatEvents.cs`) | `WeaponController`: WeaponId + Duration / Completed (false = silah değişince iptal) |
 | `EnemyKilledEvent` | Olay | Core (`Events/EnemyEvents.cs`) | `Enemy` gönderir, ölüm anında (ceset batmadan önce): Position, EnemyId, MoneyReward, XpReward (taban, int), KilledByPlayer (öldüren hasarın kaynağı `Player` tag'li mi) |
-| `IEnemySpawner` | Servis | Core (`Enemies/IEnemySpawner.cs`) → `Enemies.EnemySpawner` | `[Systems]/EnemySpawner`. `Spawn(enemyId, position)` → kök obje veya null (uyarıyla). Enemies'i gören modüller için ayrıca `EnemySpawner.Spawn(EnemyData, position)` → `Enemy` |
+| `IEnemySpawner` | Servis | Core (`Enemies/IEnemySpawner.cs`) → `Enemies.EnemySpawner` | `[Systems]/EnemySpawner`. `Spawn(enemyId, position)` → kök obje veya null (uyarıyla). Enemies'i gören modüller için ayrıca `EnemySpawner.Spawn(EnemyData, position)` → `Enemy` ve `EnemySpawner.GetAlive(List<Enemy>)` (bu spawner'ın doğurduğu canlılar; bellek ayırmaz) |
 | `PlayerDamagedEvent` | Olay | Core (`Events/PlayerEvents.cs`) | `PlayerCharacter` gönderir, uygulanan her hasarda (dokunulmazlıkla engellenen gönderilmez): Player, Damage, AppliedAmount, CurrentHealth, MaxHealth. Aynı vuruşun `DamagedEvent`'i de gelir |
 | `PlayerDiedEvent` | Olay | Core (`Events/PlayerEvents.cs`) | `PlayerCharacter` gönderir, `PlayerDamagedEvent`'ten sonra: Player, Position, KillingBlow |
+| `IBaseArea` | Servis | Core (`Base/IBaseArea.cs`) → `Building.BaseArea` | `[Gameplay]/Base`. Center (objenin konumu = jeneratör), Radius (`BaseAreaConfig`, 14 m), `Contains(pos)` (XZ, sınır dahil). Awake'te kaydolur |
+| `IPowerService` | Servis | Core (`Base/IPowerService.cs`) → `Building.Generator` | Jeneratör Awake'te kaydolur. `IsPowered` şimdilik hep true (yakıt Gün 9.2) |
+| `GeneratorDestroyedEvent` | Olay | Core (`Events/BaseEvents.cs`) | `Generator` gönderir, ölümde bir kez: Generator, Position, KillingBlow. Ardından `[Base] GeneratorDestroyedEvent: ...` logu |
+| `PowerChangedEvent` | Olay | Core (`Events/BaseEvents.cs`) | IsPowered. `BaseLights` dinler. Henüz gönderen yok (güç hep var); Gün 9.2'de jeneratör gönderecek |
+| `IWaveService` | Servis | Core (`Waves/IWaveService.cs`) → `Waves.WaveSpawner` | `[Systems]/WaveSpawner`, Awake'te kaydolur. Gece indeksi **0 tabanlı**. `TotalNights`, `IsNightRunning`, `AliveCount`, `bool StartNight(i)` (sürüyorsa/geçersizse false + log), `GetTonightInfo(i)` → `NightInfo` (geçersiz indekste `ArgumentOutOfRangeException`). `WaveSpawner` ayrıca `RemainingCount`, `CurrentNightIndex` |
+| `NightStartedEvent` | Olay | Core (`Events/WaveEvents.cs`) | `WaveSpawner`, `StartNight`'ta: NightIndex, NightNumber (1 tabanlı, veriden), TotalEnemies. Önce `[Waves] NightStartedEvent: ...` logu |
+| `WaveProgressEvent` | Olay | Core (`Events/WaveEvents.cs`) | `WaveSpawner`: gece başında bir kez (kalan = toplam), sonra her dalga düşmanı ölünce ve doğurulamayan düşman düşülünce: NightIndex, RemainingEnemies (bekleyen + kuyruk + canlı), TotalEnemies |
+| `NightCompletedEvent` | Olay | Core (`Events/WaveEvents.cs`) | `WaveSpawner`, gece bitince bir kez (son ölümden sonraki ilk Update'te): NightIndex, NightNumber. Önce `[Waves] NightCompletedEvent: ...` logu |
 
 ## Kararlar
 
@@ -400,26 +416,119 @@ Paket referansları: Unity.AI.Navigation (Enemies, Editor), Unity.InputSystem (P
   - Oyuncu: 10 `PlayerDamagedEvent` + 1 `PlayerDiedEvent`, devrildi, Muzzle kökte kaldı. Diriltilince (`SetMax` + `ResetPose`) ilk vuruşta kırmızı flaş; aynı karedeki 2. vuruş engellendi; 0.3 sn sonra hasar yeniden işledi.
   - Konsolda hata/uyarı yok. `runInBackground` geri alındı; ProjectSettings'te değişiklik yok.
 
+**2026-10-15 · 5.1 Jeneratör ve üs alanı**
+- **"Base" = üs.** Görevdeki `BaseEvents.cs` adına uyuldu: `BaseGenerator`, `BaseSceneStep`, `Data/Base/`, `Prefabs/Base/`, Core'da `Base/` klasörü. Soyut taban sınıfı anlamında değil.
+- **Üs yarıçapının tek kaynağı `BaseAreaConfig`** (Building SO, `Data/Base/BaseAreaConfig.asset`, 14 m). `MapLayoutConfig._baseAreaRadius` silindi (eski asset'teki değer yok sayılır); `CreateObstacleExclusions(baseAreaRadius)` artık yarıçapı parametre alıyor. Değişince Build Game Scene çalıştırılmalı (daire ve engeller sahne kurulurken çizilir). Jeneratörün 2 m yasak çevresi (GDD §11) eklenmedi; ızgarayla (8.1) gelecek.
+- **Sahne:** `[Gameplay]/Base` harita merkezinde. Kökte `BaseArea` (Center = bu objenin konumu). Altında `AreaDisk` (eski `Map/BaseArea` dairesi, aynı ölçü ve materyal) ve `Generator` prefab örneği (yerel orijin). Üssü taşımak için `Base`'i taşı; jeneratör ve alan birlikte gider.
+- **GeneratorData:** GDD §12'nin hepsi alan varsayılanı olarak (can 1500, yakıt 150, tüketim 0.4 + 0.05/taret, acil yakıt 30 para → 10 birim). Yakıt `float` (tüketim kesirli), fiyat `int`. Acil yakıtın 1 sn basılı tutma süresi eklenmedi (9.2).
+- **Generator:** `GeneratorPlaceholder`'ın yerine; aynı kayıt kalıbı (Start'ta `ITargetRegistry`, OnEnable/OnDisable). `IPowerService` olarak Awake'te kaydolur, `IsPowered` sabit true. Ölünce önce `GeneratorDestroyedEvent`, sonra log. Ölü jeneratör sahnede kalır, hedeflenemez olur; oyun bitişi 6.1'de.
+- **Carve yok** (4.1'deki TODO kararı): `NavMeshObstacle` kutu 2×2×2, carving kapalı. Placeholder'daki gibi düşmanlar merkezi hedefler, yerel kaçınmayla etrafını sarar ve yüzeye ≤ 1.5 m'den vurur. Carve açılırsa merkez NavMesh dışında kalır ve `PathPartial` kural 4 (8.3) ile karışır.
+- **Üs ışıkları jeneratör prefab'ında** (`Generator/BaseLights`, Visual dışında): çapraz yönlerde merkezden 6 m, 4 m yükseklik, menzil 12 m, şiddet 8, sıcak beyaz, gölgesiz, Realtime. GDD'de sadece "4 nokta ışık" var; değerler seçildi ve prefab'dan ayarlanır (sahne yeniden kurulunca kaybolmasın diye config değil prefab). GDD §18'deki "jeneratör + nokta ışık" bu dört ışık sayıldı; Visual'a ayrı ışık konmadı.
+- **BaseLights:** Başlangıç durumu Start'ta `IPowerService`'ten, sonra `PowerChangedEvent`. `Light.enabled` ile açıp kapar. Gündüz/gece ayrımı yok; şimdilik gündüz de yanıyor (6.2).
+- **Işık sınırı:** PC renderer Forward+ (nesne başı ek ışık sınırı yok); 4 üs ışığı + namlu ışığı zemine birlikte düşer. Mobile renderer Forward, nesne başı 4: orada büyük zemin bir ışığı kaybedebilir.
+- **Testler:** `BaseAreaMath` (sınır dahil, Y yok sayılır, negatif yarıçap), `BaseArea` köprüsü, GDD varsayılanları, prefab yapısı (Structure/Generator tag, carve yok, Visual'da sadece mesh, Visual dışında 4 nokta ışık, `SetLit`).
+- Building'deki yer tutucu `AssemblyInfo.cs` silindi.
+- **Duman testi** (MCP, `runInBackground` testten sonra geri alındı):
+  - Play başında `IBaseArea` (merkez 0, r 14), `IPowerService` (true), kayıtta 1 jeneratör (hedeflenebilir), can 1500/1500, 4 ışık açık.
+  - `PowerChangedEvent(false)` → 4 ışık kapandı; `true` → açıldı.
+  - Oyuncu (0, 0, −12)'ye alındı; kuzey/doğu/batıdan 24 Yürüyen (~22 m'den) jeneratöre yürüdü. 12 sn sonraki kontrolde jeneratör ölmüştü ve 24'ü de yüzeyin 2 m içindeydi (0.5–1.95 m). Oyuncuya (12 m) dönen olmadı.
+  - Konsol: test dinleyicisi `GeneratorDestroyedEvent`'i aldı (Walker, Melee), ardından `[Base] GeneratorDestroyedEvent: jeneratör yıkıldı (son vuran: Walker).` Hata/uyarı yok.
+  - İkinci Rebuild All'da üretici değişiklik yapmadı (idempotent).
+
+**2026-10-15 · 5.2 Dalga sistemi**
+- **Gece indeksi 0 tabanlı** (`StartNight(0)` = 1. gece), yuva indeksleriyle aynı kural. Görünen numara `NightData._nightNumber`'dan (1 tabanlı) gelir; olaylar ikisini de taşır. `StartNight` görevdeki listede dönüş tipsizdi; `bool` döner (6.1 başarısızlığı görebilsin diye).
+- **Zamanlama** (`WaveRunner`, saf): Her grup gece başından `startDelay` sonra ilk spawn'ı, sonra `spawnInterval` aralıkla üretir. Vade `startDelay + i × interval` ile indeksten hesaplanır (float kayması birikmez). Uzun karede biriken spawn'ların hepsi o karede üretilir. Aynı Tick'te gruplar liste sırasıyla işlenir. İlk spawn'lar `Start`'ta değil ilk `Tick`'te.
+- **Aralık sabit tek değer** (`SpawnGroup._spawnInterval`, varsayılan 0.9 sn): GDD §8'deki "0.6–1.2" grup başına seçilecek aralık olarak yorumlandı; spawn başına rastgele sapma eklenmedi. 5.3 üreticisi tip başına değer seçer (hafif hızlı, ağır yavaş). His testinde makineli tüfek gibi gelirse runner'a sapma eklenebilir.
+- **Yön dağılımı sıralı (round-robin):** `[K, D]` → K, D, K, D... Rastgele değil; yönler eşit dolar ve test edilebilir. Bölge içindeki nokta rastgele (`SpawnZone.GetRandomPoint`, `Random.insideUnitCircle × yarıçap`, düzgün dağılım).
+- **Tavan ve kuyruk:** Tavan dolunca gruplar üretmeye devam eder, istekler FIFO kuyrukta bekler (gruplar arası da sıra korunur). Kuyruk sadece `Tick`'te boşalır: ölüm bir sonraki karede yeni spawn açar. Çok sayıda düşman aynı anda ölürse kuyruktan o kadar düşman aynı karede doğar (patlama). `maxAlive` < 1 ise 1 sayılır.
+- **Doğurulamayan düşman düşülür:** Spawn callback'i false dönerse (bölge yok, NavMesh yok, `IEnemySpawner` yok, havuz yok) düşman geceden çıkarılır, `WaveProgressEvent` gider, gece takılmaz. `DroppedCount` tamamlanma logunda görünür. Yeniden deneme yok (sistematik hatada sonsuz döngü olmasın diye).
+- **Bitiş:** Tüm gruplar üretmiş + kuyruk boş + canlı 0. Sadece `Tick`'te kontrol edilir; `NightCompletedEvent` ölüm olayının içinden değil, sonraki Update'ten gider (olay zinciri iç içe girmesin diye). Boş gece ilk Tick'te biter.
+- **Boss:** `NightData._bossData` (EnemyData, opsiyonel) + `_bossStartDelay` (varsayılan 20 sn, GDD'de yok; "ağır düşmanlar ortada") + `_bossDirection` (varsayılan Kuzey). `WavePlan` boss'u adedi 1 olan ayrı bir grup olarak sona ekler (`IsBoss` isteğe aktarılır; 12.2'deki `BossSpawnedEvent` bunu kullanabilir). Kuyrukta öncelik yok (FIFO). Boss tipi `EnemySpawnerConfig` listesinde olmalı (id ile doğar).
+- **Geçersiz grup** (düşman yok, adet ≤ 0, yön yok) `WavePlan.BuildGroups`'ta uyarıyla atlanır; `BuildInfo` sessizce sayım dışı bırakır. `WaveRunner.Start` adedi olup yönü olmayan grubu `ArgumentException` ile reddeder (WavePlan zaten süzer).
+- **Gece olayı:** `NightData._modifier` tipi `NightModifierData` (Waves). Görev "şimdilik null" diyordu ama `GetTonightInfo` olay adı istediği için tip şimdiden açıldı: sadece `id`, `displayName`, `description`. Çarpanlar, sis, ışık ve güç kesintisi 12.3'te eklenecek. `NightInfo` şimdilik sadece `EventName` taşır (açıklama 12.3'te).
+- **İstihbarat (`NightInfo`, Core):** Yönler tekrarsız ve enum sırasıyla (K, D, G, B; boss yönü dahil). Düşmanlar `EnemyData` referansına göre toplanır, ilk görünme sırasıyla; boss ayrı satır (`IsBoss`). Id ve `DisplayName` EnemyData'dan. Her çağrıda yeniden kurulur (gündüz bir kez; bellek önemli değil). Config'te boş gece satırı → boş `NightInfo`.
+- **Ölüm takibi:** `WaveSpawner` doğurduğu kök objeleri `HashSet<GameObject>`'te tutar, global `DiedEvent`'i dinler (`Target` = kök, Health kökte). Sadece kendi düşmanları sayılır; debug spawner'ın, kuklaların, oyuncunun ve jeneratörün ölümü geceyi etkilemez. Havuzdan yeniden çıkan örnek ölünce setten çıkmış olduğu için sorun yok.
+- **Yerleşim:** `WaveSpawner` `[Systems]/WaveSpawner`'da; `WavesSceneStep` (Waves modülünün tek sahne adımı) bölgeleri kurduğu yerde bağlıyor, ayrı adım açılmadı. Config yoksa `WaveSpawner` kırmızı hata verir, kapanır ve servis kaydı olmaz (EnemySpawner kalıbı).
+- **WaveConfig şimdiden üretiliyor** (boş gece listesi, tavan 120): Sahnedeki `WaveSpawner` elle bağlama gerektirmesin diye. 5.3'te `WavesGenerator` NightData'ları oluşturup "eksikse ekle" mantığıyla listeye koyacak. Şu an `TotalNights` = 0.
+- **`DebugSpawner` F4 değişmedi:** Bölge içi rastgele nokta için kendi hesabını kullanıyor; `SpawnZone.GetRandomPoint` ile aynı formül. Kapsam dışı olduğu için dokunulmadı.
+- **Duman testi** (MCP; geçici gece sadece bellekte kuruldu, `WaveSpawner._config`'e reflection ile verildi; asset'e yazılmadı):
+  - Play başında `IWaveService` kayıtlı, `[Systems]/WaveSpawner`'da 4 bölge (K/D/G/B, 33 m, r 6), `TotalNights` 0.
+  - Test gecesi: 6 Yürüyen (K, 0.5 sn), 4 Koşucu (D/G, 1 sn gecikme, 0.5 sn), boss olarak Tank (B, 2 sn), tavan 5. `GetTonightInfo(0)`: yönler K D G B, Yürüyen×6, Koşucu×4, Tank×1 [boss], toplam 11, olay yok.
+  - `StartNight(0)` true; hemen ikinci çağrı false + uyarı. `NightStartedEvent` (11) ve `WaveProgressEvent` 11/11.
+  - ~7 sn sonra: canlı 5, kuyrukta 6, bekleyen 0 (FIFO: 4 Yürüyen + 1 Koşucu). Yürüyenler kuzeyden jeneratöre yürüyordu.
+  - 2 ölüm → kalan 9; sonraki karede kuyruktan Yürüyen **Kuzey**'de, Koşucu **Güney**'de (sıralı yön) doğdu, bölge merkezine 4.4 / 5.0 m.
+  - Kalanlar öldürüldü: Koşucu Doğu, Tank **Batı** (boss yönü), Koşucu Güney; kalan 11 → 0, son ölümden bir kare sonra `NightCompletedEvent` + `[Waves] NightCompletedEvent: Gece 1 tamamlandı.` Düşülen 0, `IsNightRunning` false.
+  - Konsolda hata yok; tek uyarı bilerek tetiklenen "gece hâlâ sürüyor". `runInBackground` geri alındı, ProjectSettings'te değişiklik yok. İkinci Rebuild All'da yeni asset oluşmadı (idempotent).
+
+**2026-10-15 · 5.3 10 gecenin verisi ve doğrulama**
+- **Gece asset'leri:** `Data/Waves/Nights/Night01..Night10.asset` (alt klasör: 12.3'teki olay asset'leri `Data/Waves/` altına ayrı klasörle gelebilir). Tablo `NightDefinitions`'ta (Editor), GDD §8 sırasıyla. Her gecede tip başına **tek grup**, grubun yönleri = gecenin yönleri (GDD yönü gece başına veriyor).
+- **İçerik id ile bağlanır** (`WaveContentLookup`): `Assets/_Project/Data` altındaki tüm `EnemyData` ve `NightModifierData` asset'leri id'leriyle (ordinal) aranır; aynı id iki kez varsa yol sırasına göre ilki geçerli (uyarıyla). Gün 12 asset'leri **şu id'lerle** üretilmeli, yoksa gecelere bağlanmaz: `spitter`, `exploder`, `brute` (3000), `brute_final` (6000), `fog` (Sis), `blood_moon` (Kan Ayı), `storm` (Fırtına). Sabitler `NightDefinitions`'ta.
+- **"Eksikse ekle"** (`NightDataFiller`):
+  - Gecede o id'li düşmanın grubu yoksa tanımdaki değerlerle eklenir; varsa (adet, aralık, yön değişmiş olsa da) dokunulmaz.
+  - Boss ve olay alanı boşsa doldurulur; elle atanmış boss/olay ezilmez.
+  - Gece numarası ve boss gecikmesi/yönü sadece asset ilk oluşturulurken yazılır (Gece 5 ve 10'da boss verisi henüz yok ama zamanlaması hazır).
+  - ⚠️ Bilinen sonuç: Tasarımcı GDD'deki bir grubu inspector'da **silerse**, sonraki Generate Default Data onu geri ekler (görevin "eksikse ekle" tanımı). Kaldırmak yerine tanımı `NightDefinitions`'tan çıkar.
+- **WaveConfig bağlama** (`WavesGenerator.LinkNights`): `i`. satır boşsa `i`. gece yazılır, liste kısaysa eksik geceler sona eklenir. Listede (her sırada) zaten olan gece tekrar eklenmez; dolu satıra dokunulmaz. Kullanıcının yerine koyduğu veya bilerek çıkardığı gece geri gelmez.
+- **TODO logu:** Atlanan içerik her Generate Default Data'da **tek** `[Last Haven] Waves: TODO (Gün 12) ...` satırında listelenir (Log, uyarı değil). Şu an: 4. gece spitter + fog; 5. gece brute + blood_moon; 6. gece exploder; 7. gece spitter + exploder + storm; 8–9. geceler spitter + exploder (9. gece + fog); 10. gece exploder + brute_final + blood_moon. Gün 12'de asset'ler gelince bir sonraki Rebuild All bunları kendiliğinden ekler ve log kısalır.
+- **Zamanlama** (GDD'de tip başına yok, seçildi; `NightDefinitions.Profiles`):
+  - Aralık: Yürüyen 0.7, Koşucu 0.9, Tank 1.2, Tükürücü 1.0, Patlayan 1.0 sn (GDD 0.6–1.2; hafif sık, ağır seyrek).
+  - Yer: Yürüyen ve Koşucu gece başında (gecikme 0). Tank, Tükürücü ve Patlayan ("ağır düşmanlar grubun ortalarında gelir") **ana akışın ortasında**: ana akış = öndeki tiplerin en uzun spawn penceresi; ortadaki grubun penceresi bunun ortasına oturur (gecikme 0.1 sn'ye yuvarlı). Örn. 3. gece: 35 Yürüyen 0–23.8 sn, 2 Tank 11.3 ve 12.5 sn. Boss da aynı ortaya (5. gece 13.6 sn, 10. gece 20.7 sn); boss yönü gecenin ilk yönü (Kuzey).
+  - Gecelerin spawn süresi ~13 sn (1. gece) – ~55 sn (9. gece). His testine göre `NightData`'dan veya profillerden ayarlanır (profil değişikliği sadece yeni asset'leri ve yeni eklenen grupları etkiler).
+- **Grup kuralı tek kaynak:** `SpawnGroupValidation` (Waves): grup boş → düşman verisi yok → adet ≤ 0 → yön yok. Runtime `WavePlan` geçersiz grubu uyarıyla atlar (log metinleri değişmedi), Validate Project aynı kuralı **hata** sayar.
+- **Validate Project:**
+  - Altyapı üreticilerle aynı kalıpta: `IValidationStep` (`Order`, `Name`, `Validate(ValidationReport)`) + `StepDiscovery`. Yeni kontrol için merkezi dosyaya dokunmadan yeni adım yazılır (11.3, 16.3). Adımlar salt okur, log basmaz; konsol ve dosya `ValidationReportWriter`'da. Çöken adım rapora hata olarak girer.
+  - Gece kuralları (`NightDataValidator`): **hata** = gecede hiç grup ve boss yok ("boş grup" böyle yorumlandı; grup listesi boş gece başlar başlamaz biter), grup boş, düşman verisi yok, adet ≤ 0, yön yok, `WaveConfig` gece listesi boş, boş satır, `WaveConfig.asset` yok. **Uyarı** = gece numarası listedeki sırayla uyuşmuyor, aynı gece iki kez listede. Görevde olmayan son üçü küçük ve aynı veriye ait olduğu için eklendi.
+  - Projedeki **tüm** NightData'lar kontrol edilir (WaveConfig'te olmasa da).
+  - Rapor: `Docs/VALIDATION_REPORT.md` (UTF-8, BOM'suz), tarih + özet + bölüm başına not ve sorun tablosu. Her çalıştırmada üzerine yazılır. Menü Play'de ve derleme sırasında çalışmaz (diğer menülerle aynı `CanRun`).
+  - EditMode: `NightDataAssetTests` her NightData asset'i için ayrı test + WaveConfig testi (10 gece, temiz). Asset yoksa Inconclusive.
+- **F5/F6** (`DebugWaveControls`, `[Systems]/DebugWaves`; `DebugSpawner`'a eklenmedi, o zaten ~200 satırdı):
+  - F5: Sıradaki gece = son `NightStartedEvent`'in indeksi + 1 (başta 0). Geceyi kim başlatırsa başlatsın (6.1'de GameFlow) sayaç olaydan güncellenir. Gece sürüyorsa başlatmaz, uyarı verir (`StopNight` yok). 10. geceden sonra "sıradaki gece yok" uyarısı; başa sarmaz.
+  - F6: `EnemySpawner.GetAlive` → her birine kalan canı kadar hasar (`DamageType.Bullet`, kaynak `DebugWaves` objesi, yön sıfır). Normal ölüm yolu: `DiedEvent` → dalga sayacı, `EnemyKilledEvent` (`KilledByPlayer` false). Dalga + debug spawner düşmanları dahil; sahneye elle konmuş düşman ve test kuklaları hariç. Henüz doğmamış dalga düşmanlarını etkilemez (gece onlar doğup ölünce biter).
+  - Durum paneli sol üstte, DebugSpawner panelinin altında (y 120): sıradaki gece, gece durumu ve kalan sayı. Metin sadece dalga olaylarında kurulur.
+  - Kısayollar `DebugHotkeys.Create` ile (DebugSpawner da artık bunu kullanıyor; davranış aynı).
+- **`EnemySpawner` canlı takibi:** Doğurduğu örnekleri `HashSet<Enemy>`'de tutar (havuz yeniden kullandığı için küme havuz boyutuyla sınırlı); canlılık `Enemy.IsAlive` ile sorguda süzülür. F6 için eklendi; Core arayüzüne konmadı.
+- **Duman testi** (MCP; Unity odakta olmadığı için F5/F6/F4 metotları reflection ile çağrıldı, `runInBackground` testten sonra geri alındı, ProjectSettings'te değişiklik yok):
+  - Play başında `TotalNights` 10, `DebugWaves`'in `EnemySpawner` referansı dolu, panel "F5 Gece 1/10 başlat".
+  - F5 → `[Debug] F5: 1. gece başlatılıyor.` + `[Waves] NightStartedEvent: Gece 1 başladı (20 düşman, 1 grup).` Hemen ikinci F5 → "Gece 1 hâlâ sürüyor" uyarısı.
+  - ~19 sn sonra 20 Yürüyen'in hepsi doğmuş; hepsi x ≈ 0, z −2…21.5 (kuzeyden jeneratöre akıyor), ikisi jeneratöre vuruyor.
+  - F6 → `20 düşman öldürüldü` → aynı karede kalan 0, sonraki karede `[Waves] NightCompletedEvent: Gece 1 tamamlandı.`
+  - F5 → Gece 2 (38 düşman, 2 grup); F4 ile ayrıca 20 Yürüyen Doğu'dan. ~15 sn sonra F6 → 50 düşman (30 dalga + 20 debug) öldü; gece sürüyor, bekleyen 8 Koşucu ile kalan 8/38; panel güncel.
+  - Konsolda hata yok. Uyarılar: bilerek tetiklenen "gece sürüyor" ve Walker havuzunun ön ısıtma sınırını (40) aşması (F4'ün 20'si gece 2'nin 30'uyla üst üste bindiği için; aşağıdaki TODO).
+  - İki kez Rebuild All: ikincisinde yeni asset veya bağlama yok, sadece TODO logu (idempotent). Validate Project: "Temiz — 0 hata, 0 uyarı".
+
 ## Bilinen hatalar / TODO
 
 <!-- - [ ] Açıklama (görev numarası) -->
 - [x] ~~Proje henüz git deposu değil.~~ Depo var (tek commit: "project setup"); sonraki görevlerin dosyalarının çoğu henüz commit'lenmedi (`git status`). (1.1)
 - [ ] Şablondan kalanlar duruyor: `Assets/InputSystem_Actions.inputactions` (kullanılmayacak, girdi kodda), `Assets/Scenes/SampleScene.unity`. İstenirse silinebilir. SampleScene Build Settings'te hâlâ 0. sırada. (1.1, 1.3)
   - ⚠️ `InputSystem_Actions` **project-wide actions** olarak kayıtlı (Project Settings → Input System Package). Runtime'da kendiliğinden açılır. Bizim action'larla çakışmaz ama boşuna çalışır. Silmeden önce oradaki kaydı kaldır. UI Toolkit'in runtime gezinmesi bu asset'in UI haritasını kullanıyor olabilir; karar UI görevlerinde (Gün 10) verilmeli. (2.1)
-- [ ] Üs alanı yarıçapı `MapLayoutConfig` ile ileride gelecek BaseArea config'inde iki kez tutulacak. Gün 5'te tek kaynağa bağla. (1.3)
+- [x] ~~Üs alanı yarıçapı `MapLayoutConfig` ile ileride gelecek BaseArea config'inde iki kez tutulacak.~~ 5.1'de tek kaynak `BaseAreaConfig`. (1.3)
 - [x] ~~Ateş görünmez; ıskalayan saçmanın izi için olay yok.~~ 3.3'te `ShotTracedEvent` ve efektlerle çözüldü. (3.2)
 - [ ] `WeaponData.MuzzleVfx` (opsiyonel namlu efekti prefab'ı) hiçbir yerde kullanılmıyor; sadece varsayılan namlu ışığı var. Bağlanınca prefab'da `PooledLifetime` şart. (3.3)
 - [ ] Efekt değerleri (iz kalınlığı, parçacık sayısı/boyutu, ışık şiddeti) sadece ekran görüntüsüyle ayarlandı; gerçek hızda his testi kullanıcıda. Prefab'lardan ayarlanır. (3.3)
 - [ ] İlk MCP duman testinde Play'e girer girmez bir tabanca mermisi harcandı (12 → 11, isabet yok). Sonra `IsFireHeld` ve fare tuşu false'tu; ikinci Play'de tekrar olmadı (12/12). Muhtemelen o sırada oyuna ulaşan bir fare tıklaması. Elle Play'e basınca tekrar ederse incele. (3.2)
 - [ ] Test kuklası konumları `MapLayoutConfig`'ten bağımsız. Üs yarıçapı veya engel halkası değişirse kuklalar üsse ya da engel içine düşebilir; `TestDummiesConfig`'ten elle taşı. (3.2)
-- [ ] `GeneratorPlaceholder` ve `GeneratorPlaceholderSceneStep` Gün 5'te (5.1) silinecek. Gerçek jeneratörde carve kullanılırsa `SetDestination(merkez)` NavMesh dışını hedefler; yol kısmi (`PathPartial`) çıkabilir ve kural 4 (Gün 8) ile karışabilir. O görevde dene. (4.1)
+- [x] ~~`GeneratorPlaceholder` ve `GeneratorPlaceholderSceneStep` silinecek; carve kararı.~~ 5.1'de silindi; gerçek jeneratör carve kullanmıyor. (4.1)
 - [ ] Düşman ve oyuncu fiziksel olarak çarpışmaz (NavMeshAgent collider'lara bakmaz). Canlı oyuncuda sorun yok, düşman 1.5 m'de duruyor. Ama yoluna çıkan **ölü** oyuncunun CharacterController'ı düşman collider'ından itiliyor (duman testinde ~2 m kaydı). 6.1'de yeniden doğma gelince bak. (4.1)
 - [ ] `TargetComponentCache` yok edilen hedeflerin kayıtlarını silmiyor; sadece Play başında temizleniyor. Barikatlar havuzlanırsa sorun yok. Yıkılınca Destroy ediliyorlarsa (Gün 8) kayıtlar run boyunca birikir. (4.1)
 - [ ] NavMesh tek ajan tipiyle (Humanoid, yarıçap 0.5) bake ediliyor; Tank'ın ajan yarıçapı 0.8. Yol bulma 0.5'e göre olduğu için Tank engel köşelerine ~0.3 m girebilir (sadece görsel; collider'lar birbirini itmez). Rahatsız ederse 2. ajan tipi + ikinci NavMeshSurface gerekir. (4.2)
 - [ ] Düşmanlarda Rigidbody yok. Diken tuzağı (9.3) trigger ile çalışacaksa tuzağa ya da düşmana kinematik Rigidbody gerekir. (4.2)
-- [ ] F4'teki 20 Yürüyen aynı anda doğuyor ve ilk saniyelerde yerel kaçınmayla birbirini itiyor; dalga sistemi (5.2) aralıklı doğuracak. (4.2)
+- [x] ~~F4'teki 20 Yürüyen aynı anda doğuyor; dalga sistemi aralıklı doğuracak.~~ 5.2'de dalgalar grup aralığıyla doğuyor. F4 bilerek toplu doğurmaya devam ediyor (stres testi). (4.2)
 - [ ] Oyuncu ölünce Visual devrik kalıyor, dokunulmazlık penceresi açık kalabilir. Yeniden doğmada (6.1) `AnimationDriver.ResetPose()` çağır ve `PlayerCharacter`'daki `HitInvulnerability`'yi sıfırla (şu an dışarıya açık bir sıfırlama metodu yok; 6.1'de ekle). (4.3)
 - [ ] Hit flash `_BaseColor` ile çalışıyor; dokulu modellerde (beyaz `_BaseColor` = değişiklik yok) görünmeyebilir. Emisyonu açık materyalde parlar. 16.1'de farklı shader'larla doğrula. (4.3)
 - [ ] `ReloadStartedEvent`'te kaynak yok; `PlayerAnimation` her doldurmayı oyuncunun sayıyor. Taretler doldurma olayı gönderirse (Gün 9) olaya kaynak ekle. (4.3)
 - [ ] `Enemy.cs` ~225 satır (sınır ~200). Yeni davranış eklenirken (Gün 8/12) bölünmeli; aday: ölüm/ödül kısmı. (4.3)
 - [ ] `ZombieLast.slnx` `.gitignore`'da ama depoda takipli; Unity her derlemede proje sırasını değiştiriyor. İstenirse `git rm --cached ZombieLast.slnx` ile takipten çıkarılabilir. (4.1)
+- [ ] Üs ışıkları gündüz de yanıyor (güç hep var, gündüz/gece yok). 6.2'de geceye bağlanmalı. (5.1)
+- [ ] Jeneratör vurulunca görsel geri bildirim yok (flaş/can barı); can HUD'da 6.3'te görünecek. Gerekirse `VisualFeedbackSetup.EnsureHitFlash` ile prefab'a eklenebilir. (5.1)
+- [ ] `PowerChangedEvent`'i henüz kimse göndermiyor; `BaseLights`'ın olay yolu sadece testte ve duman testinde (elle Raise) denendi. 9.2'de gerçek kesintiyle doğrula. (5.1)
+- [x] ~~`WaveConfig` boş: `TotalNights` 0.~~ 5.3'te 10 gece bağlandı. (5.2)
+- [ ] Dalga düşmanı **ölmeden** havuza dönerse (ör. ileride gece iptali, sahne temizliği, `Release` çağıran bir sistem) `WaveSpawner`'ın setinde kalır ve gece hiç bitmez. Şu an böyle bir yol yok; eklenirse `IPoolable.OnDespawned` veya bir "düşman kaldırıldı" olayıyla runner'a bildir. (5.2)
+- [ ] Geceyi durdurma yok (`StopNight`). Gece ortasında jeneratör yıkılırsa (6.1 GameOver) spawn'lar sürer; gerekirse 6.1'de `IWaveService`'e eklenmeli. (5.2)
+- [ ] Kuyruk dolu iken çok düşman aynı anda ölürse (Gün 12 patlama zinciri) kuyruktan aynı karede o kadar düşman doğar. Rahatsız ederse kuyruk boşaltmaya kare başı sınır konabilir. (5.2)
+- [ ] Spawn aralığı sabit (sapma yok); boss kuyrukta öncelikli değil. His testine göre değerlendir. (5.2)
+- [ ] Gün 12 içeriği gecelerde yok: Tükürücü (4, 7, 8, 9), Patlayan (6–10), Brute boss (5, 10), olaylar Sis (4, 9), Kan Ayı (5, 10), Fırtına (7). 12.1–12.3 asset'leri `NightDefinitions`'taki id'lerle üretince Generate Default Data ekler; `TODO (Gün 12)` logu boşalmalı. 4. ve 6. geceler şu an GDD'den hafif. (5.3)
+- [ ] Havuz ön ısıtması (`EnemySpawnerConfig`: Yürüyen 40, Koşucu 15, Tank 5) geç geceler için az olabilir: 8. gece 70, 9. gece 80 Yürüyen. Aşılınca oyun bozulmaz, havuz büyür (Instantiate + tek uyarı). Duman testinde F4 + 2. gece ile aşıldı. Geç gecelerde uyarı çıkarsa config'ten artır (öneri: Yürüyen 80, Koşucu 35, Tank 8). Üretici var olan asset'e dokunmadığı için değişiklik inspector'dan yapılmalı. (5.3)
+- [ ] F5 gece sürerken çalışmaz; geceleri hızlı atlamak (12.1 kabul testi) için her gecenin spawn'larının bitmesini bekleyip F6 gerekir (9. gece ~55 sn). Gerekirse `IWaveService.StopNight` (6.1 TODO'su) gelince F5 "geceyi bitir + sıradakini başlat" yapılabilir. (5.3)
+- [ ] `Docs/VALIDATION_REPORT.md` her çalıştırmada tarihle yeniden yazılıyor; ekipte herkes çalıştırırsa git'te çakışabilir. İstenirse `.gitignore`'a eklenebilir (16.3'te agent dosyayı yerelden okuyor). (5.3)
+- [ ] `DebugWaveControls` paneli gece sürerken de "F5 Gece N+1/10 başlat" gösteriyor (basılırsa uyarı verir). Sadece görsel. (5.3)

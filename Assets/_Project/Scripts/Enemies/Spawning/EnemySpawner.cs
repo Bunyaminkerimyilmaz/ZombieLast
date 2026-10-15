@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using LastHaven.Core;
 using UnityEngine;
 using UnityEngine.AI;
@@ -8,6 +9,7 @@ namespace LastHaven.Enemies
     /// [Systems]/EnemySpawner: <see cref="IEnemySpawner"/>. Düşmanı <see cref="IPoolService"/>'ten çeker ve
     /// <see cref="NavMesh.SamplePosition(Vector3, out NavMeshHit, float, int)"/> ile bulunan en yakın NavMesh noktasına, rastgele bir
     /// yöne bakacak şekilde koyar. <see cref="EnemySpawnerConfig"/>'teki tipler oyun başında havuzda ön ısıtılır.
+    /// Doğurduğu örnekleri hatırlar; canlı olanlar <see cref="GetAlive"/> ile alınır.
     /// </summary>
     [DisallowMultipleComponent]
     public sealed class EnemySpawner : MonoBehaviour, IEnemySpawner
@@ -18,8 +20,27 @@ namespace LastHaven.Enemies
         private EnemySpawnerConfig _config;
 
         private readonly EnemyTypeLookup _types = new EnemyTypeLookup();
+
+        // Havuz örnekleri yeniden kullanıldığı için küme havuzdaki örnek sayısıyla sınırlı kalır; canlılık sorguda süzülür.
+        private readonly HashSet<Enemy> _spawned = new HashSet<Enemy>();
         private IPoolService _pool;
         private bool _registered;
+
+        /// <summary>
+        /// Bu spawner'ın doğurduğu ve şu an canlı olan düşmanları <paramref name="results"/>'a yazar (önce temizler).
+        /// Bellek ayırmaz. Sahneye elle konmuş düşmanlar dahil değildir.
+        /// </summary>
+        public void GetAlive(List<Enemy> results)
+        {
+            results.Clear();
+            foreach (Enemy enemy in _spawned)
+            {
+                if (enemy != null && enemy.IsAlive)
+                {
+                    results.Add(enemy);
+                }
+            }
+        }
 
         /// <inheritdoc />
         public GameObject Spawn(string enemyId, Vector3 position)
@@ -59,7 +80,13 @@ namespace LastHaven.Enemies
             }
 
             Quaternion rotation = Quaternion.Euler(0f, Random.Range(0f, FullTurnDegrees), 0f);
-            return _pool.Get(data.Prefab, hit.position, rotation);
+            Enemy enemy = _pool.Get(data.Prefab, hit.position, rotation);
+            if (enemy != null)
+            {
+                _spawned.Add(enemy);
+            }
+
+            return enemy;
         }
 
         private void Awake()

@@ -4,13 +4,12 @@ using LastHaven.Core;
 using LastHaven.Enemies;
 using Unity.AI.Navigation;
 using UnityEngine;
-using UnityEngine.Rendering;
 
 namespace LastHaven.Editor
 {
     /// <summary>
-    /// Test haritası (GDD §17): zemin + runtime NavMesh, üs alanı dairesi, sabit seed'li engeller, görünmez sınır duvarları.
-    /// Hepsi [Gameplay]/Map altına kurulur.
+    /// Test haritası (GDD §17): zemin + runtime NavMesh, sabit seed'li engeller, görünmez sınır duvarları.
+    /// Hepsi [Gameplay]/Map altına kurulur. Üs alanı dairesi <see cref="BaseSceneStep"/>'te.
     /// </summary>
     public sealed class MapSceneStep : ISceneBuildStep
     {
@@ -18,8 +17,6 @@ namespace LastHaven.Editor
         public const string GroundName = "Ground";
 
         private const float PlanePrimitiveSize = 10f;
-        private const float CylinderPrimitiveHeight = 2f;
-        private const float BaseAreaThickness = 0.02f;
 
         public int Order => 100;
 
@@ -29,8 +26,7 @@ namespace LastHaven.Editor
             Transform map = context.GetOrCreateGroup(context.Gameplay, MapGroupName);
 
             BuildGround(context, map, config);
-            BuildBaseArea(context, map, config);
-            BuildObstacles(context, map, config);
+            BuildObstacles(context, map, config, BaseGenerator.LoadOrCreateAreaConfig().Radius);
             BuildBoundary(context, map, config);
         }
 
@@ -47,23 +43,12 @@ namespace LastHaven.Editor
             ground.AddComponent<NavMeshBaker>();
         }
 
-        private static void BuildBaseArea(SceneBuildContext context, Transform map, MapLayoutConfig config)
-        {
-            // Sadece görsel: collider yok, Default layer'da (NavMesh bake'ine girmez).
-            GameObject baseArea = context.CreatePrimitive(
-                PrimitiveType.Cylinder, "BaseArea", map, PlaceholderMaterialId.BaseArea, withCollider: false);
-            float diameter = config.BaseAreaRadius * 2f;
-            baseArea.transform.localPosition = new Vector3(0f, BaseAreaThickness * 0.5f, 0f);
-            baseArea.transform.localScale = new Vector3(diameter, BaseAreaThickness / CylinderPrimitiveHeight, diameter);
-            baseArea.GetComponent<Renderer>().shadowCastingMode = ShadowCastingMode.Off;
-        }
-
-        private static void BuildObstacles(SceneBuildContext context, Transform map, MapLayoutConfig config)
+        private static void BuildObstacles(SceneBuildContext context, Transform map, MapLayoutConfig config, float baseAreaRadius)
         {
             Transform group = context.GetOrCreateGroup(map, "Obstacles");
             ObstacleLayoutSettings settings = config.CreateObstacleSettings();
             List<ObstaclePlacement> placements = ObstacleLayout.Generate(
-                settings, config.ObstacleShapes, config.CreateObstacleExclusions());
+                settings, config.ObstacleShapes, config.CreateObstacleExclusions(baseAreaRadius));
 
             for (int i = 0; i < placements.Count; i++)
             {

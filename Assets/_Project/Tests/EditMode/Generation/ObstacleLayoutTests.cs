@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using LastHaven.Building;
 using LastHaven.Core;
 using LastHaven.Editor;
 using NUnit.Framework;
@@ -12,17 +13,20 @@ namespace LastHaven.Tests.EditMode
         private const float Epsilon = 1e-3f;
 
         private MapLayoutConfig _config;
+        private BaseAreaConfig _baseArea;
 
         [SetUp]
         public void SetUp()
         {
             _config = ScriptableObject.CreateInstance<MapLayoutConfig>();
+            _baseArea = ScriptableObject.CreateInstance<BaseAreaConfig>();
         }
 
         [TearDown]
         public void TearDown()
         {
             Object.DestroyImmediate(_config);
+            Object.DestroyImmediate(_baseArea);
         }
 
         [Test]
@@ -98,7 +102,7 @@ namespace LastHaven.Tests.EditMode
         public void Obstacles_KeepClearOfSpawnZonesAndBaseArea()
         {
             ObstacleLayoutSettings settings = _config.CreateObstacleSettings();
-            List<ExclusionZone> exclusions = _config.CreateObstacleExclusions();
+            List<ExclusionZone> exclusions = _config.CreateObstacleExclusions(_baseArea.Radius);
 
             Assert.AreEqual(1 + CompassDirections.All.Count, exclusions.Count);
             foreach (ObstaclePlacement placement in GenerateDefault())
@@ -152,7 +156,7 @@ namespace LastHaven.Tests.EditMode
         private List<ObstaclePlacement> GenerateDefault()
         {
             return ObstacleLayout.Generate(
-                _config.CreateObstacleSettings(), _config.ObstacleShapes, _config.CreateObstacleExclusions());
+                _config.CreateObstacleSettings(), _config.ObstacleShapes, _config.CreateObstacleExclusions(_baseArea.Radius));
         }
 
         private static ObstacleLayoutSettings CreateSettings(int seed, int count)

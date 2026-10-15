@@ -54,10 +54,10 @@ namespace LastHaven.DebugTools
             // Oyun girdisi değil, geliştirici kısayolu: IInputReader'a eklenmedi.
             _actions = new[]
             {
-                CreateAction("<Keyboard>/f1", () => SpawnAtCursor(_walker)),
-                CreateAction("<Keyboard>/f2", () => SpawnAtCursor(_runner)),
-                CreateAction("<Keyboard>/f3", () => SpawnAtCursor(_tank)),
-                CreateAction("<Keyboard>/f4", SpawnAtRandomEdge),
+                DebugHotkeys.Create("<Keyboard>/f1", () => SpawnAtCursor(_walker)),
+                DebugHotkeys.Create("<Keyboard>/f2", () => SpawnAtCursor(_runner)),
+                DebugHotkeys.Create("<Keyboard>/f3", () => SpawnAtCursor(_tank)),
+                DebugHotkeys.Create("<Keyboard>/f4", SpawnAtRandomEdge),
             };
 
             _panelText = "Debug Spawner\n"
@@ -105,13 +105,6 @@ namespace LastHaven.DebugTools
         {
             GUI.Box(PanelRect, GUIContent.none);
             GUI.Label(PanelTextRect, _panelText);
-        }
-
-        private static InputAction CreateAction(string binding, System.Action onPressed)
-        {
-            var action = new InputAction(binding, InputActionType.Button, binding);
-            action.performed += _ => onPressed();
-            return action;
         }
 
         private static string NameOf(EnemyData data)

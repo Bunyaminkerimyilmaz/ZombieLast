@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0aef8c359b83394081950ecafa1bd97, type: 3}
+  m_Name: WaveConfig
+  m_EditorClassIdentifier: LastHaven.Waves::LastHaven.Waves.WaveConfig
+  _nights:
+  - {fileID: 11400000, guid: 0df809da034df5446b9cb5465220ebc9, type: 2}
+  - {fileID: 11400000, guid: b5d58573e3a1faf43aee27902b8c7f6c, type: 2}
+  - {fileID: 11400000, guid: 7dcc77b2772d4d142ae67cb3facdc6f0, type: 2}
+  - {fileID: 11400000, guid: 1a981309986f6b4489941cdebca8459d, type: 2}
+  - {fileID: 11400000, guid: b9ef3bfe8b79d934da8c734f006a6011, type: 2}
+  - {fileID: 11400000, guid: 469163b653f406841a3b6d1e0d74e425, type: 2}
+  - {fileID: 11400000, guid: 3cf308056b33ed444972f56aa74fc426, type: 2}
+  - {fileID: 11400000, guid: a0aa72ef68b71c34facd2fe6e68b3cfd, type: 2}
+  - {fileID: 11400000, guid: c5e84ceb0f63fdf4bb1eecdf55de8ae2, type: 2}
+  - {fileID: 11400000, guid: 81874832642524f4bac53dad6ed4f900, type: 2}
+  _maxAliveEnemies: 120

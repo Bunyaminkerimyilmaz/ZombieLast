@@ -67,6 +67,15 @@ namespace LastHaven.Editor
             }
         }
 
+        [MenuItem(Root + "Validate Project", priority = 40)]
+        public static void ValidateProject()
+        {
+            if (CanRun())
+            {
+                ProjectValidator.RunAndPublish();
+            }
+        }
+
         private static bool CanRun()
         {
             if (EditorApplication.isPlayingOrWillChangePlaymode)

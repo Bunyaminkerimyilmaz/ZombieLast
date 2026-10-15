@@ -35,6 +35,13 @@ namespace LastHaven.Waves
 
         public Vector3 Center => transform.position;
 
+        /// <summary>Bölge dairesinin içinde düzgün dağılımlı rastgele bir nokta (merkezle aynı yükseklikte).</summary>
+        public Vector3 GetRandomPoint()
+        {
+            Vector2 offset = Random.insideUnitCircle * _radius;
+            return Center + new Vector3(offset.x, 0f, offset.y);
+        }
+
         private void OnDrawGizmos()
         {
             Color color = GetGizmoColor(_direction);

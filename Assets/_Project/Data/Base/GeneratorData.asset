@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c7b09d0ea06c45b47966f95eda968175, type: 3}
+  m_Name: GeneratorData
+  m_EditorClassIdentifier: LastHaven.Building::LastHaven.Building.GeneratorData
+  _maxHealth: 1500
+  _fuelCapacity: 150
+  _baseFuelConsumption: 0.4
+  _fuelConsumptionPerTurret: 0.05
+  _emergencyFuelPrice: 30
+  _emergencyFuelAmount: 10
