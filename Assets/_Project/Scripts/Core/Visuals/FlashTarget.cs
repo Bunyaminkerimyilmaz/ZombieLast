@@ -75,10 +75,10 @@ namespace LastHaven.Core
         }
 
         /// <summary>
-        /// Kalıcı renk tonu: materyalin kendi <c>_BaseColor</c>'ı <paramref name="tint"/>'e doğru karıştırılır
-        /// (<see cref="HitFlash.Tint"/>). Emisyona dokunulmaz. <c>_BaseColor</c> yoksa blok temizlenir.
+        /// Kalıcı renk tonu: materyalin kendi <c>_BaseColor</c>'ı açık ton katmanlarına doğru karıştırılır
+        /// (<see cref="TintLayers.Compose"/>). Emisyona dokunulmaz. <c>_BaseColor</c> yoksa blok temizlenir.
         /// </summary>
-        public void ApplyTint(MaterialPropertyBlock block, Color tint)
+        public void ApplyTint(MaterialPropertyBlock block, TintLayers tints)
         {
             if (_renderer == null)
             {
@@ -92,7 +92,7 @@ namespace LastHaven.Core
             }
 
             block.Clear();
-            block.SetColor(BaseColorId, HitFlash.Tint(_baseColor, tint));
+            block.SetColor(BaseColorId, tints.Compose(_baseColor));
             _renderer.SetPropertyBlock(block);
         }
 

@@ -1,3 +1,5 @@
+using UnityEngine;
+
 namespace LastHaven.Core
 {
     /// <summary>
@@ -26,5 +28,10 @@ namespace LastHaven.Core
         /// Geçersiz indekste <see cref="System.ArgumentOutOfRangeException"/> fırlatır.
         /// </summary>
         NightInfo GetTonightInfo(int nightIndex);
+
+        /// <summary>
+        /// Yönün spawn bölgesinin merkezi (dünya, yer seviyesi): istihbarat okları bu noktayı gösterir. Bölge yoksa false.
+        /// </summary>
+        bool TryGetSpawnZoneCenter(CompassDirection direction, out Vector3 center);
     }
 }

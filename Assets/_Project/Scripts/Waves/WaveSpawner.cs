@@ -7,8 +7,10 @@ namespace LastHaven.Waves
 {
     /// <summary>
     /// [Systems]/WaveSpawner: <see cref="IWaveService"/>. Gecenin <see cref="WaveRunner"/>'ını sürer; her spawn isteğinde ilgili
-    /// yöndeki <see cref="SpawnZone"/>'dan rastgele bir nokta seçip <see cref="IEnemySpawner"/>'la düşmanı doğurur.
-    /// Doğurduğu düşmanları izler; ölümleri (<see cref="DiedEvent"/>) runner'a bildirir ve dalga olaylarını gönderir.
+    /// yöndeki <see cref="SpawnZone"/>'dan rastgele bir nokta seçip <see cref="IEnemySpawner"/>'la düşmanı doğurur (<see cref="ZoneSpawner"/>).
+    /// Doğurduğu (ve <see cref="Adopt"/> ile katılan) düşmanları izler; ölümleri (<see cref="DiedEvent"/>) runner'a bildirir ve
+    /// dalga olaylarını gönderir. Gecenin olayı (GDD §14) <see cref="NightModifierController"/>'da: dalgadan önce başlar, düşmanlara
+    /// hız çarpanı verir, gece bitince biter.
     /// </summary>
     [DisallowMultipleComponent]
     public sealed class WaveSpawner : MonoBehaviour, IWaveService
@@ -21,9 +23,9 @@ namespace LastHaven.Waves
 
         private readonly HashSet<GameObject> _aliveEnemies = new HashSet<GameObject>();
         private readonly List<WaveGroup> _groups = new List<WaveGroup>();
+        private readonly NightModifierController _modifier = new NightModifierController();
         private WaveRunner _runner;
-        private SpawnZoneSet _zoneSet;
-        private IEnemySpawner _enemySpawner;
+        private ZoneSpawner _zoneSpawner;
         private int _nightIndex = -1;
         private int _nightNumber;
         private bool _registered;
@@ -76,6 +78,7 @@ namespace LastHaven.Waves
             _aliveEnemies.Clear();
             _nightIndex = nightIndex;
             _nightNumber = night.NightNumber;
+            _modifier.Begin(nightIndex, night.Modifier, this);
             _runner.Start(_groups, _config.MaxAliveEnemies);
 
             Debug.Log($"[Waves] NightStartedEvent: Gece {_nightNumber} başladı ({_runner.TotalCount} düşman, {_groups.Count} grup).", this);
@@ -98,6 +101,30 @@ namespace LastHaven.Waves
                 : new NightInfo(nightIndex, nightIndex + 1, null, null, null);
         }
 
+        /// <inheritdoc />
+        public bool TryGetSpawnZoneCenter(CompassDirection direction, out Vector3 center)
+        {
+            center = Vector3.zero;
+            return _zoneSpawner != null && _zoneSpawner.TryGetCenter(direction, out center);
+        }
+
+        /// <summary>
+        /// Dalga dışında doğmuş canlı bir düşmanı sürmekte olan geceye katar (gündüz gezginleri, GDD §9): kalan düşmana eklenir,
+        /// ölümü sayılır, gece o ölmeden bitmez. Gece sürmüyorsa veya düşman zaten bu gecenin ise false.
+        /// </summary>
+        public bool Adopt(GameObject enemy)
+        {
+            if (enemy == null || !IsNightRunning || !_aliveEnemies.Add(enemy))
+            {
+                return false;
+            }
+
+            _modifier.ApplyTo(enemy);
+            _runner.Adopt(1);
+            RaiseProgress();
+            return true;
+        }
+
         private void Awake()
         {
             if (_config == null)
@@ -107,7 +134,7 @@ namespace LastHaven.Waves
                 return;
             }
 
-            _zoneSet = new SpawnZoneSet(_zones);
+            _zoneSpawner = new ZoneSpawner(_zones, this);
             _runner = new WaveRunner(TrySpawn);
             _runner.RemainingChanged += RaiseProgress;
             _runner.Completed += OnNightCompleted;
@@ -144,26 +171,14 @@ namespace LastHaven.Waves
 
         private bool TrySpawn(WaveSpawnRequest request)
         {
-            // Servis tembel alınır: gece, bu bileşenin Start'ından önce başlatılsa da çalışsın.
-            if (_enemySpawner == null && !ServiceLocator.TryGet(out _enemySpawner))
-            {
-                Debug.LogWarning("[Waves] IEnemySpawner bulunamadı; düşman doğurulamadı. Sahnede [Systems]/EnemySpawner var mı?", this);
-                return false;
-            }
-
-            if (!_zoneSet.TryGet(request.Direction, out SpawnZone zone))
-            {
-                Debug.LogWarning($"[Waves] {request.Direction} yönünde SpawnZone yok; '{request.Enemy.Id}' doğurulamadı.", this);
-                return false;
-            }
-
-            GameObject enemy = _enemySpawner.Spawn(request.Enemy.Id, zone.GetRandomPoint());
+            GameObject enemy = _zoneSpawner.Spawn(request);
             if (enemy == null)
             {
-                return false; // EnemySpawner nedenini logladı.
+                return false;
             }
 
             _aliveEnemies.Add(enemy);
+            _modifier.ApplyTo(enemy);
             return true;
         }
 
@@ -184,6 +199,7 @@ namespace LastHaven.Waves
         private void OnNightCompleted()
         {
             _aliveEnemies.Clear();
+            _modifier.End();
             string dropped = _runner.DroppedCount > 0 ? $", {_runner.DroppedCount} düşman doğurulamadı" : string.Empty;
             Debug.Log($"[Waves] NightCompletedEvent: Gece {_nightNumber} tamamlandı{dropped}.", this);
             EventBus<NightCompletedEvent>.Raise(new NightCompletedEvent(_nightIndex, _nightNumber));

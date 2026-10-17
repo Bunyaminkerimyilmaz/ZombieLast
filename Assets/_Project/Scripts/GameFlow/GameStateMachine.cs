@@ -19,8 +19,7 @@ namespace LastHaven.GameFlow
     {
         private readonly GameFlowSettings _settings;
         private readonly Action<int> _startNight;
-        private int _timerSeconds;
-        private bool _endingSoonRaised;
+        private readonly DayClock _dayClock;
 
         /// <param name="totalNights">Toplam gece (en az 1). Bu gece atlatılınca zafer.</param>
         /// <param name="startNight">Gece evresine girilince 0 tabanlı gece indeksiyle çağrılır (dalgaları başlatır).</param>
@@ -33,6 +32,7 @@ namespace LastHaven.GameFlow
 
             _startNight = startNight ?? throw new ArgumentNullException(nameof(startNight));
             _settings = settings;
+            _dayClock = new DayClock(settings.FinalWarningDuration);
             TotalNights = totalNights;
         }
 
@@ -60,6 +60,12 @@ namespace LastHaven.GameFlow
 
         /// <summary>Süreli evrede kalan süre (sn); süresiz evrelerde 0.</summary>
         public float PhaseTimeRemaining { get; private set; }
+
+        /// <summary>
+        /// Şu an <see cref="RequestReady"/> çağrılsa verilecek erken hazır bonusu (para; <see cref="EarlyReady"/> ile aynı hesap).
+        /// Gündüz dışında 0.
+        /// </summary>
+        public int EarlyReadyBonus => Phase == GamePhase.Day ? _settings.CalculateEarlyReadyBonus(PhaseTimeRemaining) : 0;
 
         /// <summary>Oyun bitti mi (GameOver veya Victory).</summary>
         public bool IsOver => Phase == GamePhase.GameOver || Phase == GamePhase.Victory;
@@ -156,20 +162,17 @@ namespace LastHaven.GameFlow
                 return;
             }
 
-            int seconds = WholeSeconds(PhaseTimeRemaining);
-            if (seconds != _timerSeconds)
+            if (_dayClock.TryAdvanceSecond(PhaseTimeRemaining, out int seconds))
             {
-                _timerSeconds = seconds;
                 DayTimerTicked?.Invoke(seconds);
             }
 
-            CheckDayEndingSoon();
+            WarnIfDayEndingSoon();
         }
 
         private void EnterDay(int nightIndex)
         {
             NightIndex = nightIndex;
-            _endingSoonRaised = false;
             Enter(GamePhase.Day, _settings.DayDuration);
 
             // Dinleyici evreyi değiştirdiyse (ör. aynı anda jeneratör yıkıldı) gündüz olayları gönderilmez.
@@ -178,9 +181,8 @@ namespace LastHaven.GameFlow
                 return;
             }
 
-            _timerSeconds = WholeSeconds(PhaseTimeRemaining);
-            DayTimerTicked?.Invoke(_timerSeconds);
-            CheckDayEndingSoon();
+            DayTimerTicked?.Invoke(_dayClock.Restart(PhaseTimeRemaining));
+            WarnIfDayEndingSoon();
         }
 
         private void EnterDusk()
@@ -197,15 +199,12 @@ namespace LastHaven.GameFlow
             }
         }
 
-        private void CheckDayEndingSoon()
+        private void WarnIfDayEndingSoon()
         {
-            if (_endingSoonRaised || _settings.FinalWarningDuration <= 0f || PhaseTimeRemaining > _settings.FinalWarningDuration)
+            if (_dayClock.TryWarn(PhaseTimeRemaining))
             {
-                return;
+                DayEndingSoon?.Invoke(PhaseTimeRemaining);
             }
-
-            _endingSoonRaised = true;
-            DayEndingSoon?.Invoke(PhaseTimeRemaining);
         }
 
         private void Enter(GamePhase phase, float duration)
@@ -214,11 +213,6 @@ namespace LastHaven.GameFlow
             PhaseDuration = duration;
             PhaseTimeRemaining = duration;
             PhaseChanged?.Invoke();
-        }
-
-        private static int WholeSeconds(float seconds)
-        {
-            return (int)Math.Ceiling(seconds);
         }
     }
 }

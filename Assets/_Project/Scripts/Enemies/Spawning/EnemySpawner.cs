@@ -8,7 +8,8 @@ namespace LastHaven.Enemies
     /// <summary>
     /// [Systems]/EnemySpawner: <see cref="IEnemySpawner"/>. Düşmanı <see cref="IPoolService"/>'ten çeker ve
     /// <see cref="NavMesh.SamplePosition(Vector3, out NavMeshHit, float, int)"/> ile bulunan en yakın NavMesh noktasına, rastgele bir
-    /// yöne bakacak şekilde koyar. <see cref="EnemySpawnerConfig"/>'teki tipler oyun başında havuzda ön ısıtılır.
+    /// yöne bakacak şekilde koyar. <see cref="EnemySpawnerConfig"/>'teki tipler (ve saldırılarının mermi/efektleri) oyun başında havuzda
+    /// ön ısıtılır.
     /// Doğurduğu örnekleri hatırlar; canlı olanlar <see cref="GetAlive"/> ile alınır.
     /// </summary>
     [DisallowMultipleComponent]
@@ -166,6 +167,7 @@ namespace LastHaven.Enemies
                 }
 
                 _pool.Prewarm(entry.Data.Prefab.gameObject, entry.Prewarm);
+                entry.Data.Attack.Prewarm(_pool); // Mermi, patlama efekti.
             }
         }
     }

@@ -6,7 +6,7 @@ namespace LastHaven.GameFlow
     /// <summary>
     /// [Systems]/GameFlow: <see cref="IGameStateService"/>. <see cref="GameStateMachine"/>'i sürer ve Unity'ye bağlar:
     /// gece evresinde <see cref="IWaveService.StartNight"/>, <see cref="NightCompletedEvent"/> → şafak,
-    /// <see cref="GeneratorDestroyedEvent"/> → oyun bitti. Makinenin çıktılarını global olaylara çevirir ve loglar.
+    /// <see cref="GeneratorDestroyedEvent"/> → oyun bitti. Makinenin çıktılarını <see cref="GameFlowAnnouncer"/> global olaylara çevirir.
     /// "Hazırım" (Enter) gündüzü erken bitirir; şafakta da şafak panelinin "Devam" butonuyla aynı devam isteğini gönderir.
     /// <see cref="GameConfig"/>'i <see cref="IGameRules"/> olarak kaydeder. Akış ilk Update'te başlar (tüm Start'lar bitmiş olur).
     /// </summary>
@@ -63,10 +63,7 @@ namespace LastHaven.GameFlow
             }
 
             _machine = new GameStateMachine(_config.CreateFlowSettings(), _waves.TotalNights, StartNight);
-            _machine.PhaseChanged += OnPhaseChanged;
-            _machine.DayTimerTicked += OnDayTimerTicked;
-            _machine.DayEndingSoon += OnDayEndingSoon;
-            _machine.EarlyReady += OnEarlyReady;
+            GameFlowAnnouncer.Attach(_machine, this);
 
             _started = true;
             SubscribeInput();
@@ -165,67 +162,6 @@ namespace LastHaven.GameFlow
         private void OnDawnContinueRequested(DawnContinueRequestedEvent request)
         {
             _machine?.RequestDawnContinue();
-        }
-
-        private void OnPhaseChanged()
-        {
-            GamePhase phase = _machine.Phase;
-            int night = _machine.NightIndex;
-            Debug.Log($"{LogPrefix}PhaseChangedEvent: {phase} — {Describe(phase, night)}", this);
-            EventBus<PhaseChangedEvent>.Raise(new PhaseChangedEvent(phase, night, _machine.PhaseDuration));
-
-            switch (phase)
-            {
-                case GamePhase.Dawn:
-                    EventBus<DawnEvent>.Raise(new DawnEvent(night));
-                    break;
-                case GamePhase.GameOver:
-                    EventBus<GameOverEvent>.Raise(new GameOverEvent(night));
-                    break;
-                case GamePhase.Victory:
-                    EventBus<VictoryEvent>.Raise(new VictoryEvent(night));
-                    break;
-            }
-        }
-
-        private void OnDayTimerTicked(int remainingSeconds)
-        {
-            EventBus<DayTimerTickEvent>.Raise(new DayTimerTickEvent(remainingSeconds));
-        }
-
-        private void OnDayEndingSoon(float remainingSeconds)
-        {
-            Debug.Log($"{LogPrefix}DayEndingSoonEvent: gündüzün son {Mathf.CeilToInt(remainingSeconds)} sn'si.", this);
-            EventBus<DayEndingSoonEvent>.Raise(new DayEndingSoonEvent(remainingSeconds));
-        }
-
-        private void OnEarlyReady(float remainingSeconds, int bonusMoney)
-        {
-            Debug.Log($"{LogPrefix}EarlyReadyEvent: gündüz {Mathf.CeilToInt(remainingSeconds)} sn erken bitti, bonus +{bonusMoney} para.", this);
-            EventBus<EarlyReadyEvent>.Raise(new EarlyReadyEvent(remainingSeconds, bonusMoney));
-        }
-
-        /// <summary>Log açıklaması (sadece evre değişiminde kurulur).</summary>
-        private string Describe(GamePhase phase, int night)
-        {
-            string nightLabel = $"Gece {night + 1}/{_machine.TotalNights}";
-            switch (phase)
-            {
-                case GamePhase.Day:
-                    return $"{nightLabel} öncesi gündüz, {_machine.PhaseDuration:0} sn. Enter = Hazırım.";
-                case GamePhase.Dusk:
-                    return $"alacakaranlık, {_machine.PhaseDuration:0} sn sonra {nightLabel}.";
-                case GamePhase.Night:
-                    return $"{nightLabel} başlıyor.";
-                case GamePhase.Dawn:
-                    return $"{nightLabel} atlatıldı. Devam için Enter.";
-                case GamePhase.GameOver:
-                    return $"jeneratör yıkıldı, oyun bitti ({nightLabel}).";
-                case GamePhase.Victory:
-                    return $"{nightLabel} atlatıldı, tahliye! Zafer.";
-                default:
-                    return nightLabel;
-            }
         }
     }
 }

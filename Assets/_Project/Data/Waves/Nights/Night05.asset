@@ -24,7 +24,7 @@ MonoBehaviour:
     _spawnInterval: 0.9
     _startDelay: 0
     _directions: 00000000010000000200000003000000
-  _modifier: {fileID: 0}
-  _bossData: {fileID: 0}
+  _modifier: {fileID: 11400000, guid: 5327968a20bd8c1459e7530dc6afedd8, type: 2}
+  _bossData: {fileID: 11400000, guid: ca4e94a48a2af5441b32eff5c9f68a7a, type: 2}
   _bossStartDelay: 13.6
   _bossDirection: 0

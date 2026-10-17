@@ -7,16 +7,35 @@ namespace LastHaven.Waves
 {
     /// <summary>
     /// <see cref="NightData"/> → <see cref="WaveRunner"/> girdisi ve istihbarat özeti (<see cref="NightInfo"/>).
-    /// Geçersiz gruplar (boş düşman, adet 0, yön yok) atlanır; boss tek düşmanlık bir grup olarak sona eklenir.
+    /// Geçersiz gruplar (boş düşman, adet 0, yön yok) atlanır; boss tek düşmanlık bir grup olarak sona eklenir. Gece olayının
+    /// adet çarpanı (GDD §14 Kan Ayı ×1.5) grup adetlerine uygulanır (<see cref="ScaleCount"/>; boss hariç); istihbarat da çarpılmış
+    /// adedi gösterir.
     /// </summary>
     public static class WavePlan
     {
+        /// <summary>Olay çarpanlı adet: en yakın tam sayıya (yarım yukarı), en az 1 (adet 0 değilse). Çarpan negatifse 0 sayılır.</summary>
+        public static int ScaleCount(int count, float multiplier)
+        {
+            if (count <= 0)
+            {
+                return 0;
+            }
+
+            return Mathf.Max(1, Mathf.FloorToInt(count * Mathf.Max(0f, multiplier) + 0.5f));
+        }
+
+        private static float CountMultiplier(NightData night)
+        {
+            return night.Modifier != null ? night.Modifier.EnemyCountMultiplier : 1f;
+        }
+
         /// <summary>
         /// Gecenin geçerli gruplarını (ve varsa boss'u) <paramref name="results"/>'a ekler. Atlanan her grup için uyarı loglar.
         /// </summary>
         public static void BuildGroups(NightData night, List<WaveGroup> results)
         {
             IReadOnlyList<SpawnGroup> groups = night.Groups;
+            float multiplier = CountMultiplier(night);
             for (int i = 0; i < groups.Count; i++)
             {
                 SpawnGroup group = groups[i];
@@ -26,7 +45,8 @@ namespace LastHaven.Waves
                     continue;
                 }
 
-                results.Add(new WaveGroup(group.Enemy, group.Count, group.SpawnInterval, group.StartDelay, group.Directions));
+                int count = ScaleCount(group.Count, multiplier);
+                results.Add(new WaveGroup(group.Enemy, count, group.SpawnInterval, group.StartDelay, group.Directions));
             }
 
             if (night.BossData != null)
@@ -47,6 +67,7 @@ namespace LastHaven.Waves
             var counts = new List<int>();
 
             IReadOnlyList<SpawnGroup> groups = night.Groups;
+            float multiplier = CountMultiplier(night);
             for (int i = 0; i < groups.Count; i++)
             {
                 SpawnGroup group = groups[i];
@@ -56,15 +77,16 @@ namespace LastHaven.Waves
                 }
 
                 MarkDirections(group.Directions, hasDirection);
+                int count = ScaleCount(group.Count, multiplier);
                 int typeIndex = enemyTypes.IndexOf(group.Enemy);
                 if (typeIndex < 0)
                 {
                     enemyTypes.Add(group.Enemy);
-                    counts.Add(group.Count);
+                    counts.Add(count);
                 }
                 else
                 {
-                    counts[typeIndex] += group.Count;
+                    counts[typeIndex] += count;
                 }
             }
 
@@ -90,7 +112,8 @@ namespace LastHaven.Waves
             }
 
             string eventName = night.Modifier != null ? night.Modifier.DisplayName : string.Empty;
-            return new NightInfo(nightIndex, night.NightNumber, directions, enemies, eventName);
+            string eventDescription = night.Modifier != null ? night.Modifier.Description : string.Empty;
+            return new NightInfo(nightIndex, night.NightNumber, directions, enemies, eventName, eventDescription);
         }
 
         private static bool TryGetProblem(SpawnGroup group, out string problem)

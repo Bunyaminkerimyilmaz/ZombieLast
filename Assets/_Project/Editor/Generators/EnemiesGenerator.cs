@@ -7,9 +7,10 @@ namespace LastHaven.Editor
 {
     /// <summary>
     /// Düşman tipleri (<see cref="EnemyDefinitions"/>): <see cref="EnemyData"/> asset'leri (<c>Data/Enemies/&lt;Tip&gt;.asset</c>),
-    /// prefab'lar (<see cref="EnemyPrefabs"/>) ve <see cref="EnemySpawnerConfig"/>. Varsa dokunulmaz; sadece boş prefab/data
-    /// referansları doldurulur ve config'te olmayan tipler listeye eklenir. Can barı materyalleri (<see cref="HealthBarMaterials"/>)
-    /// veri aşamasında üretilir.
+    /// prefab'lar (<see cref="EnemyPrefabs"/>), saldırı yardımcıları (<see cref="EnemyAttackPrefabs"/>: mermi, patlama efekti) ve
+    /// <see cref="EnemySpawnerConfig"/>. Varsa dokunulmaz; sadece boş prefab/data/saldırı referansları doldurulur (saldırısı boş eski
+    /// veriye tanımdaki strateji yazılır) ve config'te olmayan tipler listeye eklenir. Can barı materyalleri
+    /// (<see cref="HealthBarMaterials"/>) veri aşamasında üretilir.
     /// </summary>
     public sealed class EnemiesGenerator : IGenerationStep
     {
@@ -41,6 +42,11 @@ namespace LastHaven.Editor
                 AssetDatabase.SaveAssetIfDirty(data);
                 Debug.Log($"[Last Haven] Enemies: {path} oluşturuldu.");
             }
+            else if (EnemyAttackSetup.EnsureAssigned(data, definition.Attack))
+            {
+                AssetDatabase.SaveAssetIfDirty(data);
+                Debug.Log($"[Last Haven] Enemies: {path} boş saldırısına {definition.Attack} yazıldı.");
+            }
 
             return data;
         }
@@ -59,6 +65,12 @@ namespace LastHaven.Editor
                 {
                     AssetDatabase.SaveAssetIfDirty(types[i]);
                     Debug.Log($"[Last Haven] Enemies: {GetDataPath(EnemyDefinitions.All[i])} prefab referansı bağlandı.");
+                }
+
+                if (EnemyAttackSetup.LinkAssets(types[i]))
+                {
+                    AssetDatabase.SaveAssetIfDirty(types[i]);
+                    Debug.Log($"[Last Haven] Enemies: {GetDataPath(EnemyDefinitions.All[i])} saldırı prefab'ı bağlandı.");
                 }
             }
 
@@ -88,12 +100,16 @@ namespace LastHaven.Editor
             serialized.FindProperty("_xpReward").intValue = definition.XpReward;
             serialized.FindProperty("_knockbackResistance").floatValue = definition.KnockbackResistance;
             serialized.FindProperty("_burrowDepth").floatValue = definition.BurrowDepth;
+            serialized.FindProperty("_corpseDuration").floatValue = definition.CorpseDuration;
+            serialized.FindProperty("_sinkDuration").floatValue = definition.SinkDuration;
+            EnemyAttackSetup.Write(serialized, definition.Attack);
             serialized.ApplyModifiedPropertiesWithoutUndo();
         }
 
         public void GenerateData()
         {
             HealthBarMaterials.EnsureAll();
+            BossSetup.LoadOrCreateConfig();
             LoadOrCreateConfig(LoadOrCreateAllData());
         }
 

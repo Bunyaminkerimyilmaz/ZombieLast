@@ -133,6 +133,19 @@ namespace LastHaven.Tests.EditMode
             NightInfo info = WavePlan.BuildInfo(0, night);
 
             CollectionAssert.AreEqual(new[] { CompassDirection.North, CompassDirection.East, CompassDirection.West }, info.Directions);
+            Assert.IsTrue(info.HasDirection(CompassDirection.East), "Boss yönü de saldırı yönü.");
+            Assert.IsFalse(info.HasDirection(CompassDirection.South));
+        }
+
+        [Test]
+        public void NightInfo_Empty_HasNoDirection()
+        {
+            var info = new NightInfo(0, 1, null, null, null);
+
+            foreach (CompassDirection direction in CompassDirections.All)
+            {
+                Assert.IsFalse(info.HasDirection(direction));
+            }
         }
 
         [Test]
@@ -165,6 +178,48 @@ namespace LastHaven.Tests.EditMode
             Assert.AreEqual("Sis", info.EventName);
         }
 
+        [TestCase(40, 1.5f, 60)]
+        [TestCase(10, 1.5f, 15)]
+        [TestCase(5, 1.5f, 8)]
+        [TestCase(3, 1.5f, 5)]
+        [TestCase(1, 0.1f, 1)]
+        [TestCase(0, 1.5f, 0)]
+        [TestCase(20, 1f, 20)]
+        public void ScaleCount_RoundsHalfUp_AtLeastOne(int count, float multiplier, int expected)
+        {
+            Assert.AreEqual(expected, WavePlan.ScaleCount(count, multiplier));
+        }
+
+        [Test]
+        public void BloodMoon_ScalesGroupsAndIntel_NotBoss()
+        {
+            // GDD §8 Gece 5 + §14 Kan Ayı: 40 Yürüyen, 10 Koşucu ×1.5; Brute tek kalır.
+            EnemyData walker = CreateEnemy("walker", "Yürüyen");
+            EnemyData runner = CreateEnemy("runner", "Koşucu");
+            EnemyData brute = CreateEnemy("brute", "Brute");
+            NightData night = CreateNight(5,
+                new SpawnGroup(walker, 40, 0.7f, 0f, new[] { CompassDirection.North }),
+                new SpawnGroup(runner, 10, 0.9f, 0f, new[] { CompassDirection.East }));
+            SetReference(night, "_bossData", brute);
+            var bloodMoon = ScriptableObject.CreateInstance<NightModifierData>();
+            _created.Add(bloodMoon);
+            LastHaven.Editor.NightModifiersGenerator.Apply(bloodMoon, LastHaven.Editor.NightModifierDefinitions.BloodMoon);
+            SetReference(night, "_modifier", bloodMoon);
+
+            var groups = new List<WaveGroup>();
+            WavePlan.BuildGroups(night, groups);
+            NightInfo info = WavePlan.BuildInfo(4, night);
+
+            Assert.AreEqual(60, groups[0].Count);
+            Assert.AreEqual(15, groups[1].Count);
+            Assert.AreEqual(1, groups[2].Count, "Boss çarpılmaz.");
+            Assert.IsTrue(groups[2].IsBoss);
+            Assert.AreEqual(0.7f, groups[0].SpawnInterval, 0.0001f, "Aralık değişmez; gece uzar.");
+            Assert.AreEqual(76, info.TotalEnemies, "İstihbarat çarpılmış adedi gösterir.");
+            Assert.AreEqual("Kan Ayı", info.EventName);
+            Assert.AreEqual(LastHaven.Editor.NightModifierDefinitions.BloodMoon.Description, info.EventDescription);
+        }
+
         [Test]
         public void BuildInfo_NoModifier_HasNoEvent()
         {
@@ -172,6 +227,7 @@ namespace LastHaven.Tests.EditMode
 
             Assert.IsFalse(info.HasEvent);
             Assert.AreEqual(string.Empty, info.EventName);
+            Assert.AreEqual(string.Empty, info.EventDescription);
             Assert.IsEmpty(info.Directions);
             Assert.IsEmpty(info.Enemies);
         }

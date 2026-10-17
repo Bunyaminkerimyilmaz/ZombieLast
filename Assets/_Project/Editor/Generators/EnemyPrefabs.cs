@@ -8,16 +8,24 @@ namespace LastHaven.Editor
 {
     /// <summary>
     /// Düşman prefab'ları (<c>Prefabs/Enemies/&lt;Tip&gt;.prefab</c>). Kök: NavMeshAgent + CapsuleCollider + Health + Enemy,
-    /// Enemy layer ve tag. "Visual": GDD §18 renk ve ölçekte kapsül (collider yok). Collider ve ajan ölçüleri gövdeye göre ayarlanır;
-    /// EnemyData.Scale 1 kalır (ölçek iki kez uygulanmasın). Vuruş hissi (4.3): AnimationDriver, beyaz HitFlash (GDD §7: 0.08 sn),
-    /// EnemyHitReaction ve başın üstünde can barı (Visual dışında). Durum efektleri (9.3): EnemyStatusEffects.
+    /// Enemy layer ve tag. "Visual": GDD §18 renk, şekil (kapsül; Patlayan küre) ve ölçekte gövde (collider yok). Collider ve ajan ölçüleri
+    /// gövdeye göre ayarlanır; EnemyData.Scale 1 kalır (ölçek iki kez uygulanmasın). Vuruş hissi (4.3): AnimationDriver, beyaz HitFlash
+    /// (GDD §7: 0.08 sn), EnemyHitReaction ve başın üstünde can barı (Visual dışında). Durum efektleri (9.3): EnemyStatusEffects.
+    /// Menzilli tiplerde (12.1) Visual dışında <see cref="MuzzleName"/> çıkış noktası; Patlayan'da yürüme nabzı; boss'ta (12.2)
+    /// <see cref="BossBehaviour"/> (<see cref="BossSetup"/>).
     /// </summary>
     public static class EnemyPrefabs
     {
         public const string Folder = "Assets/_Project/Prefabs/Enemies";
         public const string BodyName = "Body";
+        public const string MuzzleName = "Muzzle";
 
         private const string DataFieldName = "_data";
+        private const string MuzzleFieldName = "_muzzle";
+        private const string WalkPulsePath = "_procedural._walkPulseScale";
+
+        // GDD'de yok: ağız yüksekliği (gövde boyunun %80'i), gövdenin ön yüzünde.
+        private const float MuzzleHeightFraction = 0.8f;
 
         // GDD'de yok. Varsayılan 120°/sn ve 8 m/sn² köşelerde geniş dönüşe ve savrulmaya yol açıyordu.
         private const float AgentAngularSpeed = 540f;
@@ -33,7 +41,7 @@ namespace LastHaven.Editor
 
         /// <summary>
         /// Prefab'ı yükler; yoksa oluşturur. Varsa sadece eksikler tamamlanır (boş EnemyData referansı, vuruş hissi bileşenleri,
-        /// can barı); diğer ayarlara dokunulmaz.
+        /// can barı, menzilli tipte boş Muzzle referansı); diğer ayarlara dokunulmaz.
         /// </summary>
         public static Enemy LoadOrCreate(EnemyDefinition definition, EnemyData data)
         {
@@ -47,7 +55,9 @@ namespace LastHaven.Editor
             int changes = EditorAssetUtility.EditPrefab(
                 path,
                 root => AssignData(root, data, path)
-                        + EnsureFeedback(root, definition, HealthBarMaterials.GetOrCreateBackground(), HealthBarMaterials.GetOrCreateFill()));
+                        + EnsureFeedback(root, definition, HealthBarMaterials.GetOrCreateBackground(), HealthBarMaterials.GetOrCreateFill())
+                        + EnsureMuzzle(root, definition)
+                        + BossSetup.Ensure(root, definition, definition.IsBoss ? BossSetup.LoadOrCreateConfig() : null));
             if (changes > 0)
             {
                 Debug.Log($"[Last Haven] Enemies: {path} içinde {changes} eksik bileşen/referans tamamlandı.");
@@ -86,6 +96,9 @@ namespace LastHaven.Editor
             root.AddComponent<Enemy>();
             BuildVisual(root.transform, definition, material);
             EnsureFeedback(root, definition, barBackground, barFill);
+            EnsureMuzzle(root, definition);
+            SetWalkPulse(root, definition.WalkPulseScale);
+            BossSetup.Ensure(root, definition, null); // Config asset'i Create bağlar (testlerde asset oluşturulmaz).
             return root;
         }
 
@@ -97,6 +110,11 @@ namespace LastHaven.Editor
             try
             {
                 EditorAssetUtility.AssignIfMissing(root.GetComponent<Enemy>(), DataFieldName, data);
+                if (definition.IsBoss)
+                {
+                    BossSetup.Ensure(root, definition, BossSetup.LoadOrCreateConfig());
+                }
+
                 EditorAssetUtility.EnsureFolder(Folder);
                 GameObject prefab = PrefabUtility.SaveAsPrefabAsset(root, path);
                 Debug.Log($"[Last Haven] Enemies: {path} oluşturuldu.");
@@ -114,9 +132,55 @@ namespace LastHaven.Editor
             visual.transform.SetParent(root, false);
 
             GameObject body = PrimitiveFactory.Create(
-                PrimitiveType.Capsule, BodyName, visual.transform, material, GameLayers.Enemy, withCollider: false);
+                definition.BodyShape, BodyName, visual.transform, material, GameLayers.Enemy, withCollider: false);
             body.transform.localPosition = new Vector3(0f, definition.BodyHeight * 0.5f, 0f);
             body.transform.localScale = definition.BodyScale;
+        }
+
+        /// <summary>
+        /// Menzilli tipte <see cref="Enemy"/>'nin boş mermi çıkış noktasını bağlar; kökte <see cref="MuzzleName"/> yoksa (Visual dışında,
+        /// ağız yüksekliğinde, gövdenin önünde) oluşturur. Değişiklik sayısını döndürür.
+        /// </summary>
+        private static int EnsureMuzzle(GameObject root, EnemyDefinition definition)
+        {
+            if (definition.Attack != EnemyAttackKind.Ranged || !root.TryGetComponent(out Enemy enemy))
+            {
+                return 0;
+            }
+
+            var serialized = new SerializedObject(enemy);
+            SerializedProperty property = serialized.FindProperty(MuzzleFieldName);
+            if (property.objectReferenceValue != null)
+            {
+                return 0;
+            }
+
+            int changes = 1;
+            Transform muzzle = root.transform.Find(MuzzleName);
+            if (muzzle == null)
+            {
+                muzzle = new GameObject(MuzzleName) { layer = GameLayers.Enemy }.transform;
+                muzzle.SetParent(root.transform, false);
+                muzzle.localPosition = new Vector3(0f, definition.BodyHeight * MuzzleHeightFraction, definition.BodyRadius);
+                changes++;
+            }
+
+            property.objectReferenceValue = muzzle;
+            serialized.ApplyModifiedPropertiesWithoutUndo();
+            return changes;
+        }
+
+        /// <summary>AnimationDriver'ın yürüme nabzı oranını yazar (sadece prefab ilk kurulurken; 0 ise dokunmaz).</summary>
+        private static void SetWalkPulse(GameObject root, float scale)
+        {
+            if (scale <= 0f || !root.TryGetComponent(out AnimationDriver driver))
+            {
+                return;
+            }
+
+            var serialized = new SerializedObject(driver);
+            serialized.FindProperty(WalkPulsePath).floatValue = scale;
+            serialized.ApplyModifiedPropertiesWithoutUndo();
         }
 
         /// <summary>

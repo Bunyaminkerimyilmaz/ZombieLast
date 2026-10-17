@@ -1,0 +1,65 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d1dd6a4aad1da60439d33a99dd0fd28e, type: 3}
+  m_Name: BruteFinal
+  m_EditorClassIdentifier: LastHaven.Enemies::LastHaven.Enemies.EnemyData
+  _id: brute_final
+  _displayName: Brute (Final)
+  _maxHealth: 6000
+  _moveSpeed: 1.8
+  _damage: 40
+  _attackRate: 0.16666667
+  _attackRange: 4
+  _structureDamageMultiplier: 1
+  _attack:
+    rid: 2348788135061881110
+  _aggroRadius: 6
+  _hasPreferredTarget: 0
+  _preferredTarget: 2
+  _preferredTargetRadius: 15
+  _moneyReward: 500
+  _xpReward: 30
+  _knockbackResistance: 1
+  _knockbackDistance: 0.3
+  _knockbackDuration: 0.1
+  _scale: 1
+  _prefab: {fileID: 2300431813217316255, guid: c7dc5f32aed118942920fbb4d2920a89, type: 3}
+  _spawnDuration: 0.5
+  _retargetInterval: 0.5
+  _corpseDuration: 2
+  _sinkDuration: 1
+  _burrowDepth: 5.5
+  _disengageMargin: 0.3
+  _repathDistance: 0.5
+  _minAvoidancePriority: 30
+  _maxAvoidancePriority: 70
+  _attackSound: {fileID: 0}
+  _deathSound: {fileID: 0}
+  _deathVfx: {fileID: 0}
+  references:
+    version: 2
+    RefIds:
+    - rid: 2348788135061881110
+      type: {class: GroundSlamAttack, ns: LastHaven.Enemies, asm: LastHaven.Enemies}
+      data:
+        _radius: 4
+        _windup: 1
+        _edgeDamageFraction: 1
+        _damageLayers:
+          serializedVersion: 2
+          m_Bits: 640
+        _centerHeight: 0.5
+        _cameraShake: 0.6
+        _warningVfx: {fileID: 3194719859527639841, guid: 4ac791e8a7d926449ab27aa96bf19d89, type: 3}
+        _impactVfx: {fileID: 1199699108461569038, guid: 9bcdc2a46574ffc4899e3b3af6dee5a5, type: 3}
+        _vfxPrewarm: 2
+        _bufferSize: 32

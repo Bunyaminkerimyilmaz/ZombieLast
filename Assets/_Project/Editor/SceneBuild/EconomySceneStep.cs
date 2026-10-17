@@ -6,7 +6,8 @@ namespace LastHaven.Editor
 {
     /// <summary>
     /// [Systems]/Economy: cüzdan servisi (<see cref="WalletService"/>), kombo (<see cref="ComboService"/>) ve jeton düşürücü
-    /// (<see cref="CoinDropper"/>; kombo servisi bağlı), hepsi <see cref="EconomyConfig"/> ile.
+    /// (<see cref="CoinDropper"/>; kombo servisi bağlı), hepsi <see cref="EconomyConfig"/> ile; gece olayının jeton çarpanı
+    /// (<see cref="NightCoinModifier"/>).
     /// </summary>
     public sealed class EconomySceneStep : ISceneBuildStep
     {
@@ -27,6 +28,7 @@ namespace LastHaven.Editor
             var dropper = economyObject.AddComponent<CoinDropper>();
             Assign(dropper, ConfigFieldName, config);
             Assign(dropper, ComboFieldName, combo);
+            economyObject.AddComponent<NightCoinModifier>();
         }
 
         private static void Assign(Component component, string fieldName, Object value)

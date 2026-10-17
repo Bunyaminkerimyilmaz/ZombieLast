@@ -47,12 +47,12 @@ namespace LastHaven.Core
             }
         }
 
-        /// <summary>Hepsinin kendi rengini tona karıştırır (<see cref="HitFlash.Tint"/>).</summary>
-        public void ApplyTint(Color tint)
+        /// <summary>Hepsinin kendi rengini açık ton katmanlarına karıştırır (<see cref="TintLayers.Compose"/>).</summary>
+        public void ApplyTint(TintLayers tints)
         {
             for (int i = 0; i < _targets.Length; i++)
             {
-                _targets[i].ApplyTint(_block, tint);
+                _targets[i].ApplyTint(_block, tints);
             }
         }
 

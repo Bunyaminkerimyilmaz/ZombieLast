@@ -39,6 +39,9 @@ namespace LastHaven.Core
 
         /// <summary>Jeneratör yıkıldı.</summary>
         GeneratorDestroyed = 1,
+
+        /// <summary>Gece olayının periyodik kesintisi (GDD §14 Fırtına); kesinti bitince güç kendiliğinden döner.</summary>
+        Outage = 2,
     }
 
     /// <summary>

@@ -4,8 +4,9 @@ namespace LastHaven.Core
 {
     /// <summary>
     /// Animator olmayan görseller için prosedürel yedek animasyon (saf C#): saldırıda öne atılma, vuruşta yana sarsılma,
-    /// ölümde verilen yöne devrilme. Sonuç görselin ebeveyn uzayındaki dinlenme pozuna eklenen <see cref="Offset"/> ve
-    /// <see cref="Rotation"/>'dır; dönüş görselin orijini (ayaklar) etrafındadır. Devrilme <see cref="Reset"/>'e kadar kalır.
+    /// ölümde verilen yöne devrilme, yürürken (açıksa) nabız gibi büyüyüp küçülme. Sonuç görselin ebeveyn uzayındaki dinlenme
+    /// pozuna eklenen <see cref="Offset"/>, <see cref="Rotation"/> ve <see cref="Scale"/>'dir; dönüş ve ölçek görselin orijini
+    /// (ayaklar) etrafındadır. Devrilme <see cref="Reset"/>'e kadar kalır.
     /// </summary>
     public sealed class ProceduralPose
     {
@@ -16,6 +17,9 @@ namespace LastHaven.Core
         private float _shakeTime = NotPlaying;
         private float _toppleTime = NotPlaying;
         private Vector3 _toppleAxis = Vector3.right;
+        private float _moveSpeed;
+        private float _pulseWeight;
+        private float _pulseTime;
 
         public ProceduralPose(ProceduralPoseSettings settings)
         {
@@ -30,14 +34,22 @@ namespace LastHaven.Core
         /// <summary>Dinlenme rotasyonunun önüne eklenen dönüş (ebeveyn uzayı).</summary>
         public Quaternion Rotation { get; private set; } = Quaternion.identity;
 
+        /// <summary>Dinlenme ölçeğinin çarpanı (yürüme nabzı); dinlenmede 1.</summary>
+        public float Scale { get; private set; } = 1f;
+
         public bool IsLunging => _lungeTime >= 0f;
 
         public bool IsShaking => _shakeTime >= 0f;
 
         public bool IsToppled => _toppleTime >= 0f;
 
+        /// <summary>Yürüme nabzı oynuyor veya sönüyor.</summary>
+        public bool IsPulsing => _pulseWeight > 0f || WantsPulse;
+
         /// <summary>Poz dinlenme pozundan farklı olabilir; <see cref="Tick"/> çağrılmalı.</summary>
-        public bool IsActive => IsLunging || IsShaking || IsToppled;
+        public bool IsActive => IsLunging || IsShaking || IsToppled || IsPulsing;
+
+        private bool WantsPulse => Settings.WalkPulseScale > 0f && _moveSpeed > Settings.WalkPulseMinSpeed;
 
         /// <summary>Her şeyi durdurur, dinlenme pozuna döner (havuzdan çıkış, yeniden doğma).</summary>
         public void Reset()
@@ -45,8 +57,18 @@ namespace LastHaven.Core
             _lungeTime = NotPlaying;
             _shakeTime = NotPlaying;
             _toppleTime = NotPlaying;
+            _moveSpeed = 0f;
+            _pulseWeight = 0f;
+            _pulseTime = 0f;
             Offset = Vector3.zero;
             Rotation = Quaternion.identity;
+            Scale = 1f;
+        }
+
+        /// <summary>Yatay yürüme hızı (m/sn). Nabız (<see cref="ProceduralPoseSettings.WalkPulseScale"/> &gt; 0 ise) bununla açılır/söner.</summary>
+        public void SetMoveSpeed(float speed)
+        {
+            _moveSpeed = speed;
         }
 
         /// <summary>Öne (+Z) atılıp geri döner. Oynarken çağrılırsa baştan başlar.</summary>
@@ -128,6 +150,23 @@ namespace LastHaven.Core
 
             Offset = offset;
             Rotation = rotation;
+            Scale = TickPulse(deltaTime);
+        }
+
+        /// <summary>Nabız: ağırlık yürürken 1'e, durunca 0'a kayar; ölçek 1 → 1 + oran → 1 ((1 − cos) / 2 dalgası).</summary>
+        private float TickPulse(float deltaTime)
+        {
+            float target = WantsPulse ? 1f : 0f;
+            _pulseWeight = Mathf.MoveTowards(_pulseWeight, target, deltaTime / Mathf.Max(0.01f, Settings.WalkPulseBlendTime));
+            if (_pulseWeight <= 0f)
+            {
+                _pulseTime = 0f;
+                return 1f;
+            }
+
+            _pulseTime += deltaTime;
+            float beat = 0.5f * (1f - Mathf.Cos(2f * Mathf.PI * Settings.WalkPulseFrequency * _pulseTime));
+            return 1f + Settings.WalkPulseScale * _pulseWeight * beat;
         }
 
         private static float Progress(float elapsed, float duration)

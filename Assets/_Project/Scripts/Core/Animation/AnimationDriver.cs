@@ -5,8 +5,8 @@ namespace LastHaven.Core
     /// <summary>
     /// Mantık kodunun görsele tek kapısı (CLAUDE.md "Görsel ayrımı"). <c>Visual</c> altında controller'lı bir Animator varsa
     /// <see cref="AnimParams"/> parametrelerini yazar (controller'da olmayan parametre atlanır); yoksa <see cref="ProceduralPose"/>
-    /// ile yedek animasyon oynatır: saldırıda öne atılma, vuruşta sarsılma, ölümde rastgele yöne devrilme.
-    /// Kökte durur; havuzdan her çıkışta pozu sıfırlar.
+    /// ile yedek animasyon oynatır: saldırıda öne atılma, vuruşta sarsılma, ölümde rastgele yöne devrilme, yürürken (ayarda açıksa)
+    /// nabız. Kökte durur; havuzdan her çıkışta pozu sıfırlar.
     /// </summary>
     [DisallowMultipleComponent]
     public sealed class AnimationDriver : MonoBehaviour, IPoolable
@@ -19,8 +19,7 @@ namespace LastHaven.Core
 
         private ProceduralPose _pose;
         private AnimatorParameters _animator;
-        private Vector3 _restPosition;
-        private Quaternion _restRotation = Quaternion.identity;
+        private VisualRestPose _rest;
         private bool _initialized;
 
         /// <summary>Görsel kök; bulunamadıysa null.</summary>
@@ -53,11 +52,17 @@ namespace LastHaven.Core
             }
         }
 
-        /// <summary>Yatay hız (m/sn). Sadece Animator'a yazılır.</summary>
+        /// <summary>Yatay hız (m/sn). Animator'a yazılır; yoksa yedeğin yürüme nabzını sürer.</summary>
         public void SetSpeed(float speed)
         {
             EnsureInitialized();
-            _animator.SetFloat(AnimParams.SpeedId, speed);
+            if (_animator.IsUsable)
+            {
+                _animator.SetFloat(AnimParams.SpeedId, speed);
+                return;
+            }
+
+            _pose.SetMoveSpeed(speed);
         }
 
         /// <summary>Atılma durumu. Sadece Animator'a yazılır.</summary>
@@ -173,8 +178,7 @@ namespace LastHaven.Core
                 return;
             }
 
-            _restPosition = _visual.localPosition;
-            _restRotation = _visual.localRotation;
+            _rest = VisualRestPose.Capture(_visual);
             _animator = new AnimatorParameters(_visual.GetComponentInChildren<Animator>(true));
         }
 
@@ -193,13 +197,10 @@ namespace LastHaven.Core
 
         private void ApplyPose()
         {
-            if (_visual == null)
+            if (_visual != null)
             {
-                return;
+                _rest.Apply(_visual, _pose);
             }
-
-            _visual.localPosition = _restPosition + _pose.Offset;
-            _visual.localRotation = _pose.Rotation * _restRotation;
         }
     }
 }

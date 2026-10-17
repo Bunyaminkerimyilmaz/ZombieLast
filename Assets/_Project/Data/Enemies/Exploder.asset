@@ -1,0 +1,67 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d1dd6a4aad1da60439d33a99dd0fd28e, type: 3}
+  m_Name: Exploder
+  m_EditorClassIdentifier: LastHaven.Enemies::LastHaven.Enemies.EnemyData
+  _id: exploder
+  _displayName: Patlayan
+  _maxHealth: 50
+  _moveSpeed: 3.5
+  _damage: 60
+  _attackRate: 1
+  _attackRange: 1.2
+  _structureDamageMultiplier: 2
+  _attack:
+    rid: 2348788135061880924
+  _aggroRadius: 6
+  _hasPreferredTarget: 0
+  _preferredTarget: 2
+  _preferredTargetRadius: 15
+  _moneyReward: 20
+  _xpReward: 2
+  _knockbackResistance: 0
+  _knockbackDistance: 0.3
+  _knockbackDuration: 0.1
+  _scale: 1
+  _prefab: {fileID: 830879281022144174, guid: d7e0220be5e0eda4da744ea4cbd33dcb, type: 3}
+  _spawnDuration: 0.5
+  _retargetInterval: 0.5
+  _corpseDuration: 0
+  _sinkDuration: 0
+  _burrowDepth: 1.32
+  _disengageMargin: 0.3
+  _repathDistance: 0.5
+  _minAvoidancePriority: 30
+  _maxAvoidancePriority: 70
+  _attackSound: {fileID: 0}
+  _deathSound: {fileID: 0}
+  _deathVfx: {fileID: 0}
+  references:
+    version: 2
+    RefIds:
+    - rid: 2348788135061880924
+      type: {class: SuicideExplodeAttack, ns: LastHaven.Enemies, asm: LastHaven.Enemies}
+      data:
+        _radius: 3
+        _edgeDamageFraction: 1
+        _damageLayers:
+          serializedVersion: 2
+          m_Bits: 640
+        _contactLayers:
+          serializedVersion: 2
+          m_Bits: 640
+        _contactCheckInterval: 0.1
+        _chainRadius: 3
+        _chainDelay: 0.15
+        _explosionVfx: {fileID: 659607861346680320, guid: f20415606c339e04f82eb1d2a7d07855, type: 3}
+        _vfxPrewarm: 8
+        _bufferSize: 32

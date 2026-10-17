@@ -16,6 +16,7 @@ namespace LastHaven.Editor
         public const string NightProfilePath = Folder + "/NightLighting.asset";
         public const string DayPostProcessPath = Folder + "/DayPostProcess.asset";
         public const string NightPostProcessPath = Folder + "/NightPostProcess.asset";
+        public const string NightEventLightingPath = Folder + "/NightEventLighting.asset";
 
         private const string VolumeProfileFieldName = "_volumeProfile";
 
@@ -34,10 +35,23 @@ namespace LastHaven.Editor
             return LoadOrCreate(NightProfilePath, LightingDefinitions.Night, NightPostProcessPath, LightingDefinitions.NightPostProcess);
         }
 
+        /// <summary>Gece olayının ışık geçişi ve şimşek ayarları (varsayılanlar sınıfta). Varsa dokunulmaz.</summary>
+        public static NightEventLighting LoadOrCreateNightEvents()
+        {
+            var asset = EditorAssetUtility.LoadOrCreate<NightEventLighting>(NightEventLightingPath, out bool created);
+            if (created)
+            {
+                Debug.Log($"[Last Haven] Lighting: {NightEventLightingPath} oluşturuldu.");
+            }
+
+            return asset;
+        }
+
         public void GenerateData()
         {
             LoadOrCreateDay();
             LoadOrCreateNight();
+            LoadOrCreateNightEvents();
         }
 
         public void GeneratePrefabs()

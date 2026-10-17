@@ -1,0 +1,42 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1416b61e7de18b54a8a5e0cc5f1cb0b5, type: 3}
+  m_Name: LootTable
+  m_EditorClassIdentifier: LastHaven.Economy::LastHaven.Economy.LootTableData
+  _farDistance: 32
+  _nearRewards:
+  - _type: 0
+    _minAmount: 30
+    _maxAmount: 60
+    _weight: 1
+  - _type: 1
+    _minAmount: 15
+    _maxAmount: 15
+    _weight: 1
+  _farRewards:
+  - _type: 0
+    _minAmount: 80
+    _maxAmount: 150
+    _weight: 1
+  - _type: 1
+    _minAmount: 40
+    _maxAmount: 40
+    _weight: 1
+  - _type: 2
+    _minAmount: 1
+    _maxAmount: 1
+    _weight: 1
+  _ammoPack:
+  - _weaponId: shotgun
+    _amount: 12
+  - _weaponId: rifle
+    _amount: 60

@@ -35,6 +35,18 @@ namespace LastHaven.Enemies
         public TargetSelectorSettings Settings => _settings;
 
         /// <summary>
+        /// Sadece oyuncu (gezgin modu, GDD §9): açıkken yalnız kural 1 uygulanır; oyuncu aggro yarıçapında değilse hedef yoktur
+        /// (jeneratöre, tercih edilen hedefe ve yolu tıkayan yapıya gidilmez). <see cref="Reset"/> kapatır.
+        /// </summary>
+        public bool PlayerOnly { get; set; }
+
+        /// <summary>GDD §7 kural 1: aggro yarıçapındaki (dahil, yatay) en yakın oyuncu; yoksa null.</summary>
+        public static ITargetable SelectPlayer(ITargetRegistry registry, in TargetSelectorSettings settings, Vector3 position)
+        {
+            return registry?.FindNearest(TargetType.Player, position, settings.AggroRadius);
+        }
+
+        /// <summary>
         /// GDD §7 kuralları: 1) oyuncu aggro yarıçapındaysa oyuncu, 2) değilse tercih edilen tür yarıçapındaysa o,
         /// 3) değilse en yakın jeneratör. Hiçbiri yoksa null. Mesafeler yatay (XZ) ölçülür; sınır dahildir.
         /// </summary>
@@ -45,7 +57,7 @@ namespace LastHaven.Enemies
                 return null;
             }
 
-            ITargetable player = registry.FindNearest(TargetType.Player, position, settings.AggroRadius);
+            ITargetable player = SelectPlayer(registry, settings, position);
             if (player != null)
             {
                 return player;
@@ -64,14 +76,15 @@ namespace LastHaven.Enemies
         }
 
         /// <summary>
-        /// Hedefi siler ve ayarları yeniler (havuzdan çıkışta). İlk değerlendirme <paramref name="initialDelay"/> sn sonra olur;
-        /// düşmanlar bunu rastgele vererek aynı frame'de değerlendirme yapmaz.
+        /// Hedefi siler, ayarları yeniler ve <see cref="PlayerOnly"/>'yi kapatır (havuzdan çıkışta). İlk değerlendirme
+        /// <paramref name="initialDelay"/> sn sonra olur; düşmanlar bunu rastgele vererek aynı frame'de değerlendirme yapmaz.
         /// </summary>
         public void Reset(in TargetSelectorSettings settings, float initialDelay)
         {
             _settings = settings;
             _timer = Mathf.Max(0f, initialDelay);
             Current = null;
+            PlayerOnly = false;
             _blockedPath.Clear();
         }
 
@@ -83,10 +96,18 @@ namespace LastHaven.Enemies
 
         /// <summary>
         /// Zamanlayıcıyı bekletmeden hemen değerlendirir. <paramref name="path"/> şu anki yolun (seçili hedefe giden) durumudur;
-        /// kural 4'e sadece seçili hedef asıl hedefse (kural 1–3) bakılır.
+        /// kural 4'e sadece seçili hedef asıl hedefse (kural 1–3) bakılır. <see cref="PlayerOnly"/> açıksa sadece kural 1 uygulanır;
+        /// kural 4 de uygulanmaz (gezgin üsse saldırmaz, GDD §9: oyuncu barikatın arkasındaysa yapı seçilmez).
         /// </summary>
         public ITargetable Evaluate(Vector3 position, in PathInfo path)
         {
+            if (PlayerOnly)
+            {
+                _blockedPath.Clear();
+                Current = SelectPlayer(_registry, _settings, position);
+                return Current;
+            }
+
             ITargetable desired = Select(_registry, _settings, position);
             Current = _blockedPath.Resolve(_registry, desired, Current, path);
             return Current;

@@ -412,6 +412,65 @@ namespace LastHaven.Tests.EditMode
             Assert.IsNull(selector.Current);
         }
 
+        // --- Gezgin modu (GDD §9): sadece oyuncu ---
+
+        [Test]
+        public void PlayerOnly_IgnoresGeneratorAndPreferredTargets()
+        {
+            Register(TargetType.Generator, Vector3.zero);
+            Register(TargetType.Barricade, new Vector3(0f, 0f, 22f));
+            var selector = new TargetSelector(_registry, Tank) { PlayerOnly = true };
+
+            Assert.IsNull(selector.Evaluate(new Vector3(0f, 0f, 25f)), "Oyuncu aggro dışında: hedef yok, üsse gidilmez.");
+        }
+
+        [Test]
+        public void PlayerOnly_PlayerInsideAggro_IsChosen_AndDroppedWhenOutside()
+        {
+            FakeTarget player = Register(TargetType.Player, new Vector3(0f, 0f, 20f));
+            Register(TargetType.Generator, Vector3.zero);
+            var selector = new TargetSelector(_registry, Walker) { PlayerOnly = true };
+
+            Assert.AreSame(player, selector.Evaluate(new Vector3(0f, 0f, 26f)), "6 m sınırı dahil.");
+            Assert.IsNull(selector.Evaluate(new Vector3(0f, 0f, 26.1f)));
+        }
+
+        [Test]
+        public void PlayerOnly_BlockedPathToPlayer_DoesNotAttackStructures()
+        {
+            FakeTarget player = Register(TargetType.Player, new Vector3(0f, 0f, 10f));
+            Register(TargetType.Barricade, new Vector3(0f, 0f, 12f));
+            var selector = new TargetSelector(_registry, Walker) { PlayerOnly = true };
+            var enemy = new Vector3(0f, 0f, 15f);
+
+            selector.Evaluate(enemy, PathInfo.None);
+
+            Assert.AreSame(player, selector.Evaluate(enemy, Blocked(new Vector3(0f, 0f, 13f))), "Gezgin üsse saldırmaz.");
+            Assert.IsNull(selector.BlockedTarget);
+        }
+
+        [Test]
+        public void PlayerOnly_TurnedOff_ReturnsToGenerator()
+        {
+            FakeTarget generator = Register(TargetType.Generator, Vector3.zero);
+            var selector = new TargetSelector(_registry, Walker) { PlayerOnly = true };
+            Assert.IsNull(selector.Evaluate(new Vector3(0f, 0f, 25f)));
+
+            selector.PlayerOnly = false;
+
+            Assert.AreSame(generator, selector.Evaluate(new Vector3(0f, 0f, 25f)));
+        }
+
+        [Test]
+        public void Reset_TurnsPlayerOnlyOff()
+        {
+            var selector = new TargetSelector(_registry, Walker) { PlayerOnly = true };
+
+            selector.Reset(Walker, 0f);
+
+            Assert.IsFalse(selector.PlayerOnly, "Havuzdan çıkan düşman normal başlar.");
+        }
+
         private static PathInfo Blocked(Vector3 end)
         {
             return PathInfo.FromPartialPath(end, 10f, 1.5f);

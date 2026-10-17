@@ -45,6 +45,15 @@
     --color-key-border: rgba(255, 255, 255, 0.55);
     --color-ring-track: rgba(255, 255, 255, 0.22);
     --color-ring-fill: rgb(255, 214, 90);
+    --color-loot: rgb(160, 97, 42);
+    --color-loot-border: rgba(0, 0, 0, 0.85);
+    --color-loot-arrow: rgb(255, 190, 110);
+    --color-attack: rgb(214, 48, 40);
+    --color-attack-border: rgba(0, 0, 0, 0.85);
+    --color-attack-arrow: rgb(255, 92, 76);
+    --color-warning-edge-outer: rgba(220, 28, 20, 0.26);
+    --color-warning-edge-inner: rgba(230, 36, 28, 0.5);
+    --color-boss: rgb(196, 36, 44);
 
     --font-tiny: 15px;
     --font-small: 18px;
@@ -52,6 +61,7 @@
     --font-large: 34px;
     --font-big: 52px;
     --font-huge: 88px;
+    --font-giant: 150px;
 
     --space-small: 6px;
     --space: 12px;
@@ -65,6 +75,7 @@
     --hud-edge: 24px;
     --hud-edge-top: 20px;
     --bar-height: 22px;
+    --bar-height-large: 30px;
     --bar-height-small: 14px;
     --bar-height-thin: 12px;
     --bar-radius: 4px;

@@ -22,16 +22,21 @@ namespace LastHaven.Core
 
     /// <summary>
     /// Gündüz sayacı: kalan tam saniye (yukarı yuvarlı) değiştiğinde gönderilir. Gündüz başında bir kez (ör. 120), sonra
-    /// saniyede bir; son değer 1'dir, süre bitince <see cref="PhaseChangedEvent"/> (Dusk) gelir. HUD zamanlayıcısı dinler.
+    /// saniyede bir; son değer 1'dir, süre bitince <see cref="PhaseChangedEvent"/> (Dusk) gelir. HUD zamanlayıcısı, son uyarı
+    /// geri sayımı ve "Hazırım" ipucu dinler.
     /// </summary>
     public readonly struct DayTimerTickEvent : IEvent
     {
-        public DayTimerTickEvent(int remainingSeconds)
+        public DayTimerTickEvent(int remainingSeconds, int earlyReadyBonus)
         {
             RemainingSeconds = remainingSeconds;
+            EarlyReadyBonus = earlyReadyBonus;
         }
 
         public int RemainingSeconds { get; }
+
+        /// <summary>Şu an "Hazırım"a basılsa verilecek erken hazır bonusu (para; GDD §9, <see cref="EarlyReadyEvent"/> ile aynı hesap).</summary>
+        public int EarlyReadyBonus { get; }
     }
 
     /// <summary>

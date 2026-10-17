@@ -1,6 +1,8 @@
 namespace LastHaven.Enemies
 {
-    /// <summary>Hedefe yürür; hedef menzile girince saldırıya geçer. Hedef yoksa yerinde bekler.</summary>
+    /// <summary>
+    /// Hedefe yürür; hedef menzile girince saldırıya geçer. Hedef yoksa yerinde bekler; gezgin modundaysa dolaşmaya geçer.
+    /// </summary>
     internal sealed class ChasingState : EnemyState
     {
         public ChasingState(EnemyStateMachine machine) : base(machine)
@@ -13,6 +15,12 @@ namespace LastHaven.Enemies
         {
             if (!Body.HasTarget)
             {
+                if (Machine.IsWanderer)
+                {
+                    Machine.ChangeState(EnemyStateId.Wandering);
+                    return;
+                }
+
                 Body.Halt();
                 return;
             }

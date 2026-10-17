@@ -17,6 +17,18 @@ namespace LastHaven.UI
             return phase == GamePhase.Night;
         }
 
+        /// <summary>Gündüz istihbaratı (saldırı okları, düşman listesi, gece olayı) sadece gündüzde (GDD §9).</summary>
+        public static bool ShowsIntel(GamePhase phase)
+        {
+            return phase == GamePhase.Day;
+        }
+
+        /// <summary>"Hazırım" ipucu sadece gündüzde (Enter gündüzü erken bitirir; GDD §9).</summary>
+        public static bool ShowsReadyHint(GamePhase phase)
+        {
+            return phase == GamePhase.Day;
+        }
+
         /// <summary>Evre adını taşıyan UXML etiketinin adı; açılışta (Boot) evre adı yok (null).</summary>
         public static string PhaseLabelName(GamePhase phase)
         {

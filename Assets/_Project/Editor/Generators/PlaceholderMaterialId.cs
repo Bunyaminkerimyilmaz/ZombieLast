@@ -22,5 +22,8 @@ namespace LastHaven.Editor
         BaseArea,
         Obstacle,
         TestDummy,
+        FuelPickup,
+        AmmoPickup,
+        AcidProjectile,
     }
 }

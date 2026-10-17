@@ -1,0 +1,64 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d1dd6a4aad1da60439d33a99dd0fd28e, type: 3}
+  m_Name: Spitter
+  m_EditorClassIdentifier: LastHaven.Enemies::LastHaven.Enemies.EnemyData
+  _id: spitter
+  _displayName: "T\xFCk\xFCr\xFCc\xFC"
+  _maxHealth: 70
+  _moveSpeed: 2.5
+  _damage: 12
+  _attackRate: 0.5
+  _attackRange: 10
+  _structureDamageMultiplier: 1
+  _attack:
+    rid: 2348788135061880922
+  _aggroRadius: 6
+  _hasPreferredTarget: 1
+  _preferredTarget: 3
+  _preferredTargetRadius: 15
+  _moneyReward: 25
+  _xpReward: 2
+  _knockbackResistance: 0
+  _knockbackDistance: 0.3
+  _knockbackDuration: 0.1
+  _scale: 1
+  _prefab: {fileID: 4117823793244588205, guid: d3340333bb8295949abcb83a31233b9f, type: 3}
+  _spawnDuration: 0.5
+  _retargetInterval: 0.5
+  _corpseDuration: 2
+  _sinkDuration: 1
+  _burrowDepth: 2.2
+  _disengageMargin: 0.3
+  _repathDistance: 0.5
+  _minAvoidancePriority: 30
+  _maxAvoidancePriority: 70
+  _attackSound: {fileID: 0}
+  _deathSound: {fileID: 0}
+  _deathVfx: {fileID: 0}
+  references:
+    version: 2
+    RefIds:
+    - rid: 2348788135061880922
+      type: {class: RangedAttack, ns: LastHaven.Enemies, asm: LastHaven.Enemies}
+      data:
+        _projectile: {fileID: 7295687164123618116, guid: 12279a8e4e13dfb4e8f5ad83089e3b66, type: 3}
+        _horizontalSpeed: 12
+        _gravity: 20
+        _minFlightTime: 0.35
+        _hitRadius: 0.25
+        _maxLifetime: 4
+        _hitLayers:
+          serializedVersion: 2
+          m_Bits: 2752
+        _prewarm: 16
+        _impactVfx: {fileID: 0}

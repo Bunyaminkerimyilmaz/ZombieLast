@@ -230,6 +230,25 @@ namespace LastHaven.Tests.EditMode
         }
 
         [Test]
+        public void EarlyReadyBonus_MatchesWhatReadyWouldGive_ZeroOutsideDay()
+        {
+            Assert.AreEqual(0, _machine.EarlyReadyBonus, "Boot");
+
+            _machine.Begin();
+            Assert.AreEqual(60, _machine.EarlyReadyBonus, "120 sn → 12 adım × 5.");
+
+            _machine.Tick(10.5f); // 109.5 sn, HUD'da 110
+            Assert.AreEqual(55, _machine.EarlyReadyBonus);
+
+            _machine.Tick(99.6f); // 9.9 sn, HUD'da 10
+            Assert.AreEqual(5, _machine.EarlyReadyBonus);
+            int shown = _machine.EarlyReadyBonus;
+            _machine.RequestReady();
+            Assert.AreEqual(shown, _earlyReady[0].Bonus, "İpucundaki bonus basınca verilenle aynı.");
+            Assert.AreEqual(0, _machine.EarlyReadyBonus, "Dusk");
+        }
+
+        [Test]
         public void Ready_OutsideDay_IsIgnored()
         {
             Assert.IsFalse(_machine.RequestReady(), "Boot");

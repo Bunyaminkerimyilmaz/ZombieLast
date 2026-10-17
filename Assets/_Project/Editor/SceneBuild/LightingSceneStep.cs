@@ -43,6 +43,7 @@ namespace LastHaven.Editor
             serialized.FindProperty("_dayProfile").objectReferenceValue = day;
             serialized.FindProperty("_nightProfile").objectReferenceValue = night;
             serialized.FindProperty("_config").objectReferenceValue = config;
+            serialized.FindProperty("_eventLighting").objectReferenceValue = LightingGenerator.LoadOrCreateNightEvents();
             serialized.FindProperty("_sun").objectReferenceValue = sun;
             serialized.FindProperty("_dayVolume").objectReferenceValue = dayVolume;
             serialized.FindProperty("_nightVolume").objectReferenceValue = nightVolume;

@@ -1,7 +1,8 @@
 namespace LastHaven.Enemies
 {
     /// <summary>
-    /// Durur, hedefe döner ve saldırı hızına göre vurur. Hedef kaybolursa veya menzil + pay dışına çıkarsa kovalamaya döner.
+    /// Durur, hedefe döner ve saldırı hızına göre vurur. Hedef kaybolursa veya menzil + pay dışına çıkarsa kovalamaya döner; başlamış
+    /// saldırı sürerken (<see cref="IEnemyBody.IsAttackBusy"/>, ör. yere vurma hazırlığı) yerinde bekler.
     /// </summary>
     internal sealed class AttackingState : EnemyState
     {
@@ -18,6 +19,16 @@ namespace LastHaven.Enemies
 
         public override void Tick(float deltaTime)
         {
+            if (Body.IsAttackBusy)
+            {
+                if (Body.HasTarget)
+                {
+                    Body.FaceTarget(deltaTime);
+                }
+
+                return;
+            }
+
             if (!Body.HasTarget || Body.DistanceToTarget > Settings.AttackRange + Settings.DisengageMargin)
             {
                 Machine.ChangeState(EnemyStateId.Chasing);

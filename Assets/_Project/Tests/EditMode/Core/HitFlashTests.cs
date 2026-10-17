@@ -135,6 +135,32 @@ namespace LastHaven.Tests.EditMode
         }
 
         [Test]
+        public void TintLayers_BaseUnderStatus_ClearingOneKeepsTheOther()
+        {
+            // 12.2: boss öfkesi (alt katman) ile yavaşlama tonu (üst katman) birbirini silmez.
+            var red = new Color(0.4f, 0.1f, 0.1f, 1f);
+            _lit.SetColor(BaseColorId, red);
+            Renderer body = CreateRenderer(_visual, _lit);
+            var flash = _root.AddComponent<HitFlash>();
+            var dark = new Color(0f, 0f, 0f, 0.5f);
+            var blue = new Color(0f, 0f, 1f, 0.5f);
+
+            flash.SetTint(TintLayer.Base, dark);
+            flash.SetTint(blue);
+
+            Assert.IsTrue(flash.HasTintOn(TintLayer.Base));
+            Assert.IsTrue(flash.HasTintOn(TintLayer.Status));
+            AssertColor(HitFlash.Tint(HitFlash.Tint(red, dark), blue), GetBaseColor(body), "Alttan üste karışır.");
+
+            flash.ClearTint();
+            AssertColor(HitFlash.Tint(red, dark), GetBaseColor(body), "Yavaşlama bitince öfke tonu kalır.");
+
+            flash.ClearTint(TintLayer.Base);
+            Assert.IsFalse(flash.HasTint);
+            Assert.IsFalse(body.HasPropertyBlock());
+        }
+
+        [Test]
         public void Flash_OverridesTint_ThenTintReturns()
         {
             Renderer body = CreateRenderer(_visual, _lit);

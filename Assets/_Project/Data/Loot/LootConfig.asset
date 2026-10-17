@@ -1,0 +1,49 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b788a06db2837a74c9e865eaf7f14d87, type: 3}
+  m_Name: LootConfig
+  m_EditorClassIdentifier: LastHaven.Economy::LastHaven.Economy.LootConfig
+  _cratesPerDay: 6
+  _minDistance: 22
+  _maxDistance: 38
+  _openHoldDuration: 2
+  _interactionRange: 2
+  _openPrompt: "A\xE7"
+  _lootTable: {fileID: 11400000, guid: 78b102ec2303ee146821fc5fe6d76aea, type: 2}
+  _placementAttempts: 30
+  _navMeshSampleDistance: 2
+  _obstacleClearance: 1.2
+  _minCrateSpacing: 6
+  _blockingMask:
+    serializedVersion: 2
+    m_Bits: 2560
+  _cratePrefab: {fileID: 7584296432112564566, guid: b19cbca7ce94cfd48ababd457b521ac8, type: 3}
+  _fuelPickupPrefab: {fileID: 5622835505828578951, guid: b6fa3ef8732ff2f41b1278dca57af68d, type: 3}
+  _ammoPickupPrefab: {fileID: 8441437577926288543, guid: f7964899f0c009f4ab25720a8192c9f2, type: 3}
+  _cratePrewarm: 6
+  _pickupPrewarm: 3
+  _pickupLifetime: 30
+  _pickupBlinkDuration: 3
+  _pickupMotion:
+    _spawnHeight: 0.8
+    _restHeight: 0.3
+    _scatterMinDistance: 0.6
+    _scatterMaxDistance: 1.6
+    _arcHeight: 1.2
+    _arcDuration: 0.45
+    _spinSpeed: 180
+    _blinkFrequency: 6
+    _attractStartSpeed: 4
+    _attractAcceleration: 40
+    _attractMaxSpeed: 25
+    _collectDistance: 0.4
+    _collectHeight: 1

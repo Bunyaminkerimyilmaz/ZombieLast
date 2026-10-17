@@ -71,6 +71,45 @@ namespace LastHaven.UI
         public const string InteractionRing = "interaction-ring";
         public const string InteractionText = "interaction-text";
 
+        // Ganimet sandığı kenar göstergeleri (HudLootIndicatorsController); göstergeler EdgeIndicatorView sınıflarıyla bulunur.
+        public const string LootIndicators = "loot-indicators";
+
+        // Gündüz istihbaratı: saldırı yönü okları (HudAttackIndicatorsController). Her yönün kendi göstergesi var.
+        public const string AttackIndicators = "attack-indicators";
+        public const string AttackIndicatorNorth = "attack-indicator-north";
+        public const string AttackIndicatorEast = "attack-indicator-east";
+        public const string AttackIndicatorSouth = "attack-indicator-south";
+        public const string AttackIndicatorWest = "attack-indicator-west";
+
+        // Gündüz istihbaratı: bu gecenin düşmanları ve olayı (HudIntelController); satırlar IntelRowView sınıflarıyla bulunur.
+        public const string IntelPanel = "intel-panel";
+        public const string IntelEnemies = "intel-enemies";
+        public const string IntelEvent = "intel-event";
+        public const string IntelEventName = "intel-event-name";
+        public const string IntelEventDescription = "intel-event-description";
+
+        // Gündüzün son uyarısı (HudDayWarningController).
+        public const string DayWarning = "day-warning";
+        public const string DayWarningPulse = "day-warning-pulse";
+        public const string DayCountdown = "day-countdown";
+
+        // "Hazırım" ipucu (HudReadyHintController).
+        public const string ReadyHint = "ready-hint";
+        public const string ReadyBonus = "ready-bonus";
+        public const string ReadyBonusValue = "ready-bonus-value";
+
+        // Boss can barı (HudBossController).
+        public const string BossPanel = "boss-panel";
+        public const string BossName = "boss-name";
+        public const string BossHealthFill = "boss-health-fill";
+        public const string BossHealthValue = "boss-health-value";
+
+        /// <summary>Saldırı yönü göstergeleri, <see cref="Core.CompassDirection"/> sırasıyla (indeks = yön).</summary>
+        public static readonly string[] AttackIndicatorsByDirection =
+        {
+            AttackIndicatorNorth, AttackIndicatorEast, AttackIndicatorSouth, AttackIndicatorWest,
+        };
+
         /// <summary>Evre adı etiketleri (sıra önemsiz).</summary>
         public static readonly string[] PhaseLabels =
         {

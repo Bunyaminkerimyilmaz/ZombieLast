@@ -389,6 +389,61 @@ namespace LastHaven.Tests.EditMode
             Assert.DoesNotThrow(() => _runner.Start(groups, 10));
         }
 
+        // --- Gündüz gezginleri geceye katılır (GDD §9) ---
+
+        [Test]
+        public void Adopt_AddsToTotalAliveAndRemaining()
+        {
+            _runner.Start(new[] { Group(2) }, 10);
+
+            Assert.IsTrue(_runner.Adopt(3));
+
+            Assert.AreEqual(5, _runner.TotalCount);
+            Assert.AreEqual(3, _runner.AliveCount);
+            Assert.AreEqual(5, _runner.RemainingCount);
+            Assert.AreEqual(0, _spawned.Count, "Katılanlar zaten doğmuş.");
+        }
+
+        [Test]
+        public void Adopt_NightCompletesOnlyAfterAdoptedEnemiesDie()
+        {
+            _runner.Start(new[] { Group(1) }, 10);
+            _runner.Adopt(2);
+            _runner.Tick(0f);
+            _runner.ReportDeath();
+            _runner.Tick(0f);
+            Assert.AreEqual(0, _completedCount, "Dalga düşmanı öldü ama katılan gezginler canlı.");
+
+            _runner.ReportDeath();
+            _runner.ReportDeath();
+            _runner.Tick(0f);
+
+            Assert.AreEqual(1, _completedCount);
+        }
+
+        [Test]
+        public void Adopt_CountsTowardAliveCap()
+        {
+            _runner.Start(new[] { Group(3, interval: 0f) }, 3);
+            _runner.Adopt(2);
+
+            _runner.Tick(0f);
+
+            Assert.AreEqual(1, _spawned.Count, "Tavan 3: 2 gezgin + 1 dalga düşmanı.");
+            Assert.AreEqual(2, _runner.QueuedCount);
+        }
+
+        [Test]
+        public void Adopt_NotRunningOrNonPositive_IsIgnored()
+        {
+            Assert.IsFalse(_runner.Adopt(1), "Gece yok.");
+
+            _runner.Start(new[] { Group(1) }, 10);
+            Assert.IsFalse(_runner.Adopt(0));
+            Assert.IsFalse(_runner.Adopt(-2));
+            Assert.AreEqual(1, _runner.TotalCount);
+        }
+
         [Test]
         public void WaveGroup_ClampsNegativeValues()
         {

@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d350b5b8663314d4491c2e82037ca8d9, type: 3}
+  m_Name: Storm
+  m_EditorClassIdentifier: LastHaven.Waves::LastHaven.Waves.NightModifierData
+  _id: storm
+  _displayName: "F\u0131rt\u0131na"
+  _description: "Her 25 sn'de \u015Fim\u015Fek: 5 sn g\xFC\xE7 kesintisi (taretler
+    ve \xFCs \u0131\u015F\u0131klar\u0131 durur)."
+  _enemyCountMultiplier: 1
+  _enemySpeedMultiplier: 1
+  _coinMultiplier: 1
+  _overrideFog: 0
+  _fogColor: {r: 0.14, g: 0.16, b: 0.2, a: 1}
+  _fogDensity: 0.035
+  _overrideLight: 0
+  _lightColor: {r: 0.95, g: 0.2, b: 0.14, a: 1}
+  _ambientColor: {r: 0.32, g: 0.08, b: 0.08, a: 1}
+  _powerOutages: 1
+  _outageInterval: 25
+  _outageDuration: 5

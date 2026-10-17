@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3f7379b6b1e660449acd0aa06506560c, type: 3}
+  m_Name: DayWanderersConfig
+  m_EditorClassIdentifier: LastHaven.Waves::LastHaven.Waves.DayWanderersConfig
+  _enemy: {fileID: 11400000, guid: 7331b7f776de279499c6a220d615707b, type: 2}
+  _minCount: 3
+  _maxCount: 6
+  _minRadius: 20
+  _maxRadius: 38
+  _minPlayerDistance: 15
+  _spawnAttempts: 20
+  _minLegDistance: 4
+  _maxLegDistance: 10
+  _minPause: 1
+  _maxPause: 3
+  _maxLegDuration: 12
+  _arrivalTolerance: 0.5
+  _navMeshSampleDistance: 3

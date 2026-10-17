@@ -121,6 +121,23 @@ namespace LastHaven.Waves
             }
         }
 
+        /// <summary>
+        /// Dalga dışında doğmuş <paramref name="count"/> canlı düşmanı bu geceye katar (gündüz gezginleri, GDD §9): toplam ve canlı
+        /// sayısı artar, tavana sayılırlar; ölümleri <see cref="ReportDeath"/> ile bildirilir ve gece onlar da ölmeden bitmez.
+        /// Gece sürmüyorsa veya sayı pozitif değilse yok sayılır (false).
+        /// </summary>
+        public bool Adopt(int count)
+        {
+            if (!IsRunning || count <= 0)
+            {
+                return false;
+            }
+
+            TotalCount += count;
+            AliveCount += count;
+            return true;
+        }
+
         /// <summary>Bu gecenin canlı bir düşmanı öldü. Gece sürmüyorsa veya canlı düşman yoksa yok sayılır (false).</summary>
         public bool ReportDeath()
         {

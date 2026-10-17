@@ -26,6 +26,19 @@ namespace LastHaven.Enemies
         /// <summary>Kural 4 etkinse yolu tıkalı olan asıl hedef; değilse null.</summary>
         public ITargetable BlockedTarget => _selector?.BlockedTarget;
 
+        /// <summary>Sadece aggro yarıçapındaki oyuncu hedeflenir (<see cref="TargetSelector.PlayerOnly"/>; gezgin modu).</summary>
+        public bool PlayerOnly
+        {
+            get => _selector != null && _selector.PlayerOnly;
+            set
+            {
+                if (_selector != null)
+                {
+                    _selector.PlayerOnly = value;
+                }
+            }
+        }
+
         /// <summary>Hedef kaydını (<see cref="ITargetRegistry"/>) alıp bir kez kurulur; kayıt yoksa uyarır ve hiç hedef seçilmez.</summary>
         /// <param name="context">Uyarının bağlamı.</param>
         public void Initialize(in TargetSelectorSettings settings, Object context)

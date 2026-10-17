@@ -29,6 +29,11 @@ MonoBehaviour:
     _spawnInterval: 1.2
     _startDelay: 15.3
     _directions: 0000000002000000
+  - _enemy: {fileID: 11400000, guid: 7c701c2d26420174c8e7ca576712637b, type: 2}
+    _count: 8
+    _spawnInterval: 1
+    _startDelay: 13.6
+    _directions: 0000000002000000
   _modifier: {fileID: 0}
   _bossData: {fileID: 0}
   _bossStartDelay: 20

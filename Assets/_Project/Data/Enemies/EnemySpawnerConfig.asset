@@ -19,4 +19,12 @@ MonoBehaviour:
     _prewarm: 15
   - _data: {fileID: 11400000, guid: 273b5aedeef8e62429725f5f46fc9826, type: 2}
     _prewarm: 5
+  - _data: {fileID: 11400000, guid: 73734a70e1f06744d932844622d11e6c, type: 2}
+    _prewarm: 15
+  - _data: {fileID: 11400000, guid: 7c701c2d26420174c8e7ca576712637b, type: 2}
+    _prewarm: 15
+  - _data: {fileID: 11400000, guid: ca4e94a48a2af5441b32eff5c9f68a7a, type: 2}
+    _prewarm: 1
+  - _data: {fileID: 11400000, guid: 6c7b640fa3d5fd844b851bbc806d05c9, type: 2}
+    _prewarm: 1
   _navMeshSampleDistance: 3

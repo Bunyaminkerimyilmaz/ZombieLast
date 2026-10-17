@@ -28,6 +28,16 @@ namespace LastHaven.Tests.EditMode
         }
 
         [Test]
+        public void IntelAndReadyHint_OnlyInDay()
+        {
+            foreach (GamePhase phase in Enum.GetValues(typeof(GamePhase)))
+            {
+                Assert.AreEqual(phase == GamePhase.Day, HudPhaseRules.ShowsIntel(phase), phase.ToString());
+                Assert.AreEqual(phase == GamePhase.Day, HudPhaseRules.ShowsReadyHint(phase), phase.ToString());
+            }
+        }
+
+        [Test]
         public void PhaseLabelName_BootHasNone_OthersDistinctAndListed()
         {
             Assert.IsNull(HudPhaseRules.PhaseLabelName(GamePhase.Boot));

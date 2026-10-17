@@ -71,6 +71,9 @@ namespace LastHaven.Editor
                 PlaceholderMaterialId.BaseArea => Hex("#555555"),          // Biraz açık gri
                 PlaceholderMaterialId.Obstacle => Hex("#6E6257"),          // Kahve-gri
                 PlaceholderMaterialId.TestDummy => Hex("#9A9A9A"),         // Gri (GDD'de yok; silah testi kuklası)
+                PlaceholderMaterialId.FuelPickup => Hex("#D23C2E"),        // Kırmızı bidon (GDD'de yok; sandıktan yakıt)
+                PlaceholderMaterialId.AmmoPickup => Hex("#6F7A3A"),        // Haki kutu (GDD'de yok; sandıktan mermi)
+                PlaceholderMaterialId.AcidProjectile => Hex("#9BE22D"),    // Asit yeşili (GDD'de yok; Tükürücü mermisi)
                 _ => throw new ArgumentOutOfRangeException(nameof(id), id, null),
             };
         }

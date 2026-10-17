@@ -6,8 +6,9 @@ using UnityEngine;
 namespace LastHaven.Editor
 {
     /// <summary>
-    /// [Gameplay]/SpawnZones altına dört yöne birer <see cref="SpawnZone"/> koyar (GDD §8) ve [Systems]/WaveSpawner'ı
-    /// (<see cref="WaveSpawner"/>: config üreticiden, bölgeler buradan) kurar.
+    /// [Gameplay]/SpawnZones altına dört yöne birer <see cref="SpawnZone"/> koyar (GDD §8; her birinin altında kapalı istihbarat ışık
+    /// sütunu, GDD §9) ve [Systems]/WaveSpawner'ı (<see cref="WaveSpawner"/>: config üreticiden, bölgeler buradan; aynı objede
+    /// sütunları yakan <see cref="SpawnZoneBeacons"/>) kurar.
     /// </summary>
     public sealed class WavesSceneStep : ISceneBuildStep
     {
@@ -38,6 +39,7 @@ namespace LastHaven.Editor
                 var serialized = new SerializedObject(zone);
                 serialized.FindProperty("_direction").enumValueIndex = (int)direction;
                 serialized.FindProperty("_radius").floatValue = config.SpawnZoneRadius;
+                serialized.FindProperty("_beacon").objectReferenceValue = IntelBeaconMaterial.CreateBeacon(zoneObject.transform);
                 serialized.ApplyModifiedPropertiesWithoutUndo();
                 zones[i] = zone;
             }
@@ -60,6 +62,17 @@ namespace LastHaven.Editor
             }
 
             serialized.ApplyModifiedPropertiesWithoutUndo();
+
+            var beacons = spawnerObject.AddComponent<SpawnZoneBeacons>();
+            var serializedBeacons = new SerializedObject(beacons);
+            SerializedProperty beaconZones = serializedBeacons.FindProperty("_zones");
+            beaconZones.arraySize = zones.Length;
+            for (int i = 0; i < zones.Length; i++)
+            {
+                beaconZones.GetArrayElementAtIndex(i).objectReferenceValue = zones[i];
+            }
+
+            serializedBeacons.ApplyModifiedPropertiesWithoutUndo();
         }
     }
 }

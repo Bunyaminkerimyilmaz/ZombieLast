@@ -1,0 +1,164 @@
+/*
+ * Gündüz istihbaratı ve gündüz sonu (GDD §9): saldırı yönü okları (HudLoot.uss'teki kenar göstergesinin kırmızı türü), sağ üstte
+ * bu gecenin düşman listesi, son 15 sn'nin kenar nabzı + büyük geri sayımı ve "Hazırım" ipucu. Renkler ve yazı boyutları
+ * Theme.uss değişkenlerinden (UIGenerationTests kontrol eder).
+ * Seçiciler .lh-screen.hud ile başlar: Theme.uss'teki iki sınıflı kuralları kesin ezsin diye.
+ */
+
+/* --- Saldırı yönü okları: kök/ok taşıyıcısı/ok ucu HudLoot.uss'te; burada sadece kırmızı simge + yön harfi. --- */
+
+.lh-screen.hud .hud-attack-indicators {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+}
+
+.lh-screen.hud .hud-edge-indicator--attack .hud-edge-indicator__icon {
+    width: 36px;
+    height: 36px;
+    background-color: var(--color-attack);
+    border-color: var(--color-attack-border);
+    border-radius: 18px;
+    align-items: center;
+    justify-content: center;
+}
+
+.lh-screen.hud .hud-edge-indicator--attack .hud-edge-indicator__arrow {
+    color: var(--color-attack-arrow);
+}
+
+.lh-screen.hud .hud-edge-indicator__letter {
+    font-size: var(--font-small);
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+}
+
+/* --- İstihbarat paneli (sağ üst sütun, cüzdanın altında) --- */
+
+.lh-screen.hud .hud-intel {
+    margin-top: var(--space);
+}
+
+.lh-screen.hud .hud-intel-row {
+    margin-top: var(--space-small);
+}
+
+.lh-screen.hud .hud-intel-row__count {
+    min-width: 64px;
+    margin-right: var(--space);
+    -unity-text-align: middle-right;
+    color: var(--color-danger);
+}
+
+.lh-screen.hud .hud-intel-row__boss {
+    margin-left: var(--space);
+    padding: 0 var(--space-small);
+    color: var(--color-text);
+    background-color: var(--color-danger-back);
+    border-width: var(--border-thin);
+    border-color: var(--color-danger);
+    border-radius: var(--radius);
+}
+
+.lh-screen.hud .hud-intel__event {
+    margin-top: var(--space);
+}
+
+.lh-screen.hud .hud-intel__event-name {
+    color: var(--color-accent);
+}
+
+.lh-screen.hud .hud-intel__event-description {
+    margin-top: var(--space-small);
+    white-space: normal;
+    color: var(--color-text-dim);
+}
+
+/* --- Son 15 sn: kenar nabzı (iki kat kenarlık; kod --dim'i transition bitişlerinde açıp kapatır) --- */
+
+.lh-screen.hud .hud-day-warning {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+}
+
+.lh-screen.hud .hud-day-warning__pulse {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    transition-property: opacity;
+    transition-duration: 0.5s;
+    transition-timing-function: ease-in-out;
+}
+
+.lh-screen.hud .hud-day-warning__pulse--dim {
+    opacity: 0.15;
+}
+
+.lh-screen.hud .hud-day-warning__edge {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+}
+
+.lh-screen.hud .hud-day-warning__edge--outer {
+    border-width: 52px;
+    border-color: var(--color-warning-edge-outer);
+}
+
+.lh-screen.hud .hud-day-warning__edge--inner {
+    border-width: 18px;
+    border-color: var(--color-warning-edge-inner);
+}
+
+/* Büyük geri sayım: evre kutusu + "Hazırım" ipucunun hemen altında (ekran ortasındaki oyuncuyu az örtsün). Saniye değişince kod
+ * --tick ekler; transition bitince kaldırır. */
+.lh-screen.hud .hud-day-countdown-group {
+    position: absolute;
+    top: 196px;
+    left: 0;
+    right: 0;
+    align-items: center;
+}
+
+.lh-screen.hud .hud-day-countdown {
+    font-size: var(--font-giant);
+    color: var(--color-danger);
+    transition-property: scale;
+    transition-duration: 0.12s;
+    transition-timing-function: ease-out;
+}
+
+.lh-screen.hud .hud-day-countdown--tick {
+    scale: 1.25 1.25;
+}
+
+.lh-screen.hud .hud-day-countdown-caption {
+    color: var(--color-danger);
+}
+
+/* --- "Hazırım" ipucu: evre kutusunun altında --- */
+
+.lh-screen.hud .hud-ready-hint {
+    margin-top: var(--space-small);
+    padding: var(--space-small) var(--space);
+}
+
+.lh-screen.hud .hud-ready-hint__dash {
+    margin: 0 var(--space-small);
+    color: var(--color-text-dim);
+}
+
+.lh-screen.hud .hud-ready-hint__bonus {
+    margin-right: var(--space-small);
+    -unity-font-style: bold;
+    color: var(--color-money);
+}

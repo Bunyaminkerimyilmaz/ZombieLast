@@ -10,13 +10,14 @@ namespace LastHaven.Core
     public sealed class NightInfo
     {
         public NightInfo(int nightIndex, int nightNumber, IReadOnlyList<CompassDirection> directions,
-            IReadOnlyList<NightEnemyInfo> enemies, string eventName)
+            IReadOnlyList<NightEnemyInfo> enemies, string eventName, string eventDescription = null)
         {
             NightIndex = nightIndex;
             NightNumber = nightNumber;
             Directions = directions ?? Array.Empty<CompassDirection>();
             Enemies = enemies ?? Array.Empty<NightEnemyInfo>();
             EventName = eventName ?? string.Empty;
+            EventDescription = eventDescription ?? string.Empty;
 
             for (int i = 0; i < Enemies.Count; i++)
             {
@@ -40,12 +41,29 @@ namespace LastHaven.Core
         /// <summary>Gece olayının görünen adı (ör. "Sis"); olay yoksa boş.</summary>
         public string EventName { get; }
 
+        /// <summary>Gece olayının açıklaması (ör. "Görüş azalır, düşmanlar %10 hızlı"); olay yoksa boş.</summary>
+        public string EventDescription { get; }
+
         public bool HasEvent => EventName.Length > 0;
 
         public bool HasBoss { get; }
 
         /// <summary>Gecede doğacak toplam düşman (boss dahil).</summary>
         public int TotalEnemies { get; }
+
+        /// <summary>Bu gece bu yönden saldırı var mı.</summary>
+        public bool HasDirection(CompassDirection direction)
+        {
+            for (int i = 0; i < Directions.Count; i++)
+            {
+                if (Directions[i] == direction)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
     }
 
     /// <summary><see cref="NightInfo"/> satırı: bir düşman tipi ve o gece kaç tane geleceği.</summary>

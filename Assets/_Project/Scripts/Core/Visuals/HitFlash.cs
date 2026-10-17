@@ -7,8 +7,9 @@ namespace LastHaven.Core
     /// materyalde olmayan özellik, hiçbiri yoksa renderer atlanır). Materyallere dokunulmaz. İki katman:
     /// <list type="bullet">
     /// <item>Vuruş flaşı (<see cref="Flash()"/>): kısa süre tek renk. Renk ve süre prefab'da (düşman beyaz, oyuncu kırmızı).</item>
-    /// <item>Kalıcı renk tonu (<see cref="SetTint"/>, 9.3): durum efektleri (ör. yavaşlamış düşman mavi). Flaş sürerken flaş görünür,
-    /// bitince ton geri gelir. Ton yoksa flaş bitince blok temizlenir.</item>
+    /// <item>Kalıcı renk tonu (<see cref="SetTint(TintLayer, Color)"/>, 9.3): katman başına bir ton, alttan üste karışır
+    /// (<see cref="TintLayer.Base"/>: boss öfkesi koyulaşması, <see cref="TintLayer.Status"/>: yavaşlamış düşman mavi). Flaş sürerken
+    /// flaş görünür, bitince ton geri gelir. Ton yoksa flaş bitince blok temizlenir.</item>
     /// </list>
     /// Aynı renderer'lara iki ayrı bileşen blok yazarsa birbirini silerdi; bu yüzden ikisi de burada.
     /// </summary>
@@ -25,9 +26,8 @@ namespace LastHaven.Core
         private float _duration = 0.08f;
 
         private readonly Countdown _timer = new Countdown();
+        private readonly TintLayers _tints = new TintLayers();
         private FlashTargetSet _targets;
-        private Color _tint;
-        private bool _hasTint;
 
         public Color Color => _color;
 
@@ -35,8 +35,10 @@ namespace LastHaven.Core
 
         public bool IsFlashing => _timer.IsRunning;
 
-        /// <summary>Kalıcı renk tonu açık mı.</summary>
-        public bool HasTint => _hasTint;
+        /// <summary>Herhangi bir kalıcı renk tonu katmanı açık mı.</summary>
+        public bool HasTint => _tints.Any;
+
+        public bool HasTintOn(TintLayer layer) => _tints.IsActive(layer);
 
         /// <summary>Flaşın uygulanabildiği renderer sayısı.</summary>
         public int TargetCount
@@ -84,31 +86,31 @@ namespace LastHaven.Core
             RestoreColors();
         }
 
+        /// <summary>Durum tonu (<see cref="TintLayer.Status"/>).</summary>
+        public void SetTint(Color tint) => SetTint(TintLayer.Status, tint);
+
+        /// <summary>Durum tonunu kaldırır (<see cref="TintLayer.Status"/>).</summary>
+        public void ClearTint() => ClearTint(TintLayer.Status);
+
         /// <summary>
         /// Kalıcı ton: <c>_BaseColor</c> materyalin rengiyle <paramref name="tint"/> arasında karışır (alfa = karışım oranı; bkz.
-        /// <see cref="Tint(Color, Color)"/>). Flaş sürüyorsa flaş bitince görünür. <see cref="ClearTint"/>'e veya havuza dönüşe kadar kalır.
+        /// <see cref="Tint(Color, Color)"/>); diğer katman açıksa üst üste. Flaş sürüyorsa flaş bitince görünür. Katman
+        /// <see cref="ClearTint(TintLayer)"/>'e veya havuza dönüşe kadar kalır.
         /// </summary>
-        public void SetTint(Color tint)
+        public void SetTint(TintLayer layer, Color tint)
         {
             EnsureInitialized();
-            _tint = tint;
-            _hasTint = true;
+            _tints.Set(layer, tint);
             if (!_timer.IsRunning)
             {
                 RestoreColors();
             }
         }
 
-        /// <summary>Tonu kaldırır; flaş sürmüyorsa renkler hemen materyale döner.</summary>
-        public void ClearTint()
+        /// <summary>Katmanın tonunu kaldırır; flaş sürmüyorsa renkler hemen güncellenir.</summary>
+        public void ClearTint(TintLayer layer)
         {
-            if (!_hasTint)
-            {
-                return;
-            }
-
-            _hasTint = false;
-            if (!_timer.IsRunning)
+            if (_tints.Clear(layer) && !_timer.IsRunning)
             {
                 RestoreColors();
             }
@@ -154,7 +156,7 @@ namespace LastHaven.Core
         // Flaş ve ton yok: renderer'lar materyalin kendi rengine döner (havuz, kapanma).
         private void ResetColors()
         {
-            _hasTint = false;
+            _tints.ClearAll();
             Stop();
         }
 
@@ -165,9 +167,9 @@ namespace LastHaven.Core
                 return;
             }
 
-            if (_hasTint)
+            if (_tints.Any)
             {
-                _targets.ApplyTint(_tint);
+                _targets.ApplyTint(_tints);
             }
             else
             {

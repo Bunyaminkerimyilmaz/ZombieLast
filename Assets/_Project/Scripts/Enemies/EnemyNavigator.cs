@@ -4,8 +4,8 @@ using UnityEngine.AI;
 namespace LastHaven.Enemies
 {
     /// <summary>
-    /// <see cref="Enemy"/>'nin NavMeshAgent ve transform işleri: yürüme (yol yeniden hesaplamayı seyreltir), durma,
-    /// yerinde dönme, yerden çıkma ve ölünce yere batma. Kapalı ajana dokunmaz.
+    /// <see cref="Enemy"/>'nin NavMeshAgent ve transform işleri: yürüme (yol yeniden hesaplamayı seyreltir), durma, yerinde
+    /// dönme ve ölümde ajanı kapatma. Yerden çıkma ve yere batma <see cref="Burrow"/>'da. Kapalı ajana dokunmaz.
     /// </summary>
     internal sealed class EnemyNavigator
     {
@@ -13,19 +13,21 @@ namespace LastHaven.Enemies
 
         private readonly NavMeshAgent _agent;
         private readonly Transform _transform;
-        private float _burrowDepth;
         private float _repathSqrDistance;
         private Vector3 _lastDestination;
         private bool _hasDestination;
-        private float _sinkStartHeight;
+        private readonly SpeedMultipliers _speedMultipliers = new SpeedMultipliers();
         private float _baseSpeed;
-        private float _speedMultiplier = 1f;
 
         public EnemyNavigator(NavMeshAgent agent)
         {
             _agent = agent;
             _transform = agent.transform;
+            Burrow = new EnemyBurrow(agent);
         }
+
+        /// <summary>Yerden çıkma ve yere batma (aynı ajan ve transform).</summary>
+        public EnemyBurrow Burrow { get; }
 
         /// <summary>Ajan açık ve NavMesh üzerinde.</summary>
         public bool IsActive => _agent.enabled && _agent.isOnNavMesh;
@@ -38,20 +40,20 @@ namespace LastHaven.Enemies
         /// <summary>Ajanın hızı (m/sn); ajan kapalıyken 0. Animasyonun yürüme hızı.</summary>
         public float Speed => IsActive ? _agent.velocity.magnitude : 0f;
 
-        /// <summary>Yürüme hızı sınırı: taban hız × <see cref="SetSpeedMultiplier"/> çarpanı (m/sn).</summary>
-        public float MaxSpeed => _baseSpeed * _speedMultiplier;
+        /// <summary>Yürüme hızı sınırı: taban hız × kaynakların çarpımı (<see cref="SetSpeedMultiplier"/>, m/sn).</summary>
+        public float MaxSpeed => _baseSpeed * _speedMultipliers.Product;
 
         /// <summary>
         /// Havuzdan çıkışta: ajanı açar, bulunduğu noktaya yerleştirir ve durdurur. <paramref name="avoidancePriority"/> (0–99)
-        /// kalabalıkta kimin yol vereceğini belirler. Hız çarpanı 1'e döner.
+        /// kalabalıkta kimin yol vereceğini belirler. Hız çarpanları 1'e döner.
         /// </summary>
         public void Activate(float speed, float burrowDepth, float repathDistance, int avoidancePriority)
         {
-            _burrowDepth = burrowDepth;
+            Burrow.Depth = burrowDepth;
             _repathSqrDistance = repathDistance * repathDistance;
             _hasDestination = false;
             _baseSpeed = speed;
-            _speedMultiplier = 1f;
+            _speedMultipliers.Reset();
 
             _agent.avoidancePriority = avoidancePriority;
             _agent.enabled = true;
@@ -68,11 +70,12 @@ namespace LastHaven.Enemies
         }
 
         /// <summary>
-        /// Yürüme hızını taban hızın bu katına ayarlar (yavaşlatma: 1 − oran). Negatif 0'a kırpılır. Ajan kapalıysa sadece saklanır.
+        /// Kaynağın hız çarpanını yazar (yavaşlatma: 1 − oran, öfke ×1.4); etkili hız taban × tüm kaynakların çarpımı. Negatif 0'a
+        /// kırpılır. Ajan kapalıysa sadece saklanır.
         /// </summary>
-        public void SetSpeedMultiplier(float multiplier)
+        public void SetSpeedMultiplier(SpeedSource source, float multiplier)
         {
-            _speedMultiplier = Mathf.Max(0f, multiplier);
+            _speedMultipliers.Set(source, multiplier);
             if (IsActive)
             {
                 _agent.speed = MaxSpeed;
@@ -130,6 +133,25 @@ namespace LastHaven.Enemies
             _hasDestination = true;
         }
 
+        /// <summary>
+        /// Son yürüme hedefine vardı mı: yol hesaplanmış ve kalan mesafe durma mesafesi + <paramref name="tolerance"/> içinde.
+        /// Yol yoksa (ulaşılamayan nokta) veya ajan kapalıysa da true; yol hesaplanırken false.
+        /// </summary>
+        public bool HasArrived(float tolerance)
+        {
+            if (!IsActive)
+            {
+                return true;
+            }
+
+            if (_agent.pathPending)
+            {
+                return false;
+            }
+
+            return !_agent.hasPath || _agent.remainingDistance <= _agent.stoppingDistance + tolerance;
+        }
+
         /// <summary>Hemen durur (yol korunur, kaymadan).</summary>
         public void Halt()
         {
@@ -157,29 +179,7 @@ namespace LastHaven.Enemies
             _transform.rotation = Quaternion.RotateTowards(_transform.rotation, look, _agent.angularSpeed * deltaTime);
         }
 
-        /// <summary>
-        /// Yerden çıkma: 0 = gömülme derinliğinde, 1 = ajanın yüzeydeki konumunda. Çıkarken ajan transform'u taşımaz.
-        /// </summary>
-        public void SetEmergence(float progress)
-        {
-            if (!IsActive)
-            {
-                return;
-            }
-
-            Vector3 surface = _agent.nextPosition;
-            if (progress >= 1f)
-            {
-                _transform.position = surface;
-                _agent.updatePosition = true;
-                return;
-            }
-
-            _agent.updatePosition = false;
-            _transform.position = surface + Vector3.down * (_burrowDepth * (1f - progress));
-        }
-
-        /// <summary>Ölüm: ajanı kapatır; batma o anki yükseklikten başlar.</summary>
+        /// <summary>Ölüm: ajanı kapatır; batma (<see cref="Burrow"/>) o anki yükseklikten başlar.</summary>
         public void BeginDeath()
         {
             if (IsActive)
@@ -190,15 +190,7 @@ namespace LastHaven.Enemies
 
             _agent.enabled = false;
             _hasDestination = false;
-            _sinkStartHeight = _transform.position.y;
-        }
-
-        /// <summary>Yere batma: 0 = ölüm yüksekliği, 1 = gömülme derinliği kadar aşağıda. Ajan kapalıyken çağrılır.</summary>
-        public void SetSink(float progress)
-        {
-            Vector3 position = _transform.position;
-            position.y = _sinkStartHeight - _burrowDepth * progress;
-            _transform.position = position;
+            Burrow.BeginSink();
         }
     }
 }

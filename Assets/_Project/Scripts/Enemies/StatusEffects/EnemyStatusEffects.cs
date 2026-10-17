@@ -97,7 +97,7 @@ namespace LastHaven.Enemies
 
             bool wasSlowed = _appliedSlow > 0f;
             _appliedSlow = slow;
-            _enemy.SetSpeedMultiplier(1f - slow);
+            _enemy.SetSpeedMultiplier(SpeedSource.Status, 1f - slow);
             if (_flash == null || wasSlowed == slow > 0f)
             {
                 return;

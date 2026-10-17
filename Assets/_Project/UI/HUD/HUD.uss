@@ -54,6 +54,29 @@
     margin-top: var(--space-small);
 }
 
+/* Boss barı: üst ortada, evre kutusunun altında (gece "Hazırım" ipucu gizli). */
+.lh-screen.hud .hud-boss {
+    margin-top: var(--space);
+    width: 760px;
+}
+
+.lh-screen.hud .hud-boss__tag {
+    color: var(--color-boss);
+    margin-right: var(--space);
+}
+
+.lh-screen.hud .hud-boss__name {
+    color: var(--color-boss);
+}
+
+.lh-screen.hud .hud-boss__bar {
+    height: var(--bar-height-large);
+}
+
+.lh-screen.hud .bar-fill--boss {
+    background-color: var(--color-boss);
+}
+
 /* Sağ üst sütun: jeneratör barı, altında cüzdan (para + yakıt). */
 .lh-screen.hud .hud-top-right {
     position: absolute;

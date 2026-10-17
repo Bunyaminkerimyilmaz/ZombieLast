@@ -69,8 +69,10 @@ namespace LastHaven.Editor
             }
         }
 
+        /// <summary>Spawn bölgelerinin istihbarat ışık sütunu materyali (sütunları sahne adımı kurar).</summary>
         public void GeneratePrefabs()
         {
+            IntelBeaconMaterial.GetOrCreate();
         }
 
         private static NightData LoadOrCreateNight(NightDefinition definition, WaveContentLookup lookup, StringBuilder todo)

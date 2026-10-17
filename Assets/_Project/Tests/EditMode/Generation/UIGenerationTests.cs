@@ -67,6 +67,111 @@ namespace LastHaven.Tests.EditMode
             AssertHas<VisualElement>(root, HudElementNames.InteractionPrompt);
             AssertHas<VisualElement>(root, HudElementNames.InteractionRing);
             AssertHas<Label>(root, HudElementNames.InteractionText);
+            AssertHas<VisualElement>(root, HudElementNames.LootIndicators);
+            AssertHas<VisualElement>(root, HudElementNames.AttackIndicators);
+            foreach (string indicator in HudElementNames.AttackIndicatorsByDirection)
+            {
+                AssertHas<VisualElement>(root, indicator);
+            }
+
+            AssertHas<VisualElement>(root, HudElementNames.IntelPanel);
+            AssertHas<VisualElement>(root, HudElementNames.IntelEnemies);
+            AssertHas<VisualElement>(root, HudElementNames.IntelEvent);
+            AssertHas<Label>(root, HudElementNames.IntelEventName);
+            AssertHas<Label>(root, HudElementNames.IntelEventDescription);
+            AssertHas<VisualElement>(root, HudElementNames.DayWarning);
+            AssertHas<VisualElement>(root, HudElementNames.DayWarningPulse);
+            AssertHas<Label>(root, HudElementNames.DayCountdown);
+            AssertHas<VisualElement>(root, HudElementNames.ReadyHint);
+            AssertHas<VisualElement>(root, HudElementNames.ReadyBonus);
+            AssertHas<Label>(root, HudElementNames.ReadyBonusValue);
+            AssertHas<VisualElement>(root, HudElementNames.BossPanel);
+            AssertHas<Label>(root, HudElementNames.BossName);
+            AssertHas<VisualElement>(root, HudElementNames.BossHealthFill);
+            AssertHas<Label>(root, HudElementNames.BossHealthValue);
+        }
+
+        /// <summary>11.2: her saldırı yönünün (K, D, G, B) kendi göstergesi var; ok taşıyıcısı ve ok ucu var, hepsi gizli başlar.</summary>
+        [Test]
+        public void Hud_AttackIndicators_OnePerDirection_HiddenWithArrow()
+        {
+            TemplateContainer root = Instantiate(UIGenerator.HudPath);
+            VisualElement container = root.Q(HudElementNames.AttackIndicators);
+
+            Assert.AreEqual(CompassDirections.All.Count, HudElementNames.AttackIndicatorsByDirection.Length, "İndeks = yön.");
+            Assert.AreEqual(CompassDirections.All.Count, container.Query(className: EdgeIndicatorView.IndicatorClass).ToList().Count);
+            foreach (string name in HudElementNames.AttackIndicatorsByDirection)
+            {
+                VisualElement indicator = container.Q(name);
+                Assert.IsNotNull(indicator, name);
+                Assert.IsTrue(indicator.ClassListContains(UIClassNames.Hidden), name);
+                Assert.IsTrue(new EdgeIndicatorView(indicator).IsValid, $"{name}: ok taşıyıcısı ve ok ucu olmalı.");
+            }
+
+            Assert.AreSame(root.Q(className: UIClassNames.Screen), container.parent, "Kenar konumu ekrana göre yazılır.");
+            Assert.AreEqual(0, root.Q(HudElementNames.LootIndicators).Query(name: HudElementNames.AttackIndicatorNorth).ToList().Count,
+                "Sandık göstergeleri saldırı oklarını sayamaz.");
+        }
+
+        /// <summary>11.2: bir gecede en fazla 5 tip + boss; satırlar gizli başlar ve adet/ad/boss etiketi taşır.</summary>
+        [Test]
+        public void Hud_IntelPanel_SixHiddenRows_StartsHidden()
+        {
+            TemplateContainer root = Instantiate(UIGenerator.HudPath);
+            var rows = root.Q(HudElementNames.IntelEnemies).Query(className: IntelRowView.RowClass).ToList();
+
+            Assert.AreEqual(6, rows.Count);
+            foreach (VisualElement row in rows)
+            {
+                Assert.IsTrue(row.ClassListContains(UIClassNames.Hidden));
+                Assert.IsTrue(new IntelRowView(row).IsValid);
+            }
+
+            Assert.IsTrue(root.Q(HudElementNames.IntelPanel).ClassListContains(UIClassNames.Hidden), "Gündüz dışında gizli.");
+            Assert.IsTrue(root.Q(HudElementNames.IntelEvent).ClassListContains(UIClassNames.Hidden), "Olay yoksa gizli.");
+        }
+
+        [Test]
+        public void Hud_DayWarningAndReadyHint_StartHidden()
+        {
+            TemplateContainer root = Instantiate(UIGenerator.HudPath);
+            VisualElement screen = root.Q(className: UIClassNames.Screen);
+
+            Assert.IsTrue(root.Q(HudElementNames.DayWarning).ClassListContains(UIClassNames.Hidden));
+            Assert.AreSame(screen, root.Q(HudElementNames.DayWarning).parent, "Kenar nabzı tüm ekranı kaplar.");
+            Assert.AreEqual(0, screen.IndexOf(root.Q(HudElementNames.DayWarning)), "Nabız her şeyin altında çizilir.");
+            Assert.IsTrue(root.Q(HudElementNames.ReadyHint).ClassListContains(UIClassNames.Hidden));
+        }
+
+        /// <summary>12.2: boss barı üst sütunda (evre kutusunun altında), gizli başlar; ad metni koddan (boss verisi).</summary>
+        [Test]
+        public void Hud_BossPanel_StartsHidden_InTopColumn()
+        {
+            TemplateContainer root = Instantiate(UIGenerator.HudPath);
+            VisualElement panel = root.Q(HudElementNames.BossPanel);
+
+            Assert.IsTrue(panel.ClassListContains(UIClassNames.Hidden));
+            Assert.AreSame(root.Q(HudElementNames.ReadyHint).parent, panel.parent, "Evre kutusu ve Hazırım ipucuyla aynı sütunda.");
+            Assert.AreEqual(string.Empty, root.Q<Label>(HudElementNames.BossName).text);
+            Assert.IsTrue(panel.Contains(root.Q(HudElementNames.BossHealthFill)));
+        }
+
+        /// <summary>11.1: GDD §9 "en yakın 3 sandık"; her göstergede dönen ok taşıyıcısı ve ok ucu var, hepsi gizli başlar.</summary>
+        [Test]
+        public void Hud_LootIndicators_ThreeHiddenIndicatorsWithArrow()
+        {
+            TemplateContainer root = Instantiate(UIGenerator.HudPath);
+            VisualElement container = root.Q(HudElementNames.LootIndicators);
+            var indicators = container.Query(className: EdgeIndicatorView.IndicatorClass).ToList();
+
+            Assert.AreEqual(3, indicators.Count);
+            foreach (VisualElement indicator in indicators)
+            {
+                Assert.IsTrue(indicator.ClassListContains(UIClassNames.Hidden));
+                Assert.IsTrue(new EdgeIndicatorView(indicator).IsValid, "Ok taşıyıcısı ve ok ucu olmalı.");
+            }
+
+            Assert.AreSame(root.Q(className: UIClassNames.Screen), container.parent, "Kenar konumu ekrana göre yazılır.");
         }
 
         [Test]
@@ -128,6 +233,8 @@ namespace LastHaven.Tests.EditMode
         [TestCase(UIGenerator.HudStylePath)]
         [TestCase(UIGenerator.HudBuildStylePath)]
         [TestCase(UIGenerator.HudInteractionStylePath)]
+        [TestCase(UIGenerator.HudLootStylePath)]
+        [TestCase(UIGenerator.HudIntelStylePath)]
         [TestCase(UIGenerator.PanelsStylePath)]
         [TestCase(UIGenerator.ShopStylePath)]
         public void StyleSheets_TakeColorsAndFontSizesFromTheme(string path)
@@ -230,6 +337,8 @@ namespace LastHaven.Tests.EditMode
         [TestCase(UIGenerator.HudStylePath)]
         [TestCase(UIGenerator.HudBuildStylePath)]
         [TestCase(UIGenerator.HudInteractionStylePath)]
+        [TestCase(UIGenerator.HudLootStylePath)]
+        [TestCase(UIGenerator.HudIntelStylePath)]
         [TestCase(UIGenerator.PanelsStylePath)]
         [TestCase(UIGenerator.ShopStylePath)]
         public void StyleSheets_ImportWithoutErrors(string path)

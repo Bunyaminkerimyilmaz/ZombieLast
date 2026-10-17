@@ -1,12 +1,12 @@
 ﻿<Solution>
+  <Project Path="LastHaven.Editor.csproj" />
   <Project Path="LastHaven.Core.csproj" />
   <Project Path="LastHaven.Enemies.csproj" />
-  <Project Path="LastHaven.Editor.csproj" />
   <Project Path="LastHaven.Player.csproj" />
+  <Project Path="LastHaven.Tests.EditMode.csproj" />
   <Project Path="LastHaven.Progression.csproj" />
   <Project Path="LastHaven.Feedback.csproj" />
   <Project Path="LastHaven.Economy.csproj" />
-  <Project Path="LastHaven.Tests.EditMode.csproj" />
   <Project Path="LastHaven.Waves.csproj" />
   <Project Path="LastHaven.Building.csproj" />
   <Project Path="LastHaven.UI.csproj" />

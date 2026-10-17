@@ -6,8 +6,9 @@ namespace LastHaven.Player
 {
     /// <summary>
     /// Market satın almalarının oyuncuya etkisi (GDD §6, §10): silah açma, silah yükseltmesi, yedek mermi
-    /// (<see cref="WeaponController"/>'ın silahlarına) ve can paketi (<see cref="Health"/>). Olayları Economy'deki market gönderir;
-    /// bu bileşen sadece uygular. Yakıt (cüzdan) ve mıknatıs (<see cref="IRunModifiers"/>) marketin kendisinde.
+    /// (<see cref="WeaponController"/>'ın silahlarına) ve can paketi (<see cref="Health"/>). 11.1: ganimetten toplanan mermi kutusu
+    /// da (<see cref="AmmoPickedUpEvent"/>) yedeğe eklenir. Olayları Economy (market, ganimet) gönderir; bu bileşen sadece uygular.
+    /// Yakıt (cüzdan) ve mıknatıs (<see cref="IRunModifiers"/>) Economy'nin kendisinde.
     /// </summary>
     [DisallowMultipleComponent]
     [RequireComponent(typeof(WeaponController), typeof(Health))]
@@ -29,6 +30,7 @@ namespace LastHaven.Player
             EventBus<WeaponUnlockRequestedEvent>.Subscribe(OnWeaponUnlockRequested);
             EventBus<WeaponUpgradePurchasedEvent>.Subscribe(OnWeaponUpgradePurchased);
             EventBus<AmmoPurchasedEvent>.Subscribe(OnAmmoPurchased);
+            EventBus<AmmoPickedUpEvent>.Subscribe(OnAmmoPickedUp);
             EventBus<HealRequestedEvent>.Subscribe(OnHealRequested);
         }
 
@@ -37,6 +39,7 @@ namespace LastHaven.Player
             EventBus<WeaponUnlockRequestedEvent>.Unsubscribe(OnWeaponUnlockRequested);
             EventBus<WeaponUpgradePurchasedEvent>.Unsubscribe(OnWeaponUpgradePurchased);
             EventBus<AmmoPurchasedEvent>.Unsubscribe(OnAmmoPurchased);
+            EventBus<AmmoPickedUpEvent>.Unsubscribe(OnAmmoPickedUp);
             EventBus<HealRequestedEvent>.Unsubscribe(OnHealRequested);
         }
 
@@ -69,14 +72,24 @@ namespace LastHaven.Player
 
         private void OnAmmoPurchased(AmmoPurchasedEvent purchase)
         {
-            WeaponRuntime weapon = GetArsenal()?.FindWeapon(purchase.WeaponId);
-            if (weapon != null && weapon.AddReserve(purchase.Amount))
+            AddReserve(purchase.WeaponId, purchase.Amount);
+        }
+
+        private void OnAmmoPickedUp(AmmoPickedUpEvent pickup)
+        {
+            AddReserve(pickup.WeaponId, pickup.Amount);
+        }
+
+        private void AddReserve(string weaponId, int amount)
+        {
+            WeaponRuntime weapon = GetArsenal()?.FindWeapon(weaponId);
+            if (weapon != null && weapon.AddReserve(amount))
             {
-                Debug.Log($"{LogPrefix}Mermi: {weapon.Data.DisplayName} +{purchase.Amount} (yedek {weapon.Reserve}).", this);
+                Debug.Log($"{LogPrefix}Mermi: {weapon.Data.DisplayName} +{amount} (yedek {weapon.Reserve}).", this);
                 return;
             }
 
-            Debug.LogWarning($"{LogPrefix}Mermi eklenemedi: '{purchase.WeaponId}' +{purchase.Amount} (silah yok veya yedeği sonsuz).", this);
+            Debug.LogWarning($"{LogPrefix}Mermi eklenemedi: '{weaponId}' +{amount} (silah yok veya yedeği sonsuz).", this);
         }
 
         private void OnHealRequested(HealRequestedEvent request)

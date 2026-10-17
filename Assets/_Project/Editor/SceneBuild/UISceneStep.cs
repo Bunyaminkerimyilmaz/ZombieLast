@@ -11,7 +11,8 @@ namespace LastHaven.Editor
     /// <summary>
     /// [Systems]/UI: her ekran için bir <see cref="UIDocument"/> (ortak PanelSettings) + denetleyicisi. HUD'a oyuncunun ve
     /// jeneratörün <see cref="Health"/>'i bağlanır (Player ve Base adımlarından sonra çalışır); HUD'un bölüm denetleyicileri
-    /// (cüzdan, kombo, yakıt/güç, inşa çubuğu, yapı ipucu, etkileşim ipucu, tuş ipuçları) aynı UIDocument'ı paylaşır. İnşa
+    /// (cüzdan, kombo, yakıt/güç, inşa çubuğu, yapı ipucu, etkileşim ipucu, tuş ipuçları, sandık göstergeleri, saldırı okları, istihbarat
+    /// paneli, gündüz sonu uyarısı, "Hazırım" ipucu) aynı UIDocument'ı paylaşır. İnşa
     /// çubuğuna sahnedeki <see cref="BuildSite"/>'ın <see cref="BuildConfig"/>'i (Building adımından sonra) ve kart şablonu,
     /// market paneline kart şablonu bağlanır. Sıralama: HUD altta, market onun üstünde, şafak ve run sonu panelleri en üstte.
     /// </summary>
@@ -58,6 +59,12 @@ namespace LastHaven.Editor
             AddController<HudStructureTooltipController>(hud.gameObject, hud.GetComponent<UIDocument>());
             AddController<HudInteractionPromptController>(hud.gameObject, hud.GetComponent<UIDocument>());
             AddController<HudInputHintsController>(hud.gameObject, hud.GetComponent<UIDocument>());
+            AddController<HudLootIndicatorsController>(hud.gameObject, hud.GetComponent<UIDocument>());
+            AddController<HudAttackIndicatorsController>(hud.gameObject, hud.GetComponent<UIDocument>());
+            AddController<HudIntelController>(hud.gameObject, hud.GetComponent<UIDocument>());
+            AddController<HudDayWarningController>(hud.gameObject, hud.GetComponent<UIDocument>());
+            AddController<HudReadyHintController>(hud.gameObject, hud.GetComponent<UIDocument>());
+            AddController<HudBossController>(hud.gameObject, hud.GetComponent<UIDocument>());
 
             var shop = CreateScreen<ShopPanelController>(
                 context, group, ShopPanelName, settings, UIGenerator.ShopPanelPath, ShopPanelSortingOrder);

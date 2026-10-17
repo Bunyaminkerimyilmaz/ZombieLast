@@ -29,11 +29,27 @@ namespace LastHaven.Waves
         [SerializeField, Min(0.5f), Tooltip("Düşmanların doğabileceği dairenin yarıçapı (m).")]
         private float _radius = 6f;
 
+        [Header("İstihbarat")]
+        [SerializeField, Tooltip("Gündüz bu yön bu gece aktifse yanan kırmızı ışık sütunu (sadece görsel, GDD §9). Sahne adımı bağlar; boşsa atlanır.")]
+        private GameObject _beacon;
+
         public CompassDirection Direction => _direction;
 
         public float Radius => _radius;
 
         public Vector3 Center => transform.position;
+
+        /// <summary>Işık sütunu açık mı (sütun yoksa false).</summary>
+        public bool IsBeaconShown => _beacon != null && _beacon.activeSelf;
+
+        /// <summary>Işık sütununu gösterir/gizler (<see cref="SpawnZoneBeacons"/>). Sütun yoksa bir şey yapmaz.</summary>
+        public void SetBeaconShown(bool shown)
+        {
+            if (_beacon != null && _beacon.activeSelf != shown)
+            {
+                _beacon.SetActive(shown);
+            }
+        }
 
         /// <summary>Bölge dairesinin içinde düzgün dağılımlı rastgele bir nokta (merkezle aynı yükseklikte).</summary>
         public Vector3 GetRandomPoint()

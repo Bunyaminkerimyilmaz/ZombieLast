@@ -20,7 +20,7 @@ namespace LastHaven.Waves
         private List<SpawnGroup> _groups = new List<SpawnGroup>();
 
         [Header("Gece olayı (opsiyonel)")]
-        [SerializeField, Tooltip("Opsiyonel gece olayı (GDD §14). Boşsa olay yok. Etkileri Gün 12'de.")]
+        [SerializeField, Tooltip("Opsiyonel gece olayı (GDD §14: Kan Ayı, Sis, Fırtına). Boşsa olay yok.")]
         private NightModifierData _modifier;
 
         [Header("Boss (opsiyonel)")]

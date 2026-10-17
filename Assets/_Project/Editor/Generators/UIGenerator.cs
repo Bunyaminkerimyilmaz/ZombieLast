@@ -19,6 +19,8 @@ namespace LastHaven.Editor
         public const string HudStylePath = Folder + "/HUD/HUD.uss";
         public const string HudBuildStylePath = Folder + "/HUD/HudBuild.uss";
         public const string HudInteractionStylePath = Folder + "/HUD/HudInteraction.uss";
+        public const string HudLootStylePath = Folder + "/HUD/HudLoot.uss";
+        public const string HudIntelStylePath = Folder + "/HUD/HudIntel.uss";
         public const string BuildCardPath = Folder + "/HUD/BuildCard.uxml";
         public const string PanelsStylePath = Folder + "/Panels/Panels.uss";
         public const string DawnPanelPath = Folder + "/Panels/DawnPanel.uxml";

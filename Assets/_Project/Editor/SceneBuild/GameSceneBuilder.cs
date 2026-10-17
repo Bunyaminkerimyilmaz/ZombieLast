@@ -11,7 +11,8 @@ namespace LastHaven.Editor
 {
     /// <summary>
     /// Game.unity'yi açar veya oluşturur, [Systems] ve [Gameplay] köklerini silip tüm <see cref="ISceneBuildStep"/>'lerle
-    /// yeniden kurar, sahneyi kaydeder ve Build Settings'e ekler. [Environment] yoksa boş oluşturulur, varsa dokunulmaz.
+    /// yeniden kurar, sahneyi kaydeder ve Build Settings'e ekler (proje dışı sahnelerin önüne: <see cref="BuildSceneList"/>).
+    /// [Environment] yoksa boş oluşturulur, varsa dokunulmaz.
     /// </summary>
     public static class GameSceneBuilder
     {
@@ -145,26 +146,15 @@ namespace LastHaven.Editor
         private static void EnsureInBuildSettings(string scenePath)
         {
             var scenes = new List<EditorBuildSettingsScene>(EditorBuildSettings.scenes);
-            for (int i = 0; i < scenes.Count; i++)
+            BuildSceneList.Change change = BuildSceneList.Ensure(scenes, scenePath, ScenesFolder);
+            if (change == BuildSceneList.Change.None)
             {
-                if (!string.Equals(scenes[i].path, scenePath, StringComparison.Ordinal))
-                {
-                    continue;
-                }
-
-                if (!scenes[i].enabled)
-                {
-                    scenes[i].enabled = true;
-                    EditorBuildSettings.scenes = scenes.ToArray();
-                    Debug.Log($"[Last Haven] Build Settings: {scenePath} etkinleştirildi.");
-                }
-
                 return;
             }
 
-            scenes.Add(new EditorBuildSettingsScene(scenePath, true));
             EditorBuildSettings.scenes = scenes.ToArray();
-            Debug.Log($"[Last Haven] Build Settings: {scenePath} eklendi.");
+            AssetDatabase.SaveAssets(); // ProjectSettings/EditorBuildSettings.asset hemen diske (yoksa editör kapanınca yazılır).
+            Debug.Log($"[Last Haven] Build Settings: {scenePath} — {change} (proje dışı sahnelerin önünde; player build buradan açılır).");
         }
     }
 }

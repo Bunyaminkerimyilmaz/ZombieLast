@@ -1,0 +1,54 @@
+/*
+ * Ganimet sandığı kenar göstergeleri (GDD §9): ekran dışındaki sandığın yönünde, ekran kenarında sandık simgesi + dönen ok.
+ * Kök (.hud-edge-indicator) mutlak konumlu; merkezini ve ok taşıyıcısının açısını kod yazar (HudLootIndicatorsController,
+ * EdgeIndicatorView). margin-bottom = göstergenin ekran kenarına boşluğu; margin-left/top sıfır kalmalı (konumu kaydırırlar).
+ * Ok ucu ArrowGlyph ile çizilir: rengi elementin "color"ı, boyutu elementin boyutu.
+ * Seçiciler .lh-screen.hud ile başlar: Theme.uss'teki iki sınıflı kuralları kesin ezsin diye.
+ */
+
+.lh-screen.hud .hud-loot-indicators {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+}
+
+.lh-screen.hud .hud-edge-indicator {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 72px;
+    height: 72px;
+    margin: 0 0 var(--space) 0;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Sandık simgesi: GDD §18 turuncu-kahve küp. */
+.lh-screen.hud .hud-edge-indicator__icon {
+    width: 30px;
+    height: 30px;
+    background-color: var(--color-loot);
+    border-width: var(--border);
+    border-color: var(--color-loot-border);
+    border-radius: var(--radius);
+}
+
+/* Ok taşıyıcısı kökü kaplar ve merkezinin etrafında döner; ok ucu sağ kenarın ortasında. */
+.lh-screen.hud .hud-edge-indicator__pivot {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+.lh-screen.hud .hud-edge-indicator__arrow {
+    width: 18px;
+    height: 26px;
+    color: var(--color-loot-arrow);
+}

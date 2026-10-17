@@ -36,6 +36,9 @@ namespace LastHaven.Enemies
         [SerializeField, Min(0f), Tooltip("Yapılara (jeneratör, barikat, taret, tuzak) verilen hasarın çarpanı. Tank ve Patlayan 2.")]
         private float _structureDamageMultiplier = 1f;
 
+        [SerializeReference, Tooltip("Saldırı stratejisi: yakın dövüş, menzilli mermi (Tükürücü) veya kendini patlatma (Patlayan). Boşsa yakın dövüş.")]
+        private IEnemyAttack _attack = new MeleeAttack();
+
         [Header("Hedef seçimi")]
         [SerializeField, Min(0f), Tooltip("Oyuncu bu yarıçap içindeyse oyuncuya saldırır (m). Tank 3, diğerleri 6.")]
         private float _aggroRadius = 6f;
@@ -129,6 +132,9 @@ namespace LastHaven.Enemies
         public float AttackRange => _attackRange;
 
         public float StructureDamageMultiplier => _structureDamageMultiplier;
+
+        /// <summary>Saldırı stratejisi; atanmamışsa yakın dövüş.</summary>
+        public IEnemyAttack Attack => _attack ?? MeleeAttack.Default;
 
         public float AggroRadius => _aggroRadius;
 

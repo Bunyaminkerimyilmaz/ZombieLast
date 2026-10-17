@@ -37,6 +37,19 @@ namespace LastHaven.Core
         [SerializeField, Min(0f), Tooltip("Devrilirken görselin yükselme miktarı (m). Gövde yarıçapı kadar olursa yatan kapsül yere gömülmez.")]
         private float _toppleLift;
 
+        [Header("Yürüme: nabız")]
+        [SerializeField, Min(0f), Tooltip("Yürürken görselin nabız gibi büyüme oranı (0.15 = %15 büyüyüp geri döner). 0 = kapalı. Patlayan (GDD §18).")]
+        private float _walkPulseScale;
+
+        [SerializeField, Min(0.01f), Tooltip("Nabız frekansı (Hz).")]
+        private float _walkPulseFrequency = 2.5f;
+
+        [SerializeField, Min(0f), Tooltip("Bu hızın (m/sn) üstünde yürüyor sayılır.")]
+        private float _walkPulseMinSpeed = 0.2f;
+
+        [SerializeField, Min(0.01f), Tooltip("Durunca sönme / yürüyünce açılma süresi (sn).")]
+        private float _walkPulseBlendTime = 0.2f;
+
         public ProceduralPoseSettings()
         {
         }
@@ -49,7 +62,11 @@ namespace LastHaven.Core
             float shakeFrequency,
             float toppleAngle,
             float toppleDuration,
-            float toppleLift)
+            float toppleLift,
+            float walkPulseScale = 0f,
+            float walkPulseFrequency = 2.5f,
+            float walkPulseMinSpeed = 0.2f,
+            float walkPulseBlendTime = 0.2f)
         {
             _lungeDistance = lungeDistance;
             _lungeDuration = lungeDuration;
@@ -59,6 +76,10 @@ namespace LastHaven.Core
             _toppleAngle = toppleAngle;
             _toppleDuration = toppleDuration;
             _toppleLift = toppleLift;
+            _walkPulseScale = walkPulseScale;
+            _walkPulseFrequency = walkPulseFrequency;
+            _walkPulseMinSpeed = walkPulseMinSpeed;
+            _walkPulseBlendTime = walkPulseBlendTime;
         }
 
         public float LungeDistance => _lungeDistance;
@@ -76,5 +97,13 @@ namespace LastHaven.Core
         public float ToppleDuration => _toppleDuration;
 
         public float ToppleLift => _toppleLift;
+
+        public float WalkPulseScale => _walkPulseScale;
+
+        public float WalkPulseFrequency => _walkPulseFrequency;
+
+        public float WalkPulseMinSpeed => _walkPulseMinSpeed;
+
+        public float WalkPulseBlendTime => _walkPulseBlendTime;
     }
 }

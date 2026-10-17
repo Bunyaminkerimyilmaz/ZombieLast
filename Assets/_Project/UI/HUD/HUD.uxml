@@ -3,10 +3,85 @@
     <Style src="HUD.uss" />
     <Style src="HudBuild.uss" />
     <Style src="HudInteraction.uss" />
+    <Style src="HudLoot.uss" />
+    <Style src="HudIntel.uss" />
     <!-- Element adları HudElementNames.cs ile eşleşmeli (EditMode testi kontrol eder). Metinler burada; kod sadece sayı ve veri
          adlarını yazar. Tuş ipuçlarında klavye ve gamepad karşılığı yan yana: kökteki lh-gamepad sınıfı hangisinin görüneceğini
          seçer (HudInputHintsController). -->
     <ui:VisualElement name="hud" class="lh-screen hud" picking-mode="Ignore">
+        <!-- Gündüzün son 15 sn'si (HudDayWarningController): ekran kenarında kırmızı nabız (iki kat kenarlık; kod "dim" sınıfını
+             transition bitişlerinde açıp kapatır) ve büyük geri sayım (saniye değişince kod "tick" sınıfıyla kısa büyütür).
+             İlk çocuk: her şeyin altında çizilir. -->
+        <ui:VisualElement name="day-warning" class="hud-day-warning hidden" picking-mode="Ignore">
+            <ui:VisualElement name="day-warning-pulse" class="hud-day-warning__pulse" picking-mode="Ignore">
+                <ui:VisualElement class="hud-day-warning__edge hud-day-warning__edge--outer" picking-mode="Ignore" />
+                <ui:VisualElement class="hud-day-warning__edge hud-day-warning__edge--inner" picking-mode="Ignore" />
+            </ui:VisualElement>
+            <ui:VisualElement class="hud-day-countdown-group" picking-mode="Ignore">
+                <ui:Label name="day-countdown" text="15" class="label-huge hud-day-countdown" picking-mode="Ignore" />
+                <ui:Label text="GECE YAKLAŞIYOR" class="label-large hud-day-countdown-caption" picking-mode="Ignore" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <!-- Ganimet sandığı kenar göstergeleri (gündüz): ekran dışındaki en yakın sandıkların yönü. Gösterge sayısı buradaki
+             hud-edge-indicator sayısı; kod merkezini kenara koyar ve ok taşıyıcısını döndürür (HudLootIndicatorsController).
+             Kutulardan önce: diğer HUD kutuları bunun üstünde çizilir (göstergeler kutuları örtmez). -->
+        <ui:VisualElement name="loot-indicators" class="hud-loot-indicators" picking-mode="Ignore">
+            <ui:VisualElement class="hud-edge-indicator hidden" picking-mode="Ignore">
+                <ui:VisualElement class="hud-edge-indicator__icon" picking-mode="Ignore" />
+                <ui:VisualElement class="hud-edge-indicator__pivot" picking-mode="Ignore">
+                    <ui:VisualElement class="hud-edge-indicator__arrow" picking-mode="Ignore" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <ui:VisualElement class="hud-edge-indicator hidden" picking-mode="Ignore">
+                <ui:VisualElement class="hud-edge-indicator__icon" picking-mode="Ignore" />
+                <ui:VisualElement class="hud-edge-indicator__pivot" picking-mode="Ignore">
+                    <ui:VisualElement class="hud-edge-indicator__arrow" picking-mode="Ignore" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <ui:VisualElement class="hud-edge-indicator hidden" picking-mode="Ignore">
+                <ui:VisualElement class="hud-edge-indicator__icon" picking-mode="Ignore" />
+                <ui:VisualElement class="hud-edge-indicator__pivot" picking-mode="Ignore">
+                    <ui:VisualElement class="hud-edge-indicator__arrow" picking-mode="Ignore" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <!-- Saldırı yönü okları (gündüz istihbaratı, GDD §9): bu gecenin her saldırı yönü için ekran dışındaki spawn bölgesine dönen
+             kırmızı ok. Her yönün kendi göstergesi ve harfi var (Kuzey, Doğu, Güney, Batı); kod merkezini kenara koyar ve ok
+             taşıyıcısını döndürür (HudAttackIndicatorsController). Sandık göstergelerinin üstünde çizilir. -->
+        <ui:VisualElement name="attack-indicators" class="hud-attack-indicators" picking-mode="Ignore">
+            <ui:VisualElement name="attack-indicator-north" class="hud-edge-indicator hud-edge-indicator--attack hidden" picking-mode="Ignore">
+                <ui:VisualElement class="hud-edge-indicator__icon" picking-mode="Ignore">
+                    <ui:Label text="K" class="label hud-edge-indicator__letter" picking-mode="Ignore" />
+                </ui:VisualElement>
+                <ui:VisualElement class="hud-edge-indicator__pivot" picking-mode="Ignore">
+                    <ui:VisualElement class="hud-edge-indicator__arrow" picking-mode="Ignore" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <ui:VisualElement name="attack-indicator-east" class="hud-edge-indicator hud-edge-indicator--attack hidden" picking-mode="Ignore">
+                <ui:VisualElement class="hud-edge-indicator__icon" picking-mode="Ignore">
+                    <ui:Label text="D" class="label hud-edge-indicator__letter" picking-mode="Ignore" />
+                </ui:VisualElement>
+                <ui:VisualElement class="hud-edge-indicator__pivot" picking-mode="Ignore">
+                    <ui:VisualElement class="hud-edge-indicator__arrow" picking-mode="Ignore" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <ui:VisualElement name="attack-indicator-south" class="hud-edge-indicator hud-edge-indicator--attack hidden" picking-mode="Ignore">
+                <ui:VisualElement class="hud-edge-indicator__icon" picking-mode="Ignore">
+                    <ui:Label text="G" class="label hud-edge-indicator__letter" picking-mode="Ignore" />
+                </ui:VisualElement>
+                <ui:VisualElement class="hud-edge-indicator__pivot" picking-mode="Ignore">
+                    <ui:VisualElement class="hud-edge-indicator__arrow" picking-mode="Ignore" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <ui:VisualElement name="attack-indicator-west" class="hud-edge-indicator hud-edge-indicator--attack hidden" picking-mode="Ignore">
+                <ui:VisualElement class="hud-edge-indicator__icon" picking-mode="Ignore">
+                    <ui:Label text="B" class="label hud-edge-indicator__letter" picking-mode="Ignore" />
+                </ui:VisualElement>
+                <ui:VisualElement class="hud-edge-indicator__pivot" picking-mode="Ignore">
+                    <ui:VisualElement class="hud-edge-indicator__arrow" picking-mode="Ignore" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
         <ui:VisualElement class="hud-top" picking-mode="Ignore">
             <ui:VisualElement class="panel hud-phase-panel" picking-mode="Ignore">
                 <ui:VisualElement class="row" picking-mode="Ignore">
@@ -25,6 +100,30 @@
                 <ui:VisualElement name="remaining-group" class="row hud-remaining hidden" picking-mode="Ignore">
                     <ui:Label text="KALAN DÜŞMAN" class="label-small hud-caption" picking-mode="Ignore" />
                     <ui:Label name="remaining-value" text="0" class="label-large text-danger" picking-mode="Ignore" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <!-- "Hazırım" ipucu (gündüz; HudReadyHintController): bonus 0 iken "— +X bonus" kısmı gizli. -->
+            <ui:VisualElement name="ready-hint" class="panel row hud-ready-hint hidden" picking-mode="Ignore">
+                <ui:Label text="Enter" class="key key--keyboard" picking-mode="Ignore" />
+                <ui:Label text="Start (basılı)" class="key key--gamepad" picking-mode="Ignore" />
+                <ui:Label text="Hazırım" class="label" picking-mode="Ignore" />
+                <ui:VisualElement name="ready-bonus" class="row" picking-mode="Ignore">
+                    <ui:Label text="—" class="label hud-ready-hint__dash" picking-mode="Ignore" />
+                    <ui:Label name="ready-bonus-value" text="+0" class="label hud-ready-hint__bonus" picking-mode="Ignore" />
+                    <ui:Label text="bonus" class="label" picking-mode="Ignore" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <!-- Boss (gece; HudBossController): boss doğunca ad + büyük can barı; ölünce gizlenir. Ad boss verisinden (DisplayName). -->
+            <ui:VisualElement name="boss-panel" class="panel hud-boss hidden" picking-mode="Ignore">
+                <ui:VisualElement class="row-spread" picking-mode="Ignore">
+                    <ui:VisualElement class="row" picking-mode="Ignore">
+                        <ui:Label text="BOSS" class="label-small hud-boss__tag" picking-mode="Ignore" />
+                        <ui:Label name="boss-name" text="" class="label-large hud-boss__name" picking-mode="Ignore" />
+                    </ui:VisualElement>
+                    <ui:Label name="boss-health-value" text="0/0" class="label" picking-mode="Ignore" />
+                </ui:VisualElement>
+                <ui:VisualElement class="bar hud-boss__bar" picking-mode="Ignore">
+                    <ui:VisualElement name="boss-health-fill" class="bar-fill bar-fill--boss" picking-mode="Ignore" />
                 </ui:VisualElement>
             </ui:VisualElement>
         </ui:VisualElement>
@@ -59,6 +158,51 @@
             <!-- Güç yokken görünür; kod "dim" sınıfını transition bitişlerinde açıp kapatarak yanıp söndürür (HudFuelController). -->
             <ui:VisualElement name="power-warning" class="panel hud-power-warning hidden" picking-mode="Ignore">
                 <ui:Label text="GÜÇ YOK" class="label-big" picking-mode="Ignore" />
+            </ui:VisualElement>
+            <!-- İstihbarat (gündüz; HudIntelController): bu gecenin düşman tipleri + adetleri ve gece olayı. Satır sayısı = bir gecedeki
+                 en fazla tip (5 tip + boss); kullanılmayan satırlar gizli. -->
+            <ui:VisualElement name="intel-panel" class="panel hud-intel hidden" picking-mode="Ignore">
+                <ui:Label text="BU GECE" class="label-small hud-intel__title" picking-mode="Ignore" />
+                <ui:VisualElement name="intel-enemies" picking-mode="Ignore">
+                    <ui:VisualElement class="row hud-intel-row hidden" picking-mode="Ignore">
+                        <ui:Label text="0" class="label-large hud-intel-row__count" picking-mode="Ignore" />
+                        <ui:Label text="" class="label hud-intel-row__name" picking-mode="Ignore" />
+                        <ui:Label text="BOSS" class="label-small hud-intel-row__boss hidden" picking-mode="Ignore" />
+                    </ui:VisualElement>
+                    <ui:VisualElement class="row hud-intel-row hidden" picking-mode="Ignore">
+                        <ui:Label text="0" class="label-large hud-intel-row__count" picking-mode="Ignore" />
+                        <ui:Label text="" class="label hud-intel-row__name" picking-mode="Ignore" />
+                        <ui:Label text="BOSS" class="label-small hud-intel-row__boss hidden" picking-mode="Ignore" />
+                    </ui:VisualElement>
+                    <ui:VisualElement class="row hud-intel-row hidden" picking-mode="Ignore">
+                        <ui:Label text="0" class="label-large hud-intel-row__count" picking-mode="Ignore" />
+                        <ui:Label text="" class="label hud-intel-row__name" picking-mode="Ignore" />
+                        <ui:Label text="BOSS" class="label-small hud-intel-row__boss hidden" picking-mode="Ignore" />
+                    </ui:VisualElement>
+                    <ui:VisualElement class="row hud-intel-row hidden" picking-mode="Ignore">
+                        <ui:Label text="0" class="label-large hud-intel-row__count" picking-mode="Ignore" />
+                        <ui:Label text="" class="label hud-intel-row__name" picking-mode="Ignore" />
+                        <ui:Label text="BOSS" class="label-small hud-intel-row__boss hidden" picking-mode="Ignore" />
+                    </ui:VisualElement>
+                    <ui:VisualElement class="row hud-intel-row hidden" picking-mode="Ignore">
+                        <ui:Label text="0" class="label-large hud-intel-row__count" picking-mode="Ignore" />
+                        <ui:Label text="" class="label hud-intel-row__name" picking-mode="Ignore" />
+                        <ui:Label text="BOSS" class="label-small hud-intel-row__boss hidden" picking-mode="Ignore" />
+                    </ui:VisualElement>
+                    <ui:VisualElement class="row hud-intel-row hidden" picking-mode="Ignore">
+                        <ui:Label text="0" class="label-large hud-intel-row__count" picking-mode="Ignore" />
+                        <ui:Label text="" class="label hud-intel-row__name" picking-mode="Ignore" />
+                        <ui:Label text="BOSS" class="label-small hud-intel-row__boss hidden" picking-mode="Ignore" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+                <!-- Gece olayı (GDD §14): ad ve açıklama olay verisinden (NightModifierData). -->
+                <ui:VisualElement name="intel-event" class="hud-intel__event hidden" picking-mode="Ignore">
+                    <ui:VisualElement class="row-spread" picking-mode="Ignore">
+                        <ui:Label text="OLAY" class="label-small" picking-mode="Ignore" />
+                        <ui:Label name="intel-event-name" text="" class="label-large hud-intel__event-name" picking-mode="Ignore" />
+                    </ui:VisualElement>
+                    <ui:Label name="intel-event-description" text="" class="label-small hud-intel__event-description" picking-mode="Ignore" />
+                </ui:VisualElement>
             </ui:VisualElement>
         </ui:VisualElement>
         <!-- Kombo (sağ orta): kombo yokken gizli; eşik atlanınca kod "pulse" sınıfıyla kısa büyütür (HudComboController.PulseClass). -->
