@@ -1,13 +1,16 @@
-using System;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace LastHaven.Core
 {
     /// <summary>
-    /// Vuruş flaşı: <c>Visual</c> altındaki tüm Renderer'ların rengini kısa süre MaterialPropertyBlock ile değiştirir
-    /// (<c>_BaseColor</c> ve <c>_EmissionColor</c>; materyalde olmayan özellik, hiçbiri yoksa renderer atlanır).
-    /// Süre bitince blok temizlenir; materyallere dokunulmaz. Renk ve süre prefab'da (düşman beyaz, oyuncu kırmızı).
+    /// <c>Visual</c> altındaki tüm Renderer'ların rengini MaterialPropertyBlock ile yönetir (<c>_BaseColor</c> ve <c>_EmissionColor</c>;
+    /// materyalde olmayan özellik, hiçbiri yoksa renderer atlanır). Materyallere dokunulmaz. İki katman:
+    /// <list type="bullet">
+    /// <item>Vuruş flaşı (<see cref="Flash()"/>): kısa süre tek renk. Renk ve süre prefab'da (düşman beyaz, oyuncu kırmızı).</item>
+    /// <item>Kalıcı renk tonu (<see cref="SetTint"/>, 9.3): durum efektleri (ör. yavaşlamış düşman mavi). Flaş sürerken flaş görünür,
+    /// bitince ton geri gelir. Ton yoksa flaş bitince blok temizlenir.</item>
+    /// </list>
+    /// Aynı renderer'lara iki ayrı bileşen blok yazarsa birbirini silerdi; bu yüzden ikisi de burada.
     /// </summary>
     [DisallowMultipleComponent]
     public sealed class HitFlash : MonoBehaviour, IPoolable
@@ -22,8 +25,9 @@ namespace LastHaven.Core
         private float _duration = 0.08f;
 
         private readonly Countdown _timer = new Countdown();
-        private MaterialPropertyBlock _block;
-        private FlashTarget[] _targets;
+        private FlashTargetSet _targets;
+        private Color _tint;
+        private bool _hasTint;
 
         public Color Color => _color;
 
@@ -31,14 +35,28 @@ namespace LastHaven.Core
 
         public bool IsFlashing => _timer.IsRunning;
 
+        /// <summary>Kalıcı renk tonu açık mı.</summary>
+        public bool HasTint => _hasTint;
+
         /// <summary>Flaşın uygulanabildiği renderer sayısı.</summary>
         public int TargetCount
         {
             get
             {
                 EnsureInitialized();
-                return _targets.Length;
+                return _targets.Count;
             }
+        }
+
+        /// <summary>
+        /// Tonlanmış renk: <paramref name="original"/>'ın RGB'si <paramref name="tint"/>'in RGB'sine tonun alfası oranında karışır
+        /// (0 = değişmez, 1 = tamamen ton). Alfa (saydamlık) korunur.
+        /// </summary>
+        public static Color Tint(Color original, Color tint)
+        {
+            Color mixed = Color.Lerp(original, tint, Mathf.Clamp01(tint.a));
+            mixed.a = original.a;
+            return mixed;
         }
 
         /// <summary>Prefab'daki renk ve süreyle flaş. Flaş sürerken çağrılırsa süre baştan başlar.</summary>
@@ -50,42 +68,60 @@ namespace LastHaven.Core
         public void Flash(Color color, float duration)
         {
             EnsureInitialized();
-            if (_targets.Length == 0 || duration <= 0f)
+            if (_targets.Count == 0 || duration <= 0f)
             {
                 return;
             }
 
-            for (int i = 0; i < _targets.Length; i++)
-            {
-                _targets[i].Apply(_block, color);
-            }
-
+            _targets.Apply(color);
             _timer.Start(duration);
         }
 
-        /// <summary>Flaşı hemen bitirir ve renkleri geri verir.</summary>
+        /// <summary>Flaşı hemen bitirir; ton varsa tona, yoksa materyalin kendi rengine döner.</summary>
         public void Stop()
         {
             _timer.Stop();
-            if (_targets == null)
+            RestoreColors();
+        }
+
+        /// <summary>
+        /// Kalıcı ton: <c>_BaseColor</c> materyalin rengiyle <paramref name="tint"/> arasında karışır (alfa = karışım oranı; bkz.
+        /// <see cref="Tint(Color, Color)"/>). Flaş sürüyorsa flaş bitince görünür. <see cref="ClearTint"/>'e veya havuza dönüşe kadar kalır.
+        /// </summary>
+        public void SetTint(Color tint)
+        {
+            EnsureInitialized();
+            _tint = tint;
+            _hasTint = true;
+            if (!_timer.IsRunning)
+            {
+                RestoreColors();
+            }
+        }
+
+        /// <summary>Tonu kaldırır; flaş sürmüyorsa renkler hemen materyale döner.</summary>
+        public void ClearTint()
+        {
+            if (!_hasTint)
             {
                 return;
             }
 
-            for (int i = 0; i < _targets.Length; i++)
+            _hasTint = false;
+            if (!_timer.IsRunning)
             {
-                _targets[i].Clear();
+                RestoreColors();
             }
         }
 
         public void OnSpawned()
         {
-            Stop();
+            ResetColors();
         }
 
         public void OnDespawned()
         {
-            Stop();
+            ResetColors();
         }
 
         /// <summary>Süreyi ilerletir; bitince renkleri geri verir. Update'ten çağrılır; testler doğrudan çağırır.</summary>
@@ -104,7 +140,7 @@ namespace LastHaven.Core
 
         private void OnDisable()
         {
-            Stop();
+            ResetColors();
         }
 
         private void Update()
@@ -112,6 +148,30 @@ namespace LastHaven.Core
             if (_timer.IsRunning)
             {
                 Advance(Time.deltaTime);
+            }
+        }
+
+        // Flaş ve ton yok: renderer'lar materyalin kendi rengine döner (havuz, kapanma).
+        private void ResetColors()
+        {
+            _hasTint = false;
+            Stop();
+        }
+
+        private void RestoreColors()
+        {
+            if (_targets == null)
+            {
+                return;
+            }
+
+            if (_hasTint)
+            {
+                _targets.ApplyTint(_tint);
+            }
+            else
+            {
+                _targets.Clear();
             }
         }
 
@@ -123,7 +183,6 @@ namespace LastHaven.Core
                 return;
             }
 
-            _block = new MaterialPropertyBlock();
             if (_visual == null)
             {
                 _visual = VisualRoot.Find(transform);
@@ -132,21 +191,11 @@ namespace LastHaven.Core
             if (_visual == null)
             {
                 Debug.LogWarning($"HitFlash: '{name}' altında '{VisualRoot.Name}' bulunamadı; flaş olmayacak.", this);
-                _targets = Array.Empty<FlashTarget>();
+                _targets = FlashTargetSet.Empty;
                 return;
             }
 
-            Renderer[] renderers = _visual.GetComponentsInChildren<Renderer>(true);
-            var targets = new List<FlashTarget>(renderers.Length);
-            for (int i = 0; i < renderers.Length; i++)
-            {
-                if (FlashTarget.TryCreate(renderers[i], out FlashTarget target))
-                {
-                    targets.Add(target);
-                }
-            }
-
-            _targets = targets.ToArray();
+            _targets = FlashTargetSet.Create(_visual);
         }
     }
 }

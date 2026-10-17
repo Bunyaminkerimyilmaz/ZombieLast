@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using LastHaven.Combat;
 using LastHaven.Core;
+using LastHaven.Enemies;
 using NUnit.Framework;
 using UnityEngine;
 
@@ -153,6 +154,54 @@ namespace LastHaven.Tests.EditMode
             }
 
             Assert.AreEqual(_hits.Count, hits, "İsabet eden her saçmanın izi isabet olarak işaretli.");
+        }
+
+        [Test]
+        public void Hunter_SlowedTarget_TakesBonusDamage()
+        {
+            CombatPerkConfig perks = ScriptableObject.CreateInstance<CombatPerkConfig>();
+            try
+            {
+                Health health = CreateTarget(Origin + Vector3.forward * 5f, GameLayers.Enemy, 100f);
+                var receiver = health.gameObject.AddComponent<EnemyStatusEffects>();
+                var modifiers = new RunModifiers();
+                _shooter.SetPerks(modifiers, perks);
+
+                receiver.ApplySlow(0.4f, 10f);
+                Assert.IsTrue(receiver.IsSlowed);
+                _shooter.Fire(Request(damage: 20f, pellets: 1, range: 10f));
+                Assert.AreEqual(80f, health.Current, 0.01f, "Bayrak yokken bonus yok.");
+
+                modifiers.AddFlag(PerkFlag.Hunter);
+                _shooter.Fire(Request(damage: 20f, pellets: 1, range: 10f));
+                Assert.AreEqual(50f, health.Current, 0.01f, "Avcı + yavaşlamış: 20 × 1.5 = 30.");
+                Assert.AreEqual(30f, _hits[1].Damage, 0.01f, "Olaydaki hasar bonuslu.");
+
+                ((IPoolable)receiver).OnDespawned(); // yavaşlatma temizlenir
+                Assert.IsFalse(receiver.IsSlowed);
+                _shooter.Fire(Request(damage: 20f, pellets: 1, range: 10f));
+                Assert.AreEqual(30f, health.Current, 0.01f, "Yavaşlamamış hedefe bonus yok.");
+            }
+            finally
+            {
+                Object.DestroyImmediate(perks);
+                StatusEffectLookup.Clear();
+            }
+        }
+
+        [Test]
+        public void Hunter_WithoutPerkConfig_IsOff()
+        {
+            Health health = CreateTarget(Origin + Vector3.forward * 5f, GameLayers.Enemy, 100f);
+            health.gameObject.AddComponent<EnemyStatusEffects>().ApplySlow(0.4f, 10f);
+            var modifiers = new RunModifiers();
+            modifiers.AddFlag(PerkFlag.Hunter);
+            _shooter.SetPerks(modifiers, null);
+
+            _shooter.Fire(Request(damage: 20f, pellets: 1, range: 10f));
+
+            Assert.AreEqual(80f, health.Current, 0.01f, "Taretler gibi perk bağlanmamış atıcı.");
+            StatusEffectLookup.Clear();
         }
 
         private static HitscanRequest Request(float damage, int pellets, float range, float spread = 0f)

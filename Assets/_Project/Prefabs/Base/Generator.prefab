@@ -110,6 +110,8 @@ GameObject:
   - component: {fileID: 3256639490147514739}
   - component: {fileID: 1382065014955163834}
   - component: {fileID: 2464801544178976038}
+  - component: {fileID: 9204489474521765378}
+  - component: {fileID: 8746036277044279037}
   m_Layer: 9
   m_Name: Generator
   m_TagString: Generator
@@ -197,6 +199,30 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: LastHaven.Building::LastHaven.Building.Generator
   _data: {fileID: 11400000, guid: 757fd63a404fe5d47abe36375c1becb3, type: 2}
+--- !u!114 &9204489474521765378
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2483256294202894971}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 456c42d722d39c64ea8b555a44ee0c63, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: LastHaven.Building::LastHaven.Building.GeneratorPower
+--- !u!114 &8746036277044279037
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2483256294202894971}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 03d3a7be954f068438cf3a8aa9df1c23, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: LastHaven.Building::LastHaven.Building.EmergencyFuelStation
 --- !u!1 &3194535851812648837
 GameObject:
   m_ObjectHideFlags: 0

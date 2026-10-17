@@ -8,5 +8,11 @@ namespace LastHaven.UI
 
         /// <summary>Elementi gizler (<c>display: none</c>).</summary>
         public const string Hidden = "hidden";
+
+        /// <summary>
+        /// Ekranın kökünde: son kullanılan cihaz gamepad. Tuş ipuçlarından <c>.key--gamepad</c> olanlar görünür, <c>.key--keyboard</c>
+        /// olanlar gizlenir (<c>Theme.uss</c>).
+        /// </summary>
+        public const string Gamepad = "lh-gamepad";
     }
 }

@@ -2,6 +2,7 @@ using LastHaven.Building;
 using LastHaven.Core;
 using LastHaven.Editor;
 using NUnit.Framework;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -39,11 +40,25 @@ namespace LastHaven.Tests.EditMode
             _data = data;
 
             Assert.AreEqual(1500f, data.MaxHealth, Tolerance);
-            Assert.AreEqual(150f, data.FuelCapacity, Tolerance);
+            Assert.AreEqual(150, data.FuelCapacity);
             Assert.AreEqual(0.4f, data.BaseFuelConsumption, Tolerance);
             Assert.AreEqual(0.05f, data.FuelConsumptionPerTurret, Tolerance);
             Assert.AreEqual(30, data.EmergencyFuelPrice);
-            Assert.AreEqual(10f, data.EmergencyFuelAmount, Tolerance);
+            Assert.AreEqual(10, data.EmergencyFuelAmount);
+            Assert.AreEqual(1f, data.EmergencyFuelHoldDuration, Tolerance);
+            Assert.AreEqual(2f, data.EmergencyFuelRange, Tolerance);
+            Assert.AreEqual("Acil yakıt +10 (30 para)", data.FormatEmergencyFuelPrompt());
+        }
+
+        [Test]
+        public void GeneratorDataAsset_HasGddFuelValues()
+        {
+            GeneratorData data = AssetDatabase.LoadAssetAtPath<GeneratorData>(BaseGenerator.GeneratorDataPath);
+
+            Assert.IsNotNull(data, BaseGenerator.GeneratorDataPath);
+            Assert.AreEqual(150, data.FuelCapacity, "float → int dönüşümünde değer korunmalı.");
+            Assert.AreEqual(10, data.EmergencyFuelAmount);
+            Assert.AreEqual(30, data.EmergencyFuelPrice);
         }
 
         [Test]
@@ -73,13 +88,46 @@ namespace LastHaven.Tests.EditMode
         }
 
         [Test]
-        public void BuildRoot_Generator_IsGeneratorTargetAndPowered()
+        public void BuildRoot_Generator_IsGeneratorTarget()
         {
             var generator = Build().GetComponent<Generator>();
 
             Assert.AreEqual(TargetType.Generator, generator.TargetType);
             Assert.AreSame(generator.transform, generator.Transform);
-            Assert.IsTrue(generator.IsPowered, "Yakıt Gün 9'a kadar yok; güç hep var.");
+        }
+
+        [Test]
+        public void BuildRoot_HasPowerAndEmergencyFuelOnRoot()
+        {
+            GameObject root = Build();
+            var power = root.GetComponent<GeneratorPower>();
+            var station = root.GetComponent<EmergencyFuelStation>();
+
+            Assert.IsNotNull(power);
+            Assert.IsNotNull(station);
+            Assert.IsTrue(power.IsPowered, "Start'tan önce güç var sayılır (yakıt durumu Start'ta okunur).");
+            Assert.IsFalse(power.IsConsuming, "Gece değil.");
+            Assert.IsFalse(station.CanInteract, "Gece değil, cüzdan yok.");
+        }
+
+        [Test]
+        public void EmergencyFuelStation_UsesDataAndMeasuresToGeneratorEdge()
+        {
+            GameObject root = Build();
+            var data = ScriptableObject.CreateInstance<GeneratorData>();
+            _data = data;
+            var serialized = new SerializedObject(root.GetComponent<Generator>());
+            serialized.FindProperty("_data").objectReferenceValue = data;
+            serialized.ApplyModifiedPropertiesWithoutUndo();
+            Physics.SyncTransforms();
+            var station = root.GetComponent<EmergencyFuelStation>();
+
+            Assert.AreEqual("Acil yakıt +10 (30 para)", station.Prompt);
+            Assert.AreEqual(1f, station.HoldDuration, Tolerance);
+            Assert.AreEqual(2f, station.InteractionRange, Tolerance);
+            Assert.AreEqual(2f, station.GetDistance(new Vector3(3f, 0f, 0f)), Tolerance, "2×2 küpün kenarından.");
+            Assert.AreEqual(0f, station.GetDistance(new Vector3(0.5f, 0f, 0f)), Tolerance);
+            Assert.AreEqual(GeneratorPrefab.Size.y, station.PromptPosition.y, Tolerance, "İpucu küpün tepesinde.");
         }
 
         [Test]

@@ -1,4 +1,5 @@
 using System;
+using LastHaven.Core;
 using UnityEngine;
 
 namespace LastHaven.Combat

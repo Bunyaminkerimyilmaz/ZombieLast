@@ -5,12 +5,15 @@ namespace LastHaven.Economy
 {
     /// <summary>
     /// Para ve yakıt cüzdanı (saf C#; GDD §10). Değişiklikler C# olaylarıyla bildirilir; <see cref="WalletService"/> bunları
-    /// EventBus'a çevirir. Miktarlar int.MaxValue'da doyar. Negatif miktar <see cref="ArgumentOutOfRangeException"/> fırlatır.
+    /// EventBus'a çevirir. Miktarlar kaynağın kapasitesinde (varsayılan int.MaxValue) doyar. Negatif miktar
+    /// <see cref="ArgumentOutOfRangeException"/> fırlatır.
     /// </summary>
     public sealed class Wallet : IWallet
     {
         private int _money;
         private int _fuel;
+        private int _moneyCapacity = int.MaxValue;
+        private int _fuelCapacity = int.MaxValue;
 
         public Wallet(int startingMoney, int startingFuel)
         {
@@ -60,8 +63,39 @@ namespace LastHaven.Economy
                 return;
             }
 
-            int updated = (int)Math.Min((long)current + amount, int.MaxValue);
+            int updated = (int)Math.Min((long)current + amount, GetCapacity(resource));
             Set(resource, updated, updated - current);
+        }
+
+        /// <inheritdoc />
+        public int GetCapacity(WalletResource resource)
+        {
+            return resource switch
+            {
+                WalletResource.Money => _moneyCapacity,
+                WalletResource.Fuel => _fuelCapacity,
+                _ => throw new ArgumentOutOfRangeException(nameof(resource), resource, null),
+            };
+        }
+
+        /// <inheritdoc />
+        public void SetCapacity(WalletResource resource, int capacity)
+        {
+            RequireNonNegative(capacity, nameof(capacity));
+            int current = Get(resource);
+            if (resource == WalletResource.Money)
+            {
+                _moneyCapacity = capacity;
+            }
+            else
+            {
+                _fuelCapacity = capacity;
+            }
+
+            if (current > capacity)
+            {
+                Set(resource, capacity, capacity - current);
+            }
         }
 
         /// <inheritdoc />

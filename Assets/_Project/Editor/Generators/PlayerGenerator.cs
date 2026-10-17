@@ -10,7 +10,7 @@ namespace LastHaven.Editor
     /// Kök: CharacterController + mantık bileşenleri, Player layer ve tag. "Visual": mavi kapsül + burun küpü (collider yok).
     /// "Muzzle": Visual dışında, nişan yüksekliğinde; WeaponController mermileri buradan atar.
     /// Vuruş hissi (4.3): AnimationDriver + PlayerAnimation ve kırmızı HitFlash. Yeniden doğma (6.1): PlayerRespawn.
-    /// Fener (6.2): Visual dışında "Flashlight" (<see cref="PlayerFlashlight"/>).
+    /// Fener (6.2): Visual dışında "Flashlight" (<see cref="PlayerFlashlight"/>). Market etkileri (10.1): <see cref="PlayerPurchaseEffects"/>.
     /// Varsa dokunulmaz; sadece eksik bileşen ve boş referanslar tamamlanır.
     /// </summary>
     public sealed class PlayerGenerator : IGenerationStep
@@ -58,7 +58,7 @@ namespace LastHaven.Editor
         /// <summary>
         /// Prefab'ı yükler; yoksa oluşturur. Varsa sadece eksikleri tamamlar: boş PlayerData referansları,
         /// eksik <see cref="WeaponController"/> ve onun boş referansları, eksik vuruş hissi bileşenleri, eksik <see cref="PlayerRespawn"/>,
-        /// eksik fener, eksik <see cref="Interactor"/> (8.3).
+        /// eksik fener, eksik <see cref="Interactor"/> (8.3), eksik <see cref="PlayerPurchaseEffects"/> (10.1).
         /// Kullanıcının diğer ayarlarına dokunulmaz.
         /// Sahne adımı buradan alır; Generate Prefabs çalışmamış olsa da prefab oluşur.
         /// </summary>
@@ -76,7 +76,8 @@ namespace LastHaven.Editor
                 PrefabPath,
                 root => AssignData(root, data) + EnsureWeaponController(root, data, loadout) + EnsureFeedback(root)
                         + VisualFeedbackSetup.EnsureComponent<PlayerRespawn>(root) + PlayerFlashlight.Ensure(root)
-                        + VisualFeedbackSetup.EnsureComponent<Interactor>(root));
+                        + VisualFeedbackSetup.EnsureComponent<Interactor>(root)
+                        + VisualFeedbackSetup.EnsureComponent<PlayerPurchaseEffects>(root));
             if (changes > 0)
             {
                 Debug.Log($"[Last Haven] Player: {PrefabPath} içinde {changes} eksik bileşen/referans tamamlandı.");
@@ -119,6 +120,7 @@ namespace LastHaven.Editor
                 root.AddComponent<PlayerRespawn>();
                 PlayerFlashlight.Ensure(root);
                 root.AddComponent<Interactor>();
+                root.AddComponent<PlayerPurchaseEffects>();
 
                 EditorAssetUtility.EnsureFolder(PrefabFolder);
                 GameObject prefab = PrefabUtility.SaveAsPrefabAsset(root, PrefabPath);

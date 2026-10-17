@@ -20,6 +20,7 @@
     --color-combo: rgb(255, 120, 72);
     --color-accent: rgb(244, 180, 64);
     --color-danger: rgb(232, 80, 72);
+    --color-danger-back: rgba(120, 20, 18, 0.88);
     --color-success: rgb(112, 200, 112);
     --color-day: rgb(250, 214, 110);
     --color-dusk: rgb(240, 140, 80);
@@ -28,7 +29,24 @@
     --color-button: rgb(46, 54, 66);
     --color-button-hover: rgb(66, 78, 94);
     --color-button-active: rgb(34, 40, 50);
+    --color-focus: rgb(255, 236, 170);
+    --color-backdrop: rgba(4, 6, 10, 0.35);
+    --color-window: rgb(12, 16, 22);
+    --color-card: rgba(26, 32, 42, 0.94);
+    --color-card-border: rgba(255, 255, 255, 0.14);
+    --color-success-back: rgba(40, 96, 48, 0.94);
+    --color-dot-empty: rgba(255, 255, 255, 0.18);
+    --color-structure: rgb(112, 200, 112);
+    --color-selected: rgb(255, 214, 90);
+    --color-selected-back: rgba(70, 60, 24, 0.94);
+    --color-swatch: rgb(120, 128, 140);
+    --color-key: rgb(240, 240, 236);
+    --color-key-back: rgba(255, 255, 255, 0.14);
+    --color-key-border: rgba(255, 255, 255, 0.55);
+    --color-ring-track: rgba(255, 255, 255, 0.22);
+    --color-ring-fill: rgb(255, 214, 90);
 
+    --font-tiny: 15px;
     --font-small: 18px;
     --font-normal: 24px;
     --font-large: 34px;
@@ -39,6 +57,17 @@
     --space: 12px;
     --space-large: 24px;
     --radius: 6px;
+    --border-thin: 1px;
+    --border: 2px;
+    --border-thick: 4px;
+
+    /* HUD kutularının ekran kenarına uzaklığı ve bar kalınlıkları. */
+    --hud-edge: 24px;
+    --hud-edge-top: 20px;
+    --bar-height: 22px;
+    --bar-height-small: 14px;
+    --bar-height-thin: 12px;
+    --bar-radius: 4px;
 
     position: absolute;
     left: 0;
@@ -108,7 +137,7 @@
 
 .lh-screen .panel {
     background-color: var(--color-panel);
-    border-width: 1px;
+    border-width: var(--border-thin);
     border-color: var(--color-panel-border);
     border-radius: var(--radius);
     padding: var(--space) var(--space-large);
@@ -139,12 +168,12 @@
 /* --- Barlar: .bar içinde .bar-fill; dolum genişliğini kod yüzde olarak yazar. --- */
 
 .lh-screen .bar {
-    height: 22px;
+    height: var(--bar-height);
     margin-top: var(--space-small);
     background-color: var(--color-bar-back);
-    border-width: 2px;
+    border-width: var(--border);
     border-color: var(--color-bar-border);
-    border-radius: 4px;
+    border-radius: var(--bar-radius);
     overflow: hidden;
 }
 
@@ -165,7 +194,7 @@
     -unity-font-style: bold;
     color: var(--color-text);
     background-color: var(--color-button);
-    border-width: 2px;
+    border-width: var(--border);
     border-color: var(--color-accent);
     border-radius: var(--radius);
     min-width: 280px;
@@ -179,4 +208,44 @@
 
 .lh-screen .button:active {
     background-color: var(--color-button-active);
+}
+
+/* --- Küçük yazı (HUD'da ikincil bilgi: kart numarası, ipucu satırı) --- */
+
+.lh-screen .label-tiny {
+    font-size: var(--font-tiny);
+    color: var(--color-text-dim);
+    margin: 0;
+    padding: 0;
+    text-shadow: 2px 2px 0 var(--color-text-shadow);
+}
+
+/* --- Tuş rozetleri ---
+ * Bir eylemin klavye ve gamepad tuşu yan yana yazılır (.key--keyboard / .key--gamepad). Ekranın kökünde lh-gamepad sınıfı
+ * varken gamepad'inki, yokken klavyeninki görünür (HudInputHintsController, UIClassNames.Gamepad). Bu elementlere "hidden"
+ * verme: görünürlüklerini bu kurallar yönetir. */
+
+.lh-screen .key {
+    font-size: var(--font-small);
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+    color: var(--color-key);
+    background-color: var(--color-key-back);
+    border-width: var(--border-thin);
+    border-color: var(--color-key-border);
+    border-radius: var(--radius);
+    margin: 0 var(--space-small) 0 0;
+    padding: 0 var(--space-small);
+}
+
+.lh-screen .key--gamepad {
+    display: none;
+}
+
+.lh-screen.lh-gamepad .key--gamepad {
+    display: flex;
+}
+
+.lh-screen.lh-gamepad .key--keyboard {
+    display: none;
 }

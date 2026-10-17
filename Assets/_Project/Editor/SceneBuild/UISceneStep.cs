@@ -11,21 +11,27 @@ namespace LastHaven.Editor
     /// <summary>
     /// [Systems]/UI: her ekran için bir <see cref="UIDocument"/> (ortak PanelSettings) + denetleyicisi. HUD'a oyuncunun ve
     /// jeneratörün <see cref="Health"/>'i bağlanır (Player ve Base adımlarından sonra çalışır); HUD'un bölüm denetleyicileri
-    /// (cüzdan, kombo) aynı UIDocument'ı paylaşır. Sıralama: HUD altta, paneller üstte.
+    /// (cüzdan, kombo, yakıt/güç, inşa çubuğu, yapı ipucu, etkileşim ipucu, tuş ipuçları) aynı UIDocument'ı paylaşır. İnşa
+    /// çubuğuna sahnedeki <see cref="BuildSite"/>'ın <see cref="BuildConfig"/>'i (Building adımından sonra) ve kart şablonu,
+    /// market paneline kart şablonu bağlanır. Sıralama: HUD altta, market onun üstünde, şafak ve run sonu panelleri en üstte.
     /// </summary>
     public sealed class UISceneStep : ISceneBuildStep
     {
         public const string GroupName = "UI";
         public const string HudName = "HUD";
+        public const string ShopPanelName = "ShopPanel";
         public const string DawnPanelName = "DawnPanel";
         public const string GameOverPanelName = "GameOverPanel";
         public const string VictoryPanelName = "VictoryPanel";
 
         public const float HudSortingOrder = 0f;
+        public const float ShopPanelSortingOrder = 5f;
         public const float DawnPanelSortingOrder = 10f;
         public const float RunEndPanelSortingOrder = 20f;
 
         private const string DocumentField = "_document";
+        private const string CardTemplateField = "_cardTemplate";
+        private const string ConfigField = "_config";
 
         public int Order => 800;
 
@@ -43,6 +49,21 @@ namespace LastHaven.Editor
             serializedHud.ApplyModifiedPropertiesWithoutUndo();
             AddController<HudWalletController>(hud.gameObject, hud.GetComponent<UIDocument>());
             AddController<HudComboController>(hud.gameObject, hud.GetComponent<UIDocument>());
+            AddController<HudFuelController>(hud.gameObject, hud.GetComponent<UIDocument>());
+            var buildBar = AddController<HudBuildBarController>(hud.gameObject, hud.GetComponent<UIDocument>());
+            var serializedBuildBar = new SerializedObject(buildBar);
+            serializedBuildBar.FindProperty(ConfigField).objectReferenceValue = FindBuildConfig(context);
+            serializedBuildBar.FindProperty(CardTemplateField).objectReferenceValue = UIGenerator.LoadLayout(UIGenerator.BuildCardPath);
+            serializedBuildBar.ApplyModifiedPropertiesWithoutUndo();
+            AddController<HudStructureTooltipController>(hud.gameObject, hud.GetComponent<UIDocument>());
+            AddController<HudInteractionPromptController>(hud.gameObject, hud.GetComponent<UIDocument>());
+            AddController<HudInputHintsController>(hud.gameObject, hud.GetComponent<UIDocument>());
+
+            var shop = CreateScreen<ShopPanelController>(
+                context, group, ShopPanelName, settings, UIGenerator.ShopPanelPath, ShopPanelSortingOrder);
+            var serializedShop = new SerializedObject(shop);
+            serializedShop.FindProperty(CardTemplateField).objectReferenceValue = UIGenerator.LoadLayout(UIGenerator.ShopCardPath);
+            serializedShop.ApplyModifiedPropertiesWithoutUndo();
 
             CreateScreen<DawnPanelController>(
                 context, group, DawnPanelName, settings, UIGenerator.DawnPanelPath, DawnPanelSortingOrder);
@@ -91,6 +112,18 @@ namespace LastHaven.Editor
             }
 
             return player.GetComponent<Health>();
+        }
+
+        private static BuildConfig FindBuildConfig(SceneBuildContext context)
+        {
+            var site = context.Systems.GetComponentInChildren<BuildSite>(true);
+            if (site == null || site.Config == null)
+            {
+                Debug.LogWarning("[Last Haven] UI: sahnede BuildSite veya BuildConfig yok; inşa çubuğu boş kalacak.");
+                return null;
+            }
+
+            return site.Config;
         }
 
         private static Health FindGeneratorHealth(SceneBuildContext context)

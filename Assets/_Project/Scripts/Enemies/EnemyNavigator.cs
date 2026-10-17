@@ -18,6 +18,8 @@ namespace LastHaven.Enemies
         private Vector3 _lastDestination;
         private bool _hasDestination;
         private float _sinkStartHeight;
+        private float _baseSpeed;
+        private float _speedMultiplier = 1f;
 
         public EnemyNavigator(NavMeshAgent agent)
         {
@@ -36,15 +38,20 @@ namespace LastHaven.Enemies
         /// <summary>Ajanın hızı (m/sn); ajan kapalıyken 0. Animasyonun yürüme hızı.</summary>
         public float Speed => IsActive ? _agent.velocity.magnitude : 0f;
 
+        /// <summary>Yürüme hızı sınırı: taban hız × <see cref="SetSpeedMultiplier"/> çarpanı (m/sn).</summary>
+        public float MaxSpeed => _baseSpeed * _speedMultiplier;
+
         /// <summary>
         /// Havuzdan çıkışta: ajanı açar, bulunduğu noktaya yerleştirir ve durdurur. <paramref name="avoidancePriority"/> (0–99)
-        /// kalabalıkta kimin yol vereceğini belirler.
+        /// kalabalıkta kimin yol vereceğini belirler. Hız çarpanı 1'e döner.
         /// </summary>
         public void Activate(float speed, float burrowDepth, float repathDistance, int avoidancePriority)
         {
             _burrowDepth = burrowDepth;
             _repathSqrDistance = repathDistance * repathDistance;
             _hasDestination = false;
+            _baseSpeed = speed;
+            _speedMultiplier = 1f;
 
             _agent.avoidancePriority = avoidancePriority;
             _agent.enabled = true;
@@ -58,6 +65,18 @@ namespace LastHaven.Enemies
             _agent.updatePosition = true;
             _agent.updateRotation = false;
             _agent.isStopped = true;
+        }
+
+        /// <summary>
+        /// Yürüme hızını taban hızın bu katına ayarlar (yavaşlatma: 1 − oran). Negatif 0'a kırpılır. Ajan kapalıysa sadece saklanır.
+        /// </summary>
+        public void SetSpeedMultiplier(float multiplier)
+        {
+            _speedMultiplier = Mathf.Max(0f, multiplier);
+            if (IsActive)
+            {
+                _agent.speed = MaxSpeed;
+            }
         }
 
         /// <summary>Ajanı kapatır (havuza dönüş).</summary>

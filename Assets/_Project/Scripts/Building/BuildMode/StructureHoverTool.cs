@@ -1,4 +1,3 @@
-using System;
 using LastHaven.Core;
 using UnityEngine;
 
@@ -122,10 +121,6 @@ namespace LastHaven.Building
             {
                 Transform target = structure.transform;
                 _highlight?.Show(structure.Data, target.position, target.rotation, _color);
-                string upgrade = structure.CanUpgrade ? FormattableString.Invariant($"{structure.UpgradeCost}") : "en üst seviye";
-                Debug.Log(FormattableString.Invariant(
-                    $"{LogPrefix}Üzerinde: {structure.Data.DisplayName} {structure.CurrentLevel?.DisplayName} ({structure.Level}/{structure.MaxLevel}), can {structure.Health.Current:F0}/{structure.Health.Max:F0}. U: yükselt ({upgrade}), X: sat (+{structure.SellRefund})."),
-                    structure);
             }
             else
             {

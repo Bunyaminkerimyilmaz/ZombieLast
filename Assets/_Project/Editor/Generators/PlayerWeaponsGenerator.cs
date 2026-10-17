@@ -8,7 +8,8 @@ namespace LastHaven.Editor
 {
     /// <summary>
     /// Oyuncunun silah yuvaları: <c>Data/Player/WeaponLoadout.asset</c>. İlk oluşturmada Tabanca (açık), Pompalı, Tüfek
-    /// sırasıyla ve yükseltme verisiyle doldurulur. Varsa sadece boş yükseltme referansı doldurulur.
+    /// sırasıyla, yükseltme verisi ve perk etkileriyle (<see cref="CombatPerkConfig"/>) doldurulur. Varsa sadece boş yükseltme ve
+    /// perk referansları doldurulur.
     /// Player prefab'ına bağlanması <see cref="PlayerGenerator"/>'da.
     /// </summary>
     public sealed class PlayerWeaponsGenerator : IGenerationStep
@@ -27,15 +28,24 @@ namespace LastHaven.Editor
         {
             var loadout = EditorAssetUtility.LoadOrCreate<WeaponLoadoutData>(LoadoutPath, out bool created);
             WeaponUpgradeConfig upgrades = WeaponsGenerator.LoadOrCreateUpgradeConfig();
+            CombatPerkConfig perks = WeaponsGenerator.LoadOrCreatePerkConfig();
             if (created)
             {
-                Fill(loadout, WeaponsGenerator.LoadOrCreateAll(), upgrades);
+                Fill(loadout, WeaponsGenerator.LoadOrCreateAll(), upgrades, perks);
                 Debug.Log($"[Last Haven] Player Weapons: {LoadoutPath} oluşturuldu.");
+                return loadout;
             }
-            else if (EditorAssetUtility.AssignIfMissing(loadout, "_upgrades", upgrades))
+
+            if (EditorAssetUtility.AssignIfMissing(loadout, "_upgrades", upgrades))
             {
                 AssetDatabase.SaveAssetIfDirty(loadout);
                 Debug.Log($"[Last Haven] Player Weapons: {LoadoutPath} içinde boş yükseltme referansı dolduruldu.");
+            }
+
+            if (EditorAssetUtility.AssignIfMissing(loadout, "_perks", perks))
+            {
+                AssetDatabase.SaveAssetIfDirty(loadout);
+                Debug.Log($"[Last Haven] Player Weapons: {LoadoutPath} içinde boş perk referansı dolduruldu.");
             }
 
             return loadout;
@@ -50,7 +60,7 @@ namespace LastHaven.Editor
         {
         }
 
-        private static void Fill(WeaponLoadoutData loadout, List<WeaponData> weapons, WeaponUpgradeConfig upgrades)
+        private static void Fill(WeaponLoadoutData loadout, List<WeaponData> weapons, WeaponUpgradeConfig upgrades, CombatPerkConfig perks)
         {
             var serialized = new SerializedObject(loadout);
             SerializedProperty slots = serialized.FindProperty("_slots");
@@ -63,6 +73,7 @@ namespace LastHaven.Editor
             }
 
             serialized.FindProperty("_upgrades").objectReferenceValue = upgrades;
+            serialized.FindProperty("_perks").objectReferenceValue = perks;
             serialized.ApplyModifiedPropertiesWithoutUndo();
             AssetDatabase.SaveAssetIfDirty(loadout);
         }

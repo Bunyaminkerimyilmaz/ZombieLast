@@ -7,9 +7,14 @@ using UnityEngine;
 namespace LastHaven.Editor
 {
     /// <summary>
-    /// Üreticinin yapı tanımları (GDD §11 tablosu + §18 görünüm): data + prefab ölçüleri + yuva. 8.2: Barikat. Taret ve diken
-    /// tuzağı Gün 9'da eklenir. Data <c>Data/Building/&lt;Ad&gt;.asset</c>, prefab <c>Prefabs/Building/&lt;Ad&gt;.prefab</c>.
+    /// Üreticinin yapı tanımları (GDD §11 tablosu + §18 görünüm): data + prefab ölçüleri + yuva. 8.2: Barikat, 9.1: Taret,
+    /// 9.3: Diken tuzağı. Data <c>Data/Building/&lt;Ad&gt;.asset</c>, prefab <c>Prefabs/Building/&lt;Ad&gt;.prefab</c>.
     /// </summary>
+    /// <remarks>
+    /// Taret seviyeleri GDD §11'den mutlak değer: 2. seviye hasar 8 × 1.6 = 12.8; 3. seviye menzil 12 + 3 = 15, atış hızı
+    /// 5 × 1.3 = 6.5 (hasar 2. seviyeden kalır). GDD sadece 1. seviyenin canını (250) verir; yükseltme canı artırmaz.
+    /// Tuzağın tek seviyesi var; dayanıklılığı (40) canıdır, statları hasar/sn (15), yavaşlatma (0.4), tik aralığı (0.5).
+    /// </remarks>
     public static class BuildableDefinitions
     {
         public const string DataFolder = "Assets/_Project/Data/Building";
@@ -32,6 +37,39 @@ namespace LastHaven.Editor
                     new LevelDefinition("Metal", 120, 800f, PlaceholderMaterialId.BarricadeMetal),
                     new LevelDefinition("Beton", 300, 2000f, PlaceholderMaterialId.BarricadeConcrete),
                 }),
+            new Definition(
+                id: "turret",
+                assetName: "Turret",
+                displayName: "Taret",
+                description: "Menzildeki en yakın zombiye döner ve ateş eder; güç ister. U ile önce hasarı, sonra menzili ve atış hızı artar.",
+                footprint: new Vector2Int(2, 2),
+                height: 1.6f,
+                carvesNavMesh: true,
+                targetType: TargetType.Turret,
+                slotIndex: 1,
+                levels: new[]
+                {
+                    new LevelDefinition("Standart", 250, 250f, PlaceholderMaterialId.Turret, TurretLevelStats(8f, 5f, 12f)),
+                    new LevelDefinition("Ağır Namlu", 300, 250f, PlaceholderMaterialId.Turret, TurretLevelStats(12.8f, 5f, 12f)),
+                    new LevelDefinition("Gelişmiş", 500, 250f, PlaceholderMaterialId.Turret, TurretLevelStats(12.8f, 6.5f, 15f)),
+                },
+                shape: BuildableShape.Turret),
+            new Definition(
+                id: "spike_trap",
+                assetName: "SpikeTrap",
+                displayName: "Diken Tuzağı",
+                description: "Üstünden geçen zombilere hasar verir ve onları %40 yavaşlatır. Her hasar tikinde aşınır, dayanıklılığı bitince kırılır.",
+                footprint: new Vector2Int(2, 2),
+                height: SpikeTrapPrefab.VisualHeight,
+                carvesNavMesh: false,
+                targetType: TargetType.Trap,
+                slotIndex: 2,
+                levels: new[]
+                {
+                    // Dayanıklılık 40 = can (GDD §11 tablosunda can sütununda).
+                    new LevelDefinition("Standart", 80, 40f, PlaceholderMaterialId.SpikeTrap, SpikeTrapLevelStats(15f, 0.4f, 0.5f)),
+                },
+                shape: BuildableShape.SpikeTrap),
         };
 
         public static string GetDataPath(Definition definition)
@@ -56,10 +94,30 @@ namespace LastHaven.Editor
             {
                 LevelDefinition level = definition.Levels[i];
                 levels.GetArrayElementAtIndex(i).boxedValue = new BuildableLevel(
-                    level.DisplayName, level.Cost, level.MaxHealth, PlaceholderMaterials.GetOrCreate(level.Material));
+                    level.DisplayName, level.Cost, level.MaxHealth, PlaceholderMaterials.GetOrCreate(level.Material), level.Stats);
             }
 
             serialized.ApplyModifiedPropertiesWithoutUndo();
+        }
+
+        private static BuildableStatValue[] TurretLevelStats(float damage, float fireRate, float range)
+        {
+            return new[]
+            {
+                new BuildableStatValue(BuildableStat.Damage, damage),
+                new BuildableStatValue(BuildableStat.FireRate, fireRate),
+                new BuildableStatValue(BuildableStat.Range, range),
+            };
+        }
+
+        private static BuildableStatValue[] SpikeTrapLevelStats(float damagePerSecond, float slowFraction, float tickInterval)
+        {
+            return new[]
+            {
+                new BuildableStatValue(BuildableStat.Damage, damagePerSecond),
+                new BuildableStatValue(BuildableStat.SlowFraction, slowFraction),
+                new BuildableStatValue(BuildableStat.TickInterval, tickInterval),
+            };
         }
 
         /// <summary>Bir yapı tipinin üretim tanımı.</summary>
@@ -75,7 +133,8 @@ namespace LastHaven.Editor
                 bool carvesNavMesh,
                 TargetType targetType,
                 int slotIndex,
-                LevelDefinition[] levels)
+                LevelDefinition[] levels,
+                BuildableShape shape = BuildableShape.Box)
             {
                 Id = id;
                 AssetName = assetName;
@@ -87,6 +146,7 @@ namespace LastHaven.Editor
                 TargetType = targetType;
                 SlotIndex = slotIndex;
                 Levels = levels;
+                Shape = shape;
             }
 
             public string Id { get; }
@@ -115,18 +175,25 @@ namespace LastHaven.Editor
             public int SlotIndex { get; }
 
             public LevelDefinition[] Levels { get; }
+
+            /// <summary>Prefab'ın yer tutucu görünümü.</summary>
+            public BuildableShape Shape { get; }
         }
 
-        /// <summary>Bir seviyenin üretim tanımı: ad, fiyat (1. seviyede inşa, sonra yükseltme), maks. can, görünüm.</summary>
+        /// <summary>Bir seviyenin üretim tanımı: ad, fiyat (1. seviyede inşa, sonra yükseltme), maks. can, görünüm, tipe özel statlar.</summary>
         public sealed class LevelDefinition
         {
-            public LevelDefinition(string displayName, int cost, float maxHealth, PlaceholderMaterialId material)
+            public LevelDefinition(string displayName, int cost, float maxHealth, PlaceholderMaterialId material, params BuildableStatValue[] stats)
             {
                 DisplayName = displayName;
                 Cost = cost;
                 MaxHealth = maxHealth;
                 Material = material;
+                Stats = stats ?? System.Array.Empty<BuildableStatValue>();
             }
+
+            /// <summary>Seviyenin mutlak statları (taret: hasar, atış hızı, menzil). Boş olabilir.</summary>
+            public BuildableStatValue[] Stats { get; }
 
             public string DisplayName { get; }
 

@@ -7,11 +7,14 @@ using UnityEngine.AI;
 namespace LastHaven.Editor
 {
     /// <summary>
-    /// Kutu biçimli yapı prefab'ları (<c>Prefabs/Building/&lt;Ad&gt;.prefab</c>). Kök: Structure layer ve tag, ayak izi boyunda
-    /// BoxCollider ve NavMeshObstacle (carving data'dan), <see cref="Health"/> (1. seviye canı; yerleşince data'dan),
-    /// <see cref="Structure"/> ve onarım (<see cref="StructureRepair"/> + <see cref="RepairConfig"/>, kökün çocuğu "RepairBar").
-    /// "Visual/Body": 1. seviye renginde küp, collider yok (seviye materyali buna uygulanır).
-    /// Pivot ayak izinin merkezinde, yer seviyesinde. Varsa sadece eksik bileşenler ve boş onarım referansları tamamlanır.
+    /// Yapı prefab'ları (<c>Prefabs/Building/&lt;Ad&gt;.prefab</c>). Kök: Structure layer ve tag, ayak izi boyunda BoxCollider ve
+    /// NavMeshObstacle (carving data'dan), <see cref="Health"/> (1. seviye canı; yerleşince data'dan), <see cref="Structure"/> ve
+    /// onarım (<see cref="StructureRepair"/> + <see cref="RepairConfig"/>, kökün çocuğu "RepairBar"). Görsel tanımın şekline göre
+    /// (<see cref="BuildableShape"/>): kutu → "Visual/Body" (1. seviye renginde küp, seviye materyali buna uygulanır); taret →
+    /// <see cref="TurretPrefab"/> (gövde, dönen kafa, nişan pivotu, namlu, <see cref="Turret"/>); diken tuzağı →
+    /// <see cref="SpikeTrapPrefab"/> (yassı plaka + dikenler, <see cref="SpikeTrap"/>; üstünden geçilir: BoxCollider trigger,
+    /// NavMeshObstacle yok). Görselde collider yok. Pivot ayak izinin merkezinde, yer seviyesinde. Varsa sadece eksik bileşenler
+    /// ve boş referanslar tamamlanır.
     /// </summary>
     public static class BuildablePrefabs
     {
@@ -45,14 +48,17 @@ namespace LastHaven.Editor
         }
 
         /// <summary>Prefab'ı yükler (eksik bileşenleri tamamlar); yoksa tanımdan oluşturur.</summary>
-        public static GameObject LoadOrCreate(BuildableDefinitions.Definition definition, float cellSize, in RepairAssets repair)
+        public static GameObject LoadOrCreate(BuildableDefinitions.Definition definition, float cellSize, in RepairAssets repair,
+            in TurretPrefab.Assets turret = default, SpikeTrapConfig trapConfig = null)
         {
             string path = GetPrefabPath(definition);
             var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(path);
             if (prefab != null)
             {
-                RepairAssets assets = repair;
-                int added = EditorAssetUtility.EditPrefab(path, root => EnsureStructureComponents(root, definition, assets));
+                RepairAssets repairAssets = repair;
+                TurretPrefab.Assets turretAssets = turret;
+                int added = EditorAssetUtility.EditPrefab(
+                    path, root => EnsureStructureComponents(root, definition, repairAssets, turretAssets, trapConfig));
                 if (added > 0)
                 {
                     Debug.Log($"[Last Haven] Building: {path} prefab'ına {added} eksik bileşen/referans eklendi.");
@@ -61,7 +67,7 @@ namespace LastHaven.Editor
                 return AssetDatabase.LoadAssetAtPath<GameObject>(path);
             }
 
-            GameObject built = BuildRoot(definition, cellSize, PlaceholderMaterials.GetOrCreate(definition.Material), repair);
+            GameObject built = BuildRoot(definition, cellSize, PlaceholderMaterials.GetOrCreate(definition.Material), repair, turret, trapConfig);
             try
             {
                 EditorAssetUtility.EnsureFolder(Folder);
@@ -77,42 +83,66 @@ namespace LastHaven.Editor
 
         /// <summary>
         /// Prefab hiyerarşisini sahnede (kaydetmeden) kurar. Çağıran yok etmekle sorumludur. Testler de kullanır (materyal ve
-        /// onarım asset'leri null olabilir).
+        /// onarım/taret asset'leri null olabilir).
         /// </summary>
         public static GameObject BuildRoot(BuildableDefinitions.Definition definition, float cellSize, Material material,
-            in RepairAssets repair = default)
+            in RepairAssets repair = default, in TurretPrefab.Assets turret = default, SpikeTrapConfig trapConfig = null)
         {
             var size = new Vector3(definition.Footprint.x * cellSize, definition.Height, definition.Footprint.y * cellSize);
             var center = new Vector3(0f, size.y * 0.5f, 0f);
             var root = new GameObject(definition.AssetName) { layer = GameLayers.Structure, tag = GameTags.Structure };
+            bool walkable = definition.Shape == BuildableShape.SpikeTrap;
 
             var collider = root.AddComponent<BoxCollider>();
-            collider.size = size;
-            collider.center = center;
+            if (walkable)
+            {
+                // Üstünden geçilen tuzak: collider sadece alan (trigger), ajanların kaçınmasına girmesin diye NavMeshObstacle yok.
+                collider.isTrigger = true;
+                collider.size = new Vector3(size.x, SpikeTrapPrefab.AreaHeight, size.z);
+                collider.center = new Vector3(0f, SpikeTrapPrefab.AreaHeight * 0.5f, 0f);
+            }
+            else
+            {
+                collider.size = size;
+                collider.center = center;
 
-            var obstacle = root.AddComponent<NavMeshObstacle>();
-            obstacle.shape = NavMeshObstacleShape.Box;
-            obstacle.size = size;
-            obstacle.center = center;
-            obstacle.carving = definition.CarvesNavMesh;
+                var obstacle = root.AddComponent<NavMeshObstacle>();
+                obstacle.shape = NavMeshObstacleShape.Box;
+                obstacle.size = size;
+                obstacle.center = center;
+                obstacle.carving = definition.CarvesNavMesh;
+            }
 
             var visual = new GameObject(VisualRoot.Name) { layer = GameLayers.Structure };
             visual.transform.SetParent(root.transform, false);
+            if (definition.Shape == BuildableShape.Turret)
+            {
+                TurretPrefab.BuildVisual(visual.transform, material, turret.Indicator);
+            }
+            else if (walkable)
+            {
+                // Dikenler metal gri (yer tutucu). Testler materyalsiz kurar; o zaman asset'e dokunulmaz.
+                SpikeTrapPrefab.BuildVisual(visual.transform, new Vector2(size.x, size.z), material,
+                    material != null ? PlaceholderMaterials.GetOrCreate(PlaceholderMaterialId.BarricadeMetal) : null);
+            }
+            else
+            {
+                GameObject body = PrimitiveFactory.Create(
+                    PrimitiveType.Cube, BodyName, visual.transform, material, GameLayers.Structure, withCollider: false);
+                body.transform.localPosition = center;
+                body.transform.localScale = size;
+            }
 
-            GameObject body = PrimitiveFactory.Create(
-                PrimitiveType.Cube, BodyName, visual.transform, material, GameLayers.Structure, withCollider: false);
-            body.transform.localPosition = center;
-            body.transform.localScale = size;
-
-            EnsureStructureComponents(root, definition, repair);
+            EnsureStructureComponents(root, definition, repair, turret, trapConfig);
             return root;
         }
 
         /// <summary>
-        /// Kökte Health (maks. can = 1. seviye), Structure, StructureRepair ve onarım barı yoksa ekler; onarımın boş config ve bar
-        /// referanslarını doldurur. Değişiklik sayısını döndürür.
+        /// Kökte Health (maks. can = 1. seviye), Structure, StructureRepair ve onarım barı (taret ise taret parçaları, tuzak ise
+        /// <see cref="SpikeTrap"/>) yoksa ekler; boş referansları doldurur. Değişiklik sayısını döndürür.
         /// </summary>
-        private static int EnsureStructureComponents(GameObject root, BuildableDefinitions.Definition definition, in RepairAssets repair)
+        private static int EnsureStructureComponents(GameObject root, BuildableDefinitions.Definition definition, in RepairAssets repair,
+            in TurretPrefab.Assets turret, SpikeTrapConfig trapConfig)
         {
             int changes = 0;
             if (!root.TryGetComponent(out Health health))
@@ -125,7 +155,17 @@ namespace LastHaven.Editor
             }
 
             changes += VisualFeedbackSetup.EnsureComponent<Structure>(root);
-            return changes + EnsureRepair(root, definition, repair);
+            changes += EnsureRepair(root, definition, repair);
+            if (definition.Shape == BuildableShape.Turret)
+            {
+                changes += TurretPrefab.EnsureParts(root, turret);
+            }
+            else if (definition.Shape == BuildableShape.SpikeTrap)
+            {
+                changes += SpikeTrapPrefab.EnsureParts(root, trapConfig);
+            }
+
+            return changes;
         }
 
         private static int EnsureRepair(GameObject root, BuildableDefinitions.Definition definition, in RepairAssets repair)

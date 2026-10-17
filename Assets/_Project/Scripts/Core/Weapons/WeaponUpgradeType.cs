@@ -1,4 +1,4 @@
-namespace LastHaven.Combat
+namespace LastHaven.Core
 {
     /// <summary>Silah yükseltme türleri (GDD §6). Seviyeler her silah için ayrıdır.</summary>
     /// <remarks>Değerler SO'larda int olarak saklanabilir: sırayı değiştirme, yenisini sona ekle.</remarks>

@@ -5,12 +5,12 @@ namespace LastHaven.Building
 {
     /// <summary>
     /// Üssün jeneratörü (GDD §12). Canı <see cref="GeneratorData"/>'dan kurar, kendini <see cref="ITargetRegistry"/>'ye
-    /// <see cref="TargetType.Generator"/> olarak ekler (düşmanların varsayılan hedefi) ve <see cref="IPowerService"/> olarak kaydolur.
-    /// Yıkılınca <see cref="GeneratorDestroyedEvent"/> gönderir.
+    /// <see cref="TargetType.Generator"/> olarak ekler (düşmanların varsayılan hedefi). Yıkılınca <see cref="GeneratorDestroyedEvent"/>
+    /// gönderir. Yakıt ve güç aynı objedeki <see cref="GeneratorPower"/>'da, acil yakıt <see cref="EmergencyFuelStation"/>'da.
     /// </summary>
     [DisallowMultipleComponent]
     [RequireComponent(typeof(Health))]
-    public sealed class Generator : MonoBehaviour, ITargetable, IPowerService
+    public sealed class Generator : MonoBehaviour, ITargetable
     {
         [SerializeField, Tooltip("Jeneratör ayarları (GDD §12).")]
         private GeneratorData _data;
@@ -27,8 +27,7 @@ namespace LastHaven.Building
 
         public bool IsTargetable => isActiveAndEnabled && _health.IsAlive;
 
-        /// <summary>Yakıt tüketimi Gün 9'da gelecek; o zamana kadar güç hep var.</summary>
-        public bool IsPowered => true;
+        public Health Health => _health != null ? _health : _health = GetComponent<Health>();
 
         private void Awake()
         {
@@ -41,8 +40,6 @@ namespace LastHaven.Building
             {
                 Debug.LogError("Generator: GeneratorData atanmamış; Tools/Last Haven/Generate Prefabs çalıştır.", this);
             }
-
-            ServiceLocator.Register<IPowerService>(this);
         }
 
         private void Start()
@@ -71,11 +68,6 @@ namespace LastHaven.Building
         {
             _health.Died -= OnDied;
             _registry?.Unregister(this);
-        }
-
-        private void OnDestroy()
-        {
-            ServiceLocator.Unregister<IPowerService>(this);
         }
 
         private void OnDied(DiedEvent died)

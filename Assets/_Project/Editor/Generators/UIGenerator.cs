@@ -16,9 +16,17 @@ namespace LastHaven.Editor
         public const string RuntimeThemePath = Folder + "/Themes/Runtime.tss";
         public const string ThemeStylePath = Folder + "/Themes/Theme.uss";
         public const string HudPath = Folder + "/HUD/HUD.uxml";
+        public const string HudStylePath = Folder + "/HUD/HUD.uss";
+        public const string HudBuildStylePath = Folder + "/HUD/HudBuild.uss";
+        public const string HudInteractionStylePath = Folder + "/HUD/HudInteraction.uss";
+        public const string BuildCardPath = Folder + "/HUD/BuildCard.uxml";
+        public const string PanelsStylePath = Folder + "/Panels/Panels.uss";
         public const string DawnPanelPath = Folder + "/Panels/DawnPanel.uxml";
         public const string GameOverPanelPath = Folder + "/Panels/GameOverPanel.uxml";
         public const string VictoryPanelPath = Folder + "/Panels/VictoryPanel.uxml";
+        public const string ShopPanelPath = Folder + "/Shop/Shop.uxml";
+        public const string ShopCardPath = Folder + "/Shop/ShopCard.uxml";
+        public const string ShopStylePath = Folder + "/Shop/Shop.uss";
 
         /// <summary>Referans çözünürlük (görev: 1920×1080).</summary>
         public static readonly Vector2Int ReferenceResolution = new Vector2Int(1920, 1080);

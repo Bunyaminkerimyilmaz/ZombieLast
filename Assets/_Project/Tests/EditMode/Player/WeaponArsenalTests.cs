@@ -151,6 +151,49 @@ namespace LastHaven.Tests.EditMode
             Assert.AreEqual(11, _ammo[0].Ammo);
         }
 
+        [Test]
+        public void FindSlot_ById_IsOrdinalAndIncludesLockedWeapons()
+        {
+            var arsenal = new WeaponArsenal(_definitions, null, null);
+
+            Assert.AreEqual(1, arsenal.FindSlot("shotgun"));
+            Assert.AreEqual(2, arsenal.FindSlot("rifle"));
+            Assert.AreEqual(WeaponSlots.None, arsenal.FindSlot("SHOTGUN"));
+            Assert.AreEqual(WeaponSlots.None, arsenal.FindSlot("minigun"));
+            Assert.AreEqual(WeaponSlots.None, arsenal.FindSlot(null));
+            Assert.AreSame(arsenal.GetWeapon(1), arsenal.FindWeapon("shotgun"));
+            Assert.IsNull(arsenal.FindWeapon("minigun"));
+        }
+
+        [Test]
+        public void UnlockById_DoesNotChangeHeldWeapon()
+        {
+            var arsenal = new WeaponArsenal(_definitions, null, null);
+
+            Assert.IsTrue(arsenal.Unlock(arsenal.FindSlot("shotgun")));
+            Assert.IsFalse(arsenal.Unlock(arsenal.FindSlot("minigun")));
+
+            Assert.IsTrue(arsenal.IsUnlocked(1));
+            Assert.AreEqual(0, arsenal.CurrentSlot, "Market silahı açar, kuşanmak 2 tuşuyla.");
+            Assert.AreEqual(0, _changed.Count);
+        }
+
+        [Test]
+        public void AddReserve_ToHeldWeapon_RaisesAmmoChanged()
+        {
+            var arsenal = new WeaponArsenal(_definitions, null, null);
+            arsenal.Unlock(1);
+            arsenal.Select(1);
+            _ammo.Clear();
+
+            arsenal.FindWeapon("shotgun").AddReserve(12);
+            arsenal.FindWeapon("rifle").AddReserve(60);
+
+            Assert.AreEqual(1, _ammo.Count, "Cepteki tüfeğin mermisi gönderilmez.");
+            Assert.AreEqual(48, _ammo[0].Reserve);
+            Assert.AreEqual(240, arsenal.FindWeapon("rifle").Reserve);
+        }
+
         private void OnChanged(WeaponChangedEvent evt) => _changed.Add(evt);
 
         private void OnAmmo(AmmoChangedEvent evt) => _ammo.Add(evt);

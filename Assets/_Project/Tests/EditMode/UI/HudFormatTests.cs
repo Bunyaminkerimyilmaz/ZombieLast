@@ -82,6 +82,26 @@ namespace LastHaven.Tests.EditMode
             Assert.AreEqual("12 / " + HudFormat.Infinite, HudFormat.Ammo(12, 0, true));
         }
 
+        [TestCase(249.2f, 250)]
+        [TestCase(250f, 250)]
+        [TestCase(0.01f, 1)]
+        [TestCase(0f, 0)]
+        [TestCase(-3f, 0)]
+        [TestCase(float.PositiveInfinity, -1)]
+        [TestCase(float.NaN, -1)]
+        public void DisplaySeconds_RoundsUp_InfiniteIsMinusOne(float seconds, int expected)
+        {
+            Assert.AreEqual(expected, HudFormat.DisplaySeconds(seconds));
+        }
+
+        [Test]
+        public void Estimate_FormatsTimerOrInfinite()
+        {
+            Assert.AreEqual("4:10", HudFormat.Estimate(250));
+            Assert.AreEqual("0:00", HudFormat.Estimate(0));
+            Assert.AreEqual(HudFormat.Infinite, HudFormat.Estimate(-1));
+        }
+
         [Test]
         public void Output_IsCultureIndependent()
         {

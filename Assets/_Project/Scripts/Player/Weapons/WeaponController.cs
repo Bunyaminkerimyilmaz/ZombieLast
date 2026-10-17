@@ -57,6 +57,12 @@ namespace LastHaven.Player
                 Debug.LogWarning("WeaponController: IRunModifiers bulunamadı; perk ve gece etkileri silahlara uygulanmayacak.", this);
             }
 
+            if (_loadout.Perks == null)
+            {
+                Debug.LogWarning("WeaponController: Loadout'ta CombatPerkConfig yok; Avcı perk'i uygulanmayacak. Tools/Last Haven/Generate Default Data çalıştır.", this);
+            }
+
+            _shooter.SetPerks(_modifiers, _loadout.Perks);
             _arsenal = new WeaponArsenal(_loadout.Slots, _loadout.Upgrades, _modifiers);
             if (_arsenal.Current == null)
             {

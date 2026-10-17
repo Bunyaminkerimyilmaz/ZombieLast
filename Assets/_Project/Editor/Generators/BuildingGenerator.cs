@@ -7,16 +7,21 @@ namespace LastHaven.Editor
 {
     /// <summary>
     /// İnşa (GDD §11): <see cref="BuildConfig"/> (<c>Data/Building/BuildConfig.asset</c>), <see cref="RepairConfig"/>
-    /// (<c>Data/Building/RepairConfig.asset</c>), önizleme materyali (<see cref="BuildGhostMaterial"/>), onarım barı dolgusu
-    /// (<see cref="HealthBarMaterials"/>), <see cref="BuildableDefinitions"/>'taki yapıların data'ları (seviye materyalleri dahil)
-    /// ve prefab'ları (<see cref="BuildablePrefabs"/>). Varsa dokunulmaz; sadece boş referanslar (önizleme materyali, data → prefab,
-    /// prefab → onarım config'i/barı), prefab'da eksik Health/Structure/StructureRepair/onarım barı ve boş yuvalar doldurulur.
+    /// (<c>Data/Building/RepairConfig.asset</c>), <see cref="TurretConfig"/> (<c>Data/Building/TurretConfig.asset</c>),
+    /// <see cref="SpikeTrapConfig"/> (<c>Data/Building/SpikeTrapConfig.asset</c>; tuzak prefab'ının boş config'ine bağlanır), önizleme
+    /// materyali (<see cref="BuildGhostMaterial"/>), taret gösterge materyali (<see cref="TurretPrefab"/>), onarım barı dolgusu
+    /// (<see cref="HealthBarMaterials"/>), <see cref="BuildableDefinitions"/>'taki yapıların data'ları (seviye materyalleri ve
+    /// statları dahil) ve prefab'ları (<see cref="BuildablePrefabs"/>). Varsa dokunulmaz; sadece boş referanslar (önizleme
+    /// materyali, data → prefab, prefab → onarım config'i/barı, taret config'i/parçaları), prefab'da eksik
+    /// Health/Structure/StructureRepair/onarım barı/taret bileşenleri ve boş yuvalar doldurulur.
     /// Listede zaten olan yapı tekrar eklenmez.
     /// </summary>
     public sealed class BuildingGenerator : IGenerationStep
     {
         public const string ConfigPath = BuildableDefinitions.DataFolder + "/BuildConfig.asset";
         public const string RepairConfigPath = BuildableDefinitions.DataFolder + "/RepairConfig.asset";
+        public const string TurretConfigPath = BuildableDefinitions.DataFolder + "/TurretConfig.asset";
+        public const string SpikeTrapConfigPath = BuildableDefinitions.DataFolder + "/SpikeTrapConfig.asset";
 
         private const string GhostMaterialFieldName = "_ghostMaterial";
         private const string SlotsFieldName = "_slots";
@@ -57,6 +62,30 @@ namespace LastHaven.Editor
             return config;
         }
 
+        /// <summary>Taretlerin ortak ayarlarını (9.1) yükler ya da varsayılanlarla oluşturur.</summary>
+        public static TurretConfig LoadOrCreateTurretConfig()
+        {
+            var config = EditorAssetUtility.LoadOrCreate<TurretConfig>(TurretConfigPath, out bool created);
+            if (created)
+            {
+                Debug.Log($"[Last Haven] Building: {TurretConfigPath} oluşturuldu.");
+            }
+
+            return config;
+        }
+
+        /// <summary>Diken tuzaklarının ortak ayarlarını (9.3) yükler ya da varsayılanlarla oluşturur.</summary>
+        public static SpikeTrapConfig LoadOrCreateSpikeTrapConfig()
+        {
+            var config = EditorAssetUtility.LoadOrCreate<SpikeTrapConfig>(SpikeTrapConfigPath, out bool created);
+            if (created)
+            {
+                Debug.Log($"[Last Haven] Building: {SpikeTrapConfigPath} oluşturuldu.");
+            }
+
+            return config;
+        }
+
         /// <summary>
         /// Config + yapı data'ları + prefab'lar; boş referansları ve yuvaları doldurur. Sahne adımı buradan alır;
         /// Generate Prefabs çalışmamış olsa da her şey oluşur.
@@ -66,11 +95,13 @@ namespace LastHaven.Editor
             BuildConfig config = LoadOrCreateConfig();
             var repair = new BuildablePrefabs.RepairAssets(
                 LoadOrCreateRepairConfig(), HealthBarMaterials.GetOrCreateBackground(), HealthBarMaterials.GetOrCreateRepairFill());
+            var turret = new TurretPrefab.Assets(LoadOrCreateTurretConfig(), TurretPrefab.GetOrCreateIndicatorMaterial());
+            SpikeTrapConfig trapConfig = LoadOrCreateSpikeTrapConfig();
             List<BuildableData> buildables = LoadOrCreateBuildables();
             for (int i = 0; i < buildables.Count; i++)
             {
                 BuildableDefinitions.Definition definition = BuildableDefinitions.All[i];
-                GameObject prefab = BuildablePrefabs.LoadOrCreate(definition, config.CellSize, repair);
+                GameObject prefab = BuildablePrefabs.LoadOrCreate(definition, config.CellSize, repair, turret, trapConfig);
                 if (prefab != null && EditorAssetUtility.AssignIfMissing(buildables[i], PrefabFieldName, prefab))
                 {
                     AssetDatabase.SaveAssetIfDirty(buildables[i]);
@@ -107,7 +138,10 @@ namespace LastHaven.Editor
         {
             BuildConfig config = LoadOrCreateConfig();
             LoadOrCreateRepairConfig();
+            LoadOrCreateTurretConfig();
+            LoadOrCreateSpikeTrapConfig();
             HealthBarMaterials.GetOrCreateRepairFill();
+            TurretPrefab.GetOrCreateIndicatorMaterial();
             LinkSlots(config, LoadOrCreateBuildables());
         }
 

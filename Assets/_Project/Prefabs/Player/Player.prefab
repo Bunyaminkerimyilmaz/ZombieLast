@@ -110,6 +110,7 @@ GameObject:
   - component: {fileID: 6107186551711200051}
   - component: {fileID: 1373807415888184079}
   - component: {fileID: 4323042195547702670}
+  - component: {fileID: 2270396725924238465}
   m_Layer: 7
   m_Name: Player
   m_TagString: Player
@@ -299,6 +300,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d1a14e1651af2ba4ebc812bb929c2d7a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: LastHaven.Player::LastHaven.Player.Interactor
+--- !u!114 &2270396725924238465
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3648926223191454246}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b33a9d9522d7384b91152e0a58226a9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: LastHaven.Player::LastHaven.Player.PlayerPurchaseEffects
 --- !u!1 &5433735704821789898
 GameObject:
   m_ObjectHideFlags: 0

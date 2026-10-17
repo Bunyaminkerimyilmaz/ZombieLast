@@ -167,6 +167,66 @@ namespace LastHaven.Tests.EditMode
             Assert.Throws<ArgumentOutOfRangeException>(() => _wallet.Get(invalid));
             Assert.Throws<ArgumentOutOfRangeException>(() => _wallet.Add(invalid, 1));
             Assert.Throws<ArgumentOutOfRangeException>(() => _wallet.TrySpend(invalid, 1));
+            Assert.Throws<ArgumentOutOfRangeException>(() => _wallet.GetCapacity(invalid));
+            Assert.Throws<ArgumentOutOfRangeException>(() => _wallet.SetCapacity(invalid, 1));
+        }
+
+        // --- Kapasite (9.2: yakıt kapasitesi 150, jeneratör ayarlar) ---
+
+        [Test]
+        public void Capacity_DefaultsToUnlimited()
+        {
+            Assert.AreEqual(int.MaxValue, _wallet.GetCapacity(WalletResource.Money));
+            Assert.AreEqual(int.MaxValue, _wallet.GetCapacity(WalletResource.Fuel));
+        }
+
+        [Test]
+        public void Add_OverCapacity_SaturatesAtCapacity()
+        {
+            _wallet.SetCapacity(WalletResource.Fuel, 150);
+
+            _wallet.Add(WalletResource.Fuel, 70);
+
+            Assert.AreEqual(150, _wallet.Fuel);
+            CollectionAssert.AreEqual(new[] { (150, 50) }, _fuelChanges, "Değişim gerçekte eklenen kadar.");
+        }
+
+        [Test]
+        public void Add_WhenFull_DoesNothingWithoutEvent()
+        {
+            _wallet.SetCapacity(WalletResource.Fuel, 100);
+
+            _wallet.Add(WalletResource.Fuel, 10);
+
+            Assert.AreEqual(100, _wallet.Fuel);
+            Assert.IsEmpty(_fuelChanges);
+        }
+
+        [Test]
+        public void SetCapacity_BelowCurrent_ClampsWithEvent()
+        {
+            _wallet.SetCapacity(WalletResource.Fuel, 60);
+
+            Assert.AreEqual(60, _wallet.GetCapacity(WalletResource.Fuel));
+            Assert.AreEqual(60, _wallet.Fuel);
+            CollectionAssert.AreEqual(new[] { (60, -40) }, _fuelChanges);
+        }
+
+        [Test]
+        public void SetCapacity_AboveCurrent_KeepsAmountWithoutEvent()
+        {
+            _wallet.SetCapacity(WalletResource.Fuel, 150);
+
+            Assert.AreEqual(100, _wallet.Fuel);
+            Assert.IsEmpty(_fuelChanges);
+            Assert.AreEqual(int.MaxValue, _wallet.GetCapacity(WalletResource.Money), "Diğer kaynak etkilenmez.");
+        }
+
+        [Test]
+        public void SetCapacity_Negative_Throws()
+        {
+            Assert.Throws<ArgumentOutOfRangeException>(() => _wallet.SetCapacity(WalletResource.Fuel, -1));
+            Assert.AreEqual(int.MaxValue, _wallet.GetCapacity(WalletResource.Fuel));
         }
     }
 }

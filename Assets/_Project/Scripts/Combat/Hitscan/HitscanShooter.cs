@@ -9,10 +9,22 @@ namespace LastHaven.Combat
     /// <see cref="IDamageable"/>'a <see cref="DamageType.Bullet"/> hasarı uygular ve isabet başına <see cref="ShotHitEvent"/> gönderir.
     /// Her saçma için (ıska dahil) mermi izi olayı <see cref="ShotTracedEvent"/> gönderir.
     /// Hasar mesafeyle düşmez (GDD §6). Her kullanıcı kendi örneğini tutar; sonuç listesi tekrar kullanılır, bellek ayırmaz.
+    /// Perk kancası (<see cref="SetPerks"/>): Avcı açıksa yavaşlamış hedefe (<see cref="IStatusEffectReceiver.IsSlowed"/>) ek hasar.
     /// </summary>
     public sealed class HitscanShooter
     {
         private readonly List<ShotResult> _results = new List<ShotResult>(8);
+        private IRunModifiers _modifiers;
+        private CombatPerkConfig _perks;
+
+        /// <summary>
+        /// Perk kancalarını bağlar (GDD §13 Avcı). İkisi de gerekir; biri null ise kanca kapalı (hasar değişmez). Oyuncu silahları bağlar.
+        /// </summary>
+        public void SetPerks(IRunModifiers modifiers, CombatPerkConfig perks)
+        {
+            _modifiers = modifiers;
+            _perks = perks;
+        }
 
         /// <summary>Ateşler ve saçma başına sonuçları döndürür. Liste bir sonraki <see cref="Fire"/>'a kadar geçerlidir; saklama.</summary>
         public IReadOnlyList<ShotResult> Fire(in HitscanRequest request)
@@ -31,7 +43,7 @@ namespace LastHaven.Combat
             return _results;
         }
 
-        private static ShotResult CastPellet(in HitscanRequest request, Vector3 direction)
+        private ShotResult CastPellet(in HitscanRequest request, Vector3 direction)
         {
             if (!Physics.Raycast(request.Origin, direction, out RaycastHit hit, request.Range, request.HitMask, QueryTriggerInteraction.Ignore))
             {
@@ -43,7 +55,7 @@ namespace LastHaven.Combat
             float damage = 0f;
             if (damageable != null && damageable.IsAlive)
             {
-                damage = request.Damage;
+                damage = request.Damage * GetPerkMultiplier(collider);
                 damageable.TakeDamage(new DamageInfo(damage, DamageType.Bullet, request.Source, hit.point, direction));
             }
 
@@ -51,6 +63,18 @@ namespace LastHaven.Combat
             GameObject target = damageable is Component component ? component.gameObject : collider.gameObject;
             EventBus<ShotHitEvent>.Raise(new ShotHitEvent(request.Source, target, targetType, hit.point, hit.normal, direction, damage));
             return ShotResult.Hit(request.Origin, direction, hit, damageable, targetType, damage);
+        }
+
+        // Avcı: bayrak açıksa vurulan hedefin yavaşlaması sorulur (alıcı aranması sadece o zaman).
+        private float GetPerkMultiplier(Collider collider)
+        {
+            if (_perks == null || _modifiers == null || !_modifiers.HasFlag(PerkFlag.Hunter))
+            {
+                return 1f;
+            }
+
+            IStatusEffectReceiver receiver = StatusEffectLookup.Find(collider);
+            return HunterBonus.GetMultiplier(true, receiver != null && receiver.IsSlowed, _perks.HunterDamageBonus);
         }
     }
 }

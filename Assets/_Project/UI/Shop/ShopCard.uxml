@@ -1,0 +1,25 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <!-- Market kartı şablonu: ShopCardView her öğe için örnekler ve market sayfasına ekler. Stil Shop.uss'ten (panelden) gelir.
+         Element adları ShopElementNames.Card* ile eşleşmeli (EditMode testi kontrol eder). Seviye noktalarını kod ekler.
+         Fiyat / MAKS / ALINDI ve uyarı satırlarından durumuna uyan görünür; metinler burada, kod sadece sayı ve öğe adı yazar. -->
+    <ui:VisualElement name="shop-card" class="shop-card">
+        <ui:Label name="card-name" text="Öğe" class="label shop-card__name" />
+        <ui:VisualElement name="card-dots" class="row shop-card__dots" />
+        <ui:Label name="card-description" text="Açıklama" class="label-small shop-card__description" />
+        <ui:VisualElement class="shop-card__notices">
+            <ui:VisualElement name="card-locked" class="row shop-card__notice hidden">
+                <ui:Label text="Önce al:" class="label-small shop-card__notice-text" />
+                <ui:Label name="card-requirement" text="" class="label-small shop-card__notice-text shop-card__requirement" />
+            </ui:VisualElement>
+            <ui:Label name="card-unavailable" text="Şu an alınamaz" class="label-small shop-card__notice shop-card__notice-text hidden" />
+        </ui:VisualElement>
+        <ui:VisualElement class="row-spread shop-card__footer">
+            <ui:VisualElement class="row shop-card__price-area">
+                <ui:Label name="card-price" text="0" class="label-large shop-card__price" />
+                <ui:Label name="card-max" text="MAKS" class="label-large shop-card__max hidden" />
+                <ui:Label name="card-owned" text="ALINDI" class="label-large shop-card__owned hidden" />
+            </ui:VisualElement>
+            <ui:Button name="card-buy-button" text="Satın Al" class="shop-card__buy" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

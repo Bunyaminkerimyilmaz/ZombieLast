@@ -7,12 +7,14 @@ namespace LastHaven.Editor
 {
     /// <summary>
     /// GDD §6 silahlarının <see cref="WeaponData"/> asset'leri (<c>Data/Weapons/Pistol|Shotgun|Rifle.asset</c>) ve
-    /// <see cref="WeaponUpgradeConfig"/>. Varsa dokunulmaz (inspector'daki denge ayarları korunur); yoksa GDD değerleriyle oluşturulur.
+    /// <see cref="WeaponUpgradeConfig"/> ve <see cref="CombatPerkConfig"/> (9.3). Varsa dokunulmaz (inspector'daki denge ayarları
+    /// korunur); yoksa GDD değerleriyle oluşturulur.
     /// </summary>
     public sealed class WeaponsGenerator : IGenerationStep
     {
         public const string Folder = "Assets/_Project/Data/Weapons";
         public const string UpgradeConfigPath = Folder + "/WeaponUpgradeConfig.asset";
+        public const string PerkConfigPath = Folder + "/CombatPerkConfig.asset";
 
         // GDD §6. Mermi izi renkleri GDD'de yok; silahları ayırt etmek için seçildi.
         private static readonly WeaponDefinition[] Definitions =
@@ -58,10 +60,23 @@ namespace LastHaven.Editor
             return config;
         }
 
+        /// <summary>Perk'lerin silah etkilerini (GDD §13 Avcı; 9.3) yükler; yoksa varsayılanlarla oluşturur.</summary>
+        public static CombatPerkConfig LoadOrCreatePerkConfig()
+        {
+            var config = EditorAssetUtility.LoadOrCreate<CombatPerkConfig>(PerkConfigPath, out bool created);
+            if (created)
+            {
+                Debug.Log($"[Last Haven] Weapons: {PerkConfigPath} oluşturuldu.");
+            }
+
+            return config;
+        }
+
         public void GenerateData()
         {
             LoadOrCreateAll();
             LoadOrCreateUpgradeConfig();
+            LoadOrCreatePerkConfig();
         }
 
         public void GeneratePrefabs()

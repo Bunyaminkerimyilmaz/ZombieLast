@@ -7,7 +7,7 @@ namespace LastHaven.Building
     /// İnşa modu (GDD §11): sadece gündüz, B ile açılır/kapanır (<see cref="InputMode.BuildMode"/>). 1–5 (gamepad: D-pad)
     /// yapı seçer, Q döndürür; imlecin altındaki hücrede yarı saydam önizleme (yeşil/kırmızı, para dahil). Sol tık parayı
     /// ödeyip yerleştirir; sağ tık seçimi, seçim yoksa modu iptal eder. Var olan yapının üzerine gelince vurgulanır; U yükseltir,
-    /// X satar. Gündüz bitince (alacakaranlık) kendiliğinden kapanır.
+    /// X satar. Taret seçiliyken ve üzerine gelince menzil dairesi görünür. Gündüz bitince (alacakaranlık) kendiliğinden kapanır.
     /// Bu bileşen mod, evre, B ve iptali yönetir; yapı tuşları mod açıkken <see cref="BuildPlacementTool"/>'a bağlanır, ızgara
     /// <see cref="BuildSite"/>'ta.
     /// </summary>
@@ -27,6 +27,9 @@ namespace LastHaven.Building
 
         [SerializeField, Tooltip("Üzerine gelinen yapının vurgu kabuğunun kökü (başta kapalı). Boşsa vurgu yok. Üretici kurar.")]
         private Transform _highlightRoot;
+
+        [SerializeField, Tooltip("Menzil dairesi (taret; başta kapalı, X'te 90° yatırılmış LineRenderer). Boşsa daire yok. Üretici kurar.")]
+        private LineRenderer _rangeIndicator;
 
         private BuildPlacementTool _tool;
         private IInputReader _input;
@@ -81,9 +84,11 @@ namespace LastHaven.Building
                 highlight?.Prepare(config.Slots[i]);
             }
 
+            ServiceLocator.TryGet(out IRunModifiers modifiers);
+            var range = new BuildRangePreview(_rangeIndicator, modifiers, config.RangeColor, config.RangeLineWidth, config.RangeSegments);
             var pointer = new BuildPointer(_input, camera, player, config.GamepadPlacementDistance);
             var hover = new StructureHoverTool(_site, highlight, pointer, config.HighlightColor);
-            _tool = new BuildPlacementTool(_site, new BuildSelection(config.Slots), ghost, pointer, hover);
+            _tool = new BuildPlacementTool(_site, new BuildSelection(config.Slots), ghost, pointer, hover, range);
 
             _started = true;
             SubscribeInput();

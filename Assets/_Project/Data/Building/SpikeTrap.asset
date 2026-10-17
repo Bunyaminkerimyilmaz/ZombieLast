@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a7f9c2003a8dda247a2163730baacb05, type: 3}
+  m_Name: SpikeTrap
+  m_EditorClassIdentifier: LastHaven.Building::LastHaven.Building.BuildableData
+  _id: spike_trap
+  _displayName: "Diken Tuza\u011F\u0131"
+  _description: "\xDCst\xFCnden ge\xE7en zombilere hasar verir ve onlar\u0131 %40
+    yava\u015Flat\u0131r. Her hasar tikinde a\u015F\u0131n\u0131r, dayan\u0131kl\u0131l\u0131\u011F\u0131
+    bitince k\u0131r\u0131l\u0131r."
+  _icon: {fileID: 0}
+  _footprint: {x: 2, y: 2}
+  _levels:
+  - _displayName: Standart
+    _cost: 80
+    _maxHealth: 40
+    _material: {fileID: 2100000, guid: 30aa068ef1621164b9cdc4ce924bfde4, type: 2}
+    _stats:
+    - _stat: 0
+      _value: 15
+    - _stat: 3
+      _value: 0.4
+    - _stat: 5
+      _value: 0.5
+  _prefab: {fileID: 5299619702977280618, guid: dc88704eacc39384bb0786dcda713400, type: 3}
+  _carvesNavMesh: 0
+  _targetType: 4

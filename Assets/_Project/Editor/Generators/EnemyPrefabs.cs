@@ -10,7 +10,7 @@ namespace LastHaven.Editor
     /// Düşman prefab'ları (<c>Prefabs/Enemies/&lt;Tip&gt;.prefab</c>). Kök: NavMeshAgent + CapsuleCollider + Health + Enemy,
     /// Enemy layer ve tag. "Visual": GDD §18 renk ve ölçekte kapsül (collider yok). Collider ve ajan ölçüleri gövdeye göre ayarlanır;
     /// EnemyData.Scale 1 kalır (ölçek iki kez uygulanmasın). Vuruş hissi (4.3): AnimationDriver, beyaz HitFlash (GDD §7: 0.08 sn),
-    /// EnemyHitReaction ve başın üstünde can barı (Visual dışında).
+    /// EnemyHitReaction ve başın üstünde can barı (Visual dışında). Durum efektleri (9.3): EnemyStatusEffects.
     /// </summary>
     public static class EnemyPrefabs
     {
@@ -120,15 +120,17 @@ namespace LastHaven.Editor
         }
 
         /// <summary>
-        /// Vuruş hissi bileşenlerini (AnimationDriver, HitFlash, EnemyHitReaction) ve can barını eksikse ekler.
-        /// Visual'dan sonra çağrılmalı. Değişiklik sayısını döndürür.
+        /// Vuruş hissi bileşenlerini (AnimationDriver, HitFlash, EnemyHitReaction), can barını ve durum efektlerini
+        /// (<see cref="EnemyStatusEffects"/>, 9.3; yavaşlatma tonu HitFlash'la) eksikse ekler. Visual'dan sonra çağrılmalı.
+        /// Değişiklik sayısını döndürür.
         /// </summary>
         private static int EnsureFeedback(GameObject root, EnemyDefinition definition, Material barBackground, Material barFill)
         {
             return VisualFeedbackSetup.EnsureAnimationDriver(root, definition.BodyRadius)
                    + VisualFeedbackSetup.EnsureHitFlash(root, Color.white, HitFlashDuration)
                    + VisualFeedbackSetup.EnsureComponent<EnemyHitReaction>(root)
-                   + EnemyHealthBarBuilder.Ensure(root, definition.BodyHeight, barBackground, barFill);
+                   + EnemyHealthBarBuilder.Ensure(root, definition.BodyHeight, barBackground, barFill)
+                   + VisualFeedbackSetup.EnsureComponent<EnemyStatusEffects>(root);
         }
 
         private static int AssignData(GameObject root, EnemyData data, string path)

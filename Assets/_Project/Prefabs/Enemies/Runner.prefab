@@ -318,6 +318,7 @@ GameObject:
   - component: {fileID: 5463358919694195783}
   - component: {fileID: 8818683374359826600}
   - component: {fileID: 9021886982462616108}
+  - component: {fileID: 3339423100778392497}
   m_Layer: 8
   m_Name: Runner
   m_TagString: Enemy
@@ -462,6 +463,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8aa33960d63a3484fa47defd18add2c5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: LastHaven.Enemies::LastHaven.Enemies.EnemyHitReaction
+--- !u!114 &3339423100778392497
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7671467393620870129}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 113e33030d135b2498a78c0e6836d7ca, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: LastHaven.Enemies::LastHaven.Enemies.EnemyStatusEffects
+  _slowTint: {r: 0.35, g: 0.6, b: 1, a: 0.45}
 --- !u!1 &8206663526645971835
 GameObject:
   m_ObjectHideFlags: 0

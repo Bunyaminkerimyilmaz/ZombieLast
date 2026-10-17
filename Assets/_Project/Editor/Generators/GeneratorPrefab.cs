@@ -7,8 +7,8 @@ using UnityEngine.AI;
 namespace LastHaven.Editor
 {
     /// <summary>
-    /// Jeneratör prefab'ı (<c>Prefabs/Base/Generator.prefab</c>). Kök: BoxCollider + NavMeshObstacle (carve yok) + Health + Generator,
-    /// Structure layer ve Generator tag. "Visual": sarı 2×2×2 küp (GDD §18, collider yok).
+    /// Jeneratör prefab'ı (<c>Prefabs/Base/Generator.prefab</c>). Kök: BoxCollider + NavMeshObstacle (carve yok) + Health + Generator
+    /// + GeneratorPower (yakıt/güç) + EmergencyFuelStation (acil yakıt), Structure layer ve Generator tag. "Visual": sarı 2×2×2 küp (GDD §18, collider yok).
     /// "BaseLights": Visual dışında, çapraz yönlerde 4 nokta ışık + <see cref="BaseLights"/> (GDD §12).
     /// </summary>
     public static class GeneratorPrefab
@@ -35,7 +35,8 @@ namespace LastHaven.Editor
         public static readonly Vector3 Size = new Vector3(2f, 2f, 2f);
 
         /// <summary>
-        /// Prefab'ı yükler; yoksa oluşturur. Varsa sadece eksikler tamamlanır (boş GeneratorData referansı, üs ışıkları);
+        /// Prefab'ı yükler; yoksa oluşturur. Varsa sadece eksikler tamamlanır (boş GeneratorData referansı, üs ışıkları,
+        /// güç ve acil yakıt bileşenleri);
         /// diğer ayarlara dokunulmaz.
         /// </summary>
         public static Generator LoadOrCreate(GeneratorData data)
@@ -46,7 +47,8 @@ namespace LastHaven.Editor
                 return Create(data);
             }
 
-            int changes = EditorAssetUtility.EditPrefab(PrefabPath, root => AssignData(root, data) + EnsureLights(root));
+            int changes = EditorAssetUtility.EditPrefab(
+                PrefabPath, root => AssignData(root, data) + EnsureLights(root) + EnsurePowerComponents(root));
             if (changes > 0)
             {
                 Debug.Log($"[Last Haven] Base: {PrefabPath} içinde {changes} eksik bileşen/referans tamamlandı.");
@@ -79,6 +81,7 @@ namespace LastHaven.Editor
 
             root.AddComponent<Health>();
             root.AddComponent<Generator>();
+            EnsurePowerComponents(root);
 
             BuildVisual(root.transform, material);
             EnsureLights(root);
@@ -175,6 +178,25 @@ namespace LastHaven.Editor
             }
 
             return group.transform;
+        }
+
+        /// <summary>Kökte eksik <see cref="GeneratorPower"/> ve <see cref="EmergencyFuelStation"/>'ı ekler (9.2). Eklenen sayısını döndürür.</summary>
+        private static int EnsurePowerComponents(GameObject root)
+        {
+            int changes = 0;
+            if (!root.TryGetComponent(out GeneratorPower _))
+            {
+                root.AddComponent<GeneratorPower>();
+                changes++;
+            }
+
+            if (!root.TryGetComponent(out EmergencyFuelStation _))
+            {
+                root.AddComponent<EmergencyFuelStation>();
+                changes++;
+            }
+
+            return changes;
         }
 
         private static int AssignData(GameObject root, GeneratorData data)

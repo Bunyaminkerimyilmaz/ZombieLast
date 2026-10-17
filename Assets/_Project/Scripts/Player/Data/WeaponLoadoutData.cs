@@ -18,6 +18,9 @@ namespace LastHaven.Player
         [SerializeField, Tooltip("Silah yükseltmelerinin seviye başına etkileri (GDD §6). Boşsa yükseltme yapılamaz.")]
         private WeaponUpgradeConfig _upgrades;
 
+        [SerializeField, Tooltip("Perk'lerin silah etkileri (GDD §13: Avcı). Boşsa bu etkiler uygulanmaz.")]
+        private CombatPerkConfig _perks;
+
         [Header("İsabet")]
         [SerializeField, Tooltip("Oyuncu mermilerinin çarptığı layer'lar. Yapılar ve oyuncu dahil değil: mermi kendi barikatının üstünden geçer.")]
         private LayerMask _hitMask = GameLayers.GroundMask | GameLayers.ObstacleMask | GameLayers.EnemyMask;
@@ -26,6 +29,9 @@ namespace LastHaven.Player
 
         /// <summary>Null olabilir.</summary>
         public WeaponUpgradeConfig Upgrades => _upgrades;
+
+        /// <summary>Null olabilir.</summary>
+        public CombatPerkConfig Perks => _perks;
 
         public LayerMask HitMask => _hitMask;
     }

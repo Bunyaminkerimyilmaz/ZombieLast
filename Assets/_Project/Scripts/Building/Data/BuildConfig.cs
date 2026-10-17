@@ -5,7 +5,8 @@ using UnityEngine;
 namespace LastHaven.Building
 {
     /// <summary>
-    /// İnşa modu ayarları (GDD §11): yapı yuvaları (1–5), ızgara, jeneratör yasak bölgesi, önizleme, vurgulama ve çakışma kontrolü.
+    /// İnşa modu ayarları (GDD §11): yapı yuvaları (1–5), ızgara, jeneratör yasak bölgesi, önizleme, vurgulama, menzil dairesi ve
+    /// çakışma kontrolü.
     /// Asset'i üretici oluşturur: <c>Data/Building/BuildConfig.asset</c>. Üs yarıçapı burada değil, <see cref="BaseAreaConfig"/>'te.
     /// </summary>
     public sealed class BuildConfig : ScriptableObject
@@ -47,6 +48,16 @@ namespace LastHaven.Building
         [SerializeField, Min(1f), Tooltip("Kabuğun yapıya göre ölçeği: yüzeyleri yapının hemen dışında kalsın (z-fighting olmasın).")]
         private float _highlightScale = 1.04f;
 
+        [Header("Menzil dairesi (taret: seçiliyken ve üzerine gelince)")]
+        [SerializeField, Tooltip("Zemindeki menzil halkasının rengi (alfa = saydamlık).")]
+        private Color _rangeColor = new Color(0.35f, 0.85f, 1f, 0.6f);
+
+        [SerializeField, Min(0.01f), Tooltip("Halkanın çizgi kalınlığı (m).")]
+        private float _rangeLineWidth = 0.1f;
+
+        [SerializeField, Range(8, 256), Tooltip("Halkanın parça sayısı.")]
+        private int _rangeSegments = 72;
+
         [Header("Çakışma")]
         [SerializeField, Tooltip("Ayak izinde bu layer'lardan bir collider varsa yerleştirilemez (oyuncu, düşman, engel).")]
         private LayerMask _blockingLayers = GameLayers.PlayerMask | GameLayers.EnemyMask | GameLayers.ObstacleMask;
@@ -74,6 +85,12 @@ namespace LastHaven.Building
         public Color HighlightColor => _highlightColor;
 
         public float HighlightScale => _highlightScale;
+
+        public Color RangeColor => _rangeColor;
+
+        public float RangeLineWidth => _rangeLineWidth;
+
+        public int RangeSegments => _rangeSegments;
 
         public LayerMask BlockingLayers => _blockingLayers;
 

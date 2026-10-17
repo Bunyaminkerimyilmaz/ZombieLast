@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using LastHaven.Combat;
 using LastHaven.Core;
@@ -61,6 +62,26 @@ namespace LastHaven.Player
         public bool IsUnlocked(int slot)
         {
             return _slots.IsUnlocked(slot);
+        }
+
+        /// <summary>Silahın yuvası (id ordinal karşılaştırılır); yoksa <see cref="WeaponSlots.None"/>.</summary>
+        public int FindSlot(string weaponId)
+        {
+            for (int i = 0; i < _weapons.Length; i++)
+            {
+                if (_weapons[i] != null && string.Equals(_weapons[i].Id, weaponId, StringComparison.Ordinal))
+                {
+                    return i;
+                }
+            }
+
+            return WeaponSlots.None;
+        }
+
+        /// <summary>Id'si verilen silah (kilitli olsa da); yoksa null.</summary>
+        public WeaponRuntime FindWeapon(string weaponId)
+        {
+            return GetWeapon(FindSlot(weaponId));
         }
 
         /// <summary>Yuvayı açar. Elde silah yoksa onu ele alır. Yuva boşsa veya zaten açıksa false.</summary>

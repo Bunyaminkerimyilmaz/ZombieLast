@@ -1,0 +1,250 @@
+/*
+ * Market paneli (1920×1080 referans): hafif karartma (oyun durmaz, arkası görünür) + tam opak pencere (linear renk uzayında
+ * %3 saydamlık bile arkadaki HUD'u okunur bırakıyor); sekmeler, kart sayfası
+ * (5 sütun × 2 satır sığar), alt bilgi. Pencere HUD'un evre panelinin altından başlar (gündüz sayacı görünsün); sağ üstteki
+ * cüzdanı örter, para pencerenin başlığında. Kart şablonu ShopCard.uxml. Renkler Theme.uss değişkenlerinden.
+ * Seçiciler .lh-screen.lh-shop ile başlar: Theme.uss'teki iki sınıflı kuralları ve varsayılan temayı kesin ezsin diye.
+ * Kodun eklediği sınıflar: ShopTabBar.SelectedClass, ShopCardView.*Class (adlar orada sabit).
+ */
+
+.lh-screen.lh-shop .shop-backdrop {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--color-backdrop);
+    align-items: center;
+    justify-content: flex-start;
+    padding-top: 160px;
+}
+
+/* Yükseklik ~755 px: üstte evre paneli (~150 px), altta can ve silah kutuları (~920 px) açıkta kalır. */
+.lh-screen.lh-shop .shop-window {
+    width: 1560px;
+    padding: var(--space-large) var(--space-large) var(--space) var(--space-large);
+    background-color: var(--color-window);
+}
+
+/* --- Başlık --- */
+
+.lh-screen.lh-shop .shop-header {
+    align-items: center;
+    margin-bottom: var(--space);
+}
+
+.lh-screen.lh-shop .shop-title {
+    color: var(--color-accent);
+}
+
+.lh-screen.lh-shop .shop-caption {
+    margin-right: var(--space);
+}
+
+.lh-screen.lh-shop .shop-money-value {
+    color: var(--color-money);
+}
+
+/* --- Sekmeler --- */
+
+.lh-screen.lh-shop .shop-tabs {
+    margin-bottom: var(--space);
+    padding-bottom: var(--space-small);
+    border-bottom-width: 2px;
+    border-bottom-color: var(--color-panel-border);
+}
+
+.lh-screen.lh-shop .shop-tab {
+    font-size: var(--font-normal);
+    -unity-font-style: bold;
+    color: var(--color-text-dim);
+    background-color: var(--color-button);
+    border-width: 2px;
+    border-color: var(--color-panel-border);
+    border-radius: var(--radius);
+    margin: 0 var(--space) 0 0;
+    padding: var(--space-small) var(--space-large);
+}
+
+.lh-screen.lh-shop .shop-tab:hover {
+    background-color: var(--color-button-hover);
+}
+
+.lh-screen.lh-shop .shop-tab.shop-tab--selected {
+    color: var(--color-text);
+    border-color: var(--color-accent);
+    background-color: var(--color-button-hover);
+}
+
+.lh-screen.lh-shop .shop-tab:focus {
+    color: var(--color-focus);
+    border-color: var(--color-focus);
+}
+
+/* --- Kart sayfası --- */
+
+.lh-screen.lh-shop .shop-pages {
+    min-height: 524px;
+}
+
+.lh-screen.lh-shop .shop-page {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-content: flex-start;
+}
+
+/* --- Kart: satın alınca --purchased (büyüme + yeşil), alınamayınca --denied (kayma + kırmızı); transition bitince kod kaldırır. --- */
+
+.lh-screen.lh-shop .shop-card {
+    width: 284px;
+    min-height: 250px;
+    margin: 6px;
+    padding: var(--space);
+    background-color: var(--color-card);
+    border-width: 2px;
+    border-color: var(--color-card-border);
+    border-radius: var(--radius);
+    transition-property: scale, translate, border-color, background-color;
+    transition-duration: 0.12s;
+    transition-timing-function: ease-out;
+}
+
+.lh-screen.lh-shop .shop-card.shop-card--focused {
+    border-color: var(--color-focus);
+}
+
+.lh-screen.lh-shop .shop-card.shop-card--dimmed {
+    opacity: 0.45;
+}
+
+.lh-screen.lh-shop .shop-card.shop-card--dimmed.shop-card--focused {
+    opacity: 0.75;
+}
+
+.lh-screen.lh-shop .shop-card.shop-card--purchased {
+    scale: 1.06 1.06;
+    border-color: var(--color-success);
+    background-color: var(--color-success-back);
+}
+
+.lh-screen.lh-shop .shop-card.shop-card--denied {
+    translate: 10px 0;
+    border-color: var(--color-danger);
+}
+
+.lh-screen.lh-shop .shop-card__name {
+    -unity-font-style: bold;
+    white-space: normal;
+}
+
+.lh-screen.lh-shop .shop-card__dots {
+    margin-top: var(--space-small);
+}
+
+.lh-screen.lh-shop .shop-card__dot {
+    width: 14px;
+    height: 14px;
+    margin-right: var(--space-small);
+    border-width: 1px;
+    border-color: var(--color-bar-border);
+    border-radius: 7px;
+    background-color: var(--color-dot-empty);
+}
+
+.lh-screen.lh-shop .shop-card__dot.shop-card__dot--filled {
+    background-color: var(--color-accent);
+}
+
+.lh-screen.lh-shop .shop-card__description {
+    flex-grow: 1;
+    margin-top: var(--space-small);
+    white-space: normal;
+    -unity-font-style: normal;
+    letter-spacing: 0;
+}
+
+.lh-screen.lh-shop .shop-card__notices {
+    min-height: 26px;
+    margin-top: var(--space-small);
+}
+
+.lh-screen.lh-shop .shop-card__notice-text {
+    color: var(--color-danger);
+    letter-spacing: 0;
+}
+
+.lh-screen.lh-shop .shop-card__requirement {
+    margin-left: var(--space-small);
+    color: var(--color-accent);
+}
+
+.lh-screen.lh-shop .shop-card__footer {
+    align-items: center;
+    margin-top: var(--space-small);
+}
+
+.lh-screen.lh-shop .shop-card__price {
+    color: var(--color-money);
+}
+
+.lh-screen.lh-shop .shop-card__price.shop-card__price--short {
+    color: var(--color-danger);
+}
+
+.lh-screen.lh-shop .shop-card__max,
+.lh-screen.lh-shop .shop-card__owned {
+    color: var(--color-success);
+}
+
+/* --- Butonlar (Satın Al, Kapat) --- */
+
+.lh-screen.lh-shop .shop-card__buy,
+.lh-screen.lh-shop .shop-close {
+    font-size: var(--font-small);
+    -unity-font-style: bold;
+    color: var(--color-text);
+    background-color: var(--color-button);
+    border-width: 2px;
+    border-color: var(--color-accent);
+    border-radius: var(--radius);
+    margin: 0;
+    padding: var(--space-small) var(--space);
+}
+
+.lh-screen.lh-shop .shop-close {
+    font-size: var(--font-normal);
+    padding: var(--space-small) var(--space-large);
+}
+
+.lh-screen.lh-shop .shop-card__buy:hover,
+.lh-screen.lh-shop .shop-close:hover {
+    background-color: var(--color-button-hover);
+}
+
+.lh-screen.lh-shop .shop-card__buy:active,
+.lh-screen.lh-shop .shop-close:active {
+    background-color: var(--color-button-active);
+}
+
+.lh-screen.lh-shop .shop-card__buy:focus,
+.lh-screen.lh-shop .shop-close:focus {
+    color: var(--color-button-active);
+    border-color: var(--color-focus);
+    background-color: var(--color-focus);
+}
+
+/* Tamamlanmış kartta (MAKS / ALINDI) buton soluk ama odaklanabilir: odak sırası durumla değişmez. */
+.lh-screen.lh-shop .shop-card.shop-card--done .shop-card__buy {
+    opacity: 0.4;
+}
+
+/* --- Alt bilgi --- */
+
+.lh-screen.lh-shop .shop-footer {
+    align-items: center;
+    margin-top: var(--space-small);
+}
+
+.lh-screen.lh-shop .shop-hint {
+    letter-spacing: 0;
+}

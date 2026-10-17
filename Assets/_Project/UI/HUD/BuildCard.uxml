@@ -1,0 +1,13 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <!-- İnşa çubuğu kartı şablonu: BuildCardView her dolu yuva için örnekler ve çubuğa ekler. Stil HudBuild.uss'ten (HUD'dan)
+         gelir. Element adları HudElementNames.Card* ile eşleşmeli (EditMode testi kontrol eder). Kod yuva numarasını, yapının
+         adını, fiyatını ve ikonunu (yoksa rengini) yazar. -->
+    <ui:VisualElement name="build-card" class="build-card" picking-mode="Ignore">
+        <ui:VisualElement class="build-card__top" picking-mode="Ignore">
+            <ui:Label name="build-card-key" text="1" class="key build-card__key" picking-mode="Ignore" />
+            <ui:Label name="build-card-price" text="0" class="label build-card__price" picking-mode="Ignore" />
+        </ui:VisualElement>
+        <ui:VisualElement name="build-card-swatch" class="build-card__swatch" picking-mode="Ignore" />
+        <ui:Label name="build-card-name" text="Yapı" class="label build-card__name" picking-mode="Ignore" />
+    </ui:VisualElement>
+</ui:UXML>

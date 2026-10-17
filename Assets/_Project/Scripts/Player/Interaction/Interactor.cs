@@ -12,8 +12,6 @@ namespace LastHaven.Player
     [RequireComponent(typeof(Health))]
     public sealed class Interactor : MonoBehaviour
     {
-        private const string LogPrefix = "[Player] ";
-
         private readonly InteractionHold _hold = new InteractionHold();
         private Health _health;
         private IInputReader _input;
@@ -84,12 +82,6 @@ namespace LastHaven.Player
             _lastProgress = progress;
             Vector3 position = target != null ? target.PromptPosition : Vector3.zero;
             EventBus<InteractionPromptEvent>.Raise(new InteractionPromptEvent(target, prompt, position, holding, progress));
-
-            // UI ipucu (Gün 10) gelene kadar hedef log'da görünür.
-            if (targetChanged && target != null)
-            {
-                Debug.Log($"{LogPrefix}Etkileşim: {prompt} (E basılı tut).", this);
-            }
         }
     }
 }

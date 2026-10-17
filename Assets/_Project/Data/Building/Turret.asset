@@ -1,0 +1,58 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a7f9c2003a8dda247a2163730baacb05, type: 3}
+  m_Name: Turret
+  m_EditorClassIdentifier: LastHaven.Building::LastHaven.Building.BuildableData
+  _id: turret
+  _displayName: Taret
+  _description: "Menzildeki en yak\u0131n zombiye d\xF6ner ve ate\u015F eder; g\xFC\xE7
+    ister. U ile \xF6nce hasar\u0131, sonra menzili ve at\u0131\u015F h\u0131z\u0131
+    artar."
+  _icon: {fileID: 0}
+  _footprint: {x: 2, y: 2}
+  _levels:
+  - _displayName: Standart
+    _cost: 250
+    _maxHealth: 250
+    _material: {fileID: 2100000, guid: cb5df7582d46ad24c995ab4d3828b6cd, type: 2}
+    _stats:
+    - _stat: 0
+      _value: 8
+    - _stat: 1
+      _value: 5
+    - _stat: 2
+      _value: 12
+  - _displayName: "A\u011F\u0131r Namlu"
+    _cost: 300
+    _maxHealth: 250
+    _material: {fileID: 2100000, guid: cb5df7582d46ad24c995ab4d3828b6cd, type: 2}
+    _stats:
+    - _stat: 0
+      _value: 12.8
+    - _stat: 1
+      _value: 5
+    - _stat: 2
+      _value: 12
+  - _displayName: "Geli\u015Fmi\u015F"
+    _cost: 500
+    _maxHealth: 250
+    _material: {fileID: 2100000, guid: cb5df7582d46ad24c995ab4d3828b6cd, type: 2}
+    _stats:
+    - _stat: 0
+      _value: 12.8
+    - _stat: 1
+      _value: 6.5
+    - _stat: 2
+      _value: 15
+  _prefab: {fileID: 7109696940669131583, guid: 2db981ec378bef14ba6c63b5e2a2ec06, type: 3}
+  _carvesNavMesh: 1
+  _targetType: 3

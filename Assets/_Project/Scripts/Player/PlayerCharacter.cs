@@ -37,6 +37,10 @@ namespace LastHaven.Player
 
         public bool IsAlive => _health.IsAlive;
 
+        public float CurrentHealth => _health.Current;
+
+        public float MaxHealth => _health.Max;
+
         /// <summary>PlayerData × <see cref="IRunModifiers"/> PickupRadius; stat değişince yeniden hesaplanır.</summary>
         public float PickupRadius => _pickupRadius;
 

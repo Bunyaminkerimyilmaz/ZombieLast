@@ -7,9 +7,10 @@ using UnityEngine.InputSystem;
 namespace LastHaven.DebugTools
 {
     /// <summary>
-    /// Ekonomi kısayolları ([Systems]/DebugEconomy): F7 para, F8 yakıt ekler (<see cref="IWallet"/>; miktarlar inspector'dan).
-    /// Ekleme normal cüzdan yoluyla yapılır: HUD ve olaylar her zamanki gibi güncellenir. Sol üstte, gece kısayollarının altında
-    /// küçük panel. Sadece editörde ve development build'de çalışır (sınıf ve alanları her build'de var; sahnede "missing script" olmasın).
+    /// Ekonomi kısayolları ([Systems]/DebugEconomy): F7 para, F8 yakıt ekler (<see cref="IWallet"/>; miktarlar inspector'dan);
+    /// Shift+F8 yakıtı az bırakır (güç kesintisini denemek için, 9.2). Değişiklik normal cüzdan yoluyla yapılır: HUD ve olaylar
+    /// her zamanki gibi güncellenir. Sol üstte, gece kısayollarının altında küçük panel. Sadece editörde ve development build'de
+    /// çalışır (sınıf ve alanları her build'de var; sahnede "missing script" olmasın).
     /// </summary>
     [DisallowMultipleComponent]
     public sealed class DebugEconomyControls : MonoBehaviour
@@ -20,12 +21,15 @@ namespace LastHaven.DebugTools
         [SerializeField, Min(0), Tooltip("F8'in eklediği yakıt.")]
         private int _fuelAmount = 50;
 
+        [SerializeField, Min(0), Tooltip("Shift+F8'in bıraktığı yakıt (fazlası harcanır).")]
+        private int _lowFuelAmount = 3;
+
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
         private const string Prefix = "[Debug] ";
 
         // DebugWaveControls panelinin (y 120–204) altında.
-        private static readonly Rect PanelRect = new Rect(10f, 210f, 290f, 64f);
-        private static readonly Rect PanelTextRect = new Rect(18f, 214f, 274f, 56f);
+        private static readonly Rect PanelRect = new Rect(10f, 210f, 290f, 84f);
+        private static readonly Rect PanelTextRect = new Rect(18f, 214f, 274f, 76f);
 
         private InputAction[] _actions;
         private IWallet _wallet;
@@ -41,7 +45,8 @@ namespace LastHaven.DebugTools
 
             _panelText = "Ekonomi Kısayolları\n"
                          + "F7   +" + _moneyAmount + " para\n"
-                         + "F8   +" + _fuelAmount + " yakıt";
+                         + "F8   +" + _fuelAmount + " yakıt\n"
+                         + "Shift+F8   yakıt → " + _lowFuelAmount;
         }
 
         private void Start()
@@ -87,9 +92,34 @@ namespace LastHaven.DebugTools
             Add(WalletResource.Money, _moneyAmount, "F7", "para");
         }
 
+        // F8 tek action; Shift basılıysa ekleme yerine yakıtı az bırakır (iki ayrı bağlama ikisini birden tetiklerdi).
         private void AddFuel()
         {
+            Keyboard keyboard = Keyboard.current;
+            if (keyboard != null && keyboard.shiftKey.isPressed)
+            {
+                DrainFuel();
+                return;
+            }
+
             Add(WalletResource.Fuel, _fuelAmount, "F8", "yakıt");
+        }
+
+        private void DrainFuel()
+        {
+            if (_wallet == null)
+            {
+                Debug.LogWarning($"{Prefix}Shift+F8: IWallet yok; yakıt değişmedi.", this);
+                return;
+            }
+
+            int excess = _wallet.Fuel - _lowFuelAmount;
+            if (excess > 0)
+            {
+                _wallet.TrySpend(WalletResource.Fuel, excess);
+            }
+
+            Debug.Log($"{Prefix}Shift+F8: yakıt {_wallet.Fuel}.", this);
         }
 
         private void Add(WalletResource resource, int amount, string key, string label)

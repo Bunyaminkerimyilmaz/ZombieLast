@@ -5,8 +5,8 @@ namespace LastHaven.Building
 {
     /// <summary>
     /// İnşa modunun araçları: "seç → önizle → yerleştir" (yapı seçimi <see cref="BuildSelection"/>, önizleme
-    /// <see cref="BuildGhost"/>, yerleşim noktası <see cref="BuildPointer"/>, <see cref="BuildSite"/>) ve var olan yapının
-    /// üzerine gelme / yükseltme / satış (<see cref="StructureHoverTool"/>). Mod, evre ve iptal <see cref="BuildModeController"/>'da;
+    /// <see cref="BuildGhost"/>, yerleşim noktası <see cref="BuildPointer"/>, <see cref="BuildSite"/>), var olan yapının
+    /// üzerine gelme / yükseltme / satış (<see cref="StructureHoverTool"/>) ve menzil dairesi (<see cref="BuildRangePreview"/>). Mod, evre ve iptal <see cref="BuildModeController"/>'da;
     /// kontrolcü mod açılınca girdiyi <see cref="Bind"/> ile bağlar, kapanınca <see cref="Unbind"/> ile çözer. Seçim değişince
     /// <see cref="BuildSelectionChangedEvent"/> gönderir.
     /// </summary>
@@ -20,16 +20,19 @@ namespace LastHaven.Building
         private readonly BuildGhost _ghost;
         private readonly BuildPointer _pointer;
         private readonly StructureHoverTool _hover;
+        private readonly BuildRangePreview _range;
         private readonly Color _validColor;
         private readonly Color _invalidColor;
 
-        public BuildPlacementTool(BuildSite site, BuildSelection selection, BuildGhost ghost, BuildPointer pointer, StructureHoverTool hover)
+        public BuildPlacementTool(
+            BuildSite site, BuildSelection selection, BuildGhost ghost, BuildPointer pointer, StructureHoverTool hover, BuildRangePreview range)
         {
             _site = site;
             _selection = selection;
             _ghost = ghost;
             _pointer = pointer;
             _hover = hover;
+            _range = range;
             _validColor = site.Config.ValidColor;
             _invalidColor = site.Config.InvalidColor;
         }
@@ -61,25 +64,30 @@ namespace LastHaven.Building
 
         /// <summary>
         /// Her kare: imlecin altındaki yapıyı günceller; yapı yoksa ve seçim varsa önizlemeyi imlecin altına taşır ve rengini
-        /// yerleşim sonucuna göre ayarlar.
+        /// yerleşim sonucuna göre ayarlar. Menzilli yapıda (taret) önizlemenin veya üzerine gelinen yapının menzil dairesi görünür.
         /// </summary>
         public void Tick()
         {
             _hover.Tick();
-            BuildableData data = _selection.Selected;
-            if (data == null)
+            Structure hovered = _hover.Hovered;
+            if (hovered != null)
             {
+                _ghost.Hide();
+                _range.Show(hovered.CurrentLevel, hovered.transform.position);
                 return;
             }
 
-            if (!_hover.HasHover && TryGetPoint(out Vector3 point))
+            BuildableData data = _selection.Selected;
+            if (data != null && TryGetPoint(out Vector3 point))
             {
                 BuildPlacement placement = _site.Evaluate(data, point, _selection.RotationSteps);
                 _ghost.Show(data, placement.Position, placement.Rotation, placement.IsValid ? _validColor : _invalidColor);
+                _range.Show(data.GetLevel(0), placement.Position);
             }
             else
             {
                 _ghost.Hide();
+                _range.Hide();
             }
         }
 
@@ -143,6 +151,7 @@ namespace LastHaven.Building
         public bool ClearSelection()
         {
             _ghost.Hide();
+            _range.Hide();
             if (!_selection.Clear())
             {
                 return false;

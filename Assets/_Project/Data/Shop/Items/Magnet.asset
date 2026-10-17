@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 274de1240c163194e9f1cec3898e6f2f, type: 3}
+  m_Name: Magnet
+  m_EditorClassIdentifier: LastHaven.Economy::LastHaven.Economy.ShopItemData
+  _id: magnet
+  _displayName: "M\u0131knat\u0131s"
+  _description: "Jeton toplama yar\u0131\xE7ap\u0131 her seviyede +1 m."
+  _category: 1
+  _prices: 64000000c80000005e010000
+  _maxLevel: 3
+  _requiredItemId: 
+  _effect: 5
+  _targetId: 
+  _upgradeType: 0
+  _value: 1

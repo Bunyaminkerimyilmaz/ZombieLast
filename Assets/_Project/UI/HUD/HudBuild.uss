@@ -1,0 +1,173 @@
+/*
+ * İnşa modu HUD'u (1920×1080 referans): alt ortada inşa çubuğu (yapı kartları, seçili yapının açıklaması, tuş ipuçları) ve
+ * üzerine gelinen yapının ipucu kutusu. Renkler ve yazılar Theme.uss değişkenlerinden. Kart şablonu BuildCard.uxml.
+ * Kodun eklediği sınıflar: BuildCardView.*Class, StructureTooltipView.*Class (adlar orada sabit).
+ * Seçiciler .lh-screen.hud ile başlar: Theme.uss'teki iki sınıflı kuralları kesin ezsin diye.
+ */
+
+/* --- İnşa çubuğu: sol alttaki can kutusu ile sağ alttaki silah kutusunun arasında. --- */
+
+.lh-screen.hud .hud-build-bar {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: var(--hud-edge);
+    align-items: center;
+}
+
+.lh-screen.hud .hud-build-panel {
+    align-items: center;
+    max-width: 1100px;
+    padding: var(--space) var(--space-large);
+}
+
+.lh-screen.hud .hud-build-title {
+    color: var(--color-accent);
+    margin-bottom: var(--space-small);
+}
+
+/* Kartlar aynı boyda (ad iki satıra kaysa da). */
+.lh-screen.hud .hud-build-cards {
+    justify-content: center;
+    align-items: stretch;
+}
+
+.lh-screen.hud .hud-build-description {
+    max-width: 760px;
+    margin-top: var(--space);
+    white-space: normal;
+    -unity-text-align: middle-center;
+    letter-spacing: 0;
+}
+
+.lh-screen.hud .hud-build-hints {
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: var(--space-small);
+}
+
+.lh-screen.hud .hud-build-hint {
+    margin-right: var(--space);
+}
+
+/* --- Yapı kartı: seçili kart vurgulu ve biraz büyük, parası yetmeyen soluk (fiyat kırmızı). --- */
+
+.lh-screen.hud .build-card {
+    width: 210px;
+    margin: 0 var(--space-small);
+    padding: var(--space-small) var(--space);
+    align-items: center;
+    background-color: var(--color-card);
+    border-width: var(--border);
+    border-color: var(--color-card-border);
+    border-radius: var(--radius);
+    transform-origin: bottom;
+    transition-property: scale, border-color, background-color;
+    transition-duration: 0.1s;
+    transition-timing-function: ease-out;
+}
+
+.lh-screen.hud .build-card.build-card--selected {
+    scale: 1.06 1.06;
+    border-color: var(--color-selected);
+    background-color: var(--color-selected-back);
+}
+
+.lh-screen.hud .build-card.build-card--dimmed {
+    opacity: 0.45;
+}
+
+.lh-screen.hud .build-card.build-card--dimmed.build-card--selected {
+    opacity: 0.75;
+}
+
+.lh-screen.hud .build-card__top {
+    width: 100%;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.lh-screen.hud .build-card__price {
+    color: var(--color-money);
+    -unity-font-style: bold;
+}
+
+.lh-screen.hud .build-card__price.build-card__price--short {
+    color: var(--color-danger);
+}
+
+/* İkon varsa arka plan görseli, yoksa yapının rengi (kod yazar); ikisi de yoksa bu varsayılan renk. */
+.lh-screen.hud .build-card__swatch {
+    width: 44px;
+    height: 44px;
+    margin: var(--space-small) 0;
+    background-color: var(--color-swatch);
+    border-width: var(--border);
+    border-color: var(--color-bar-border);
+    border-radius: var(--radius);
+    -unity-background-scale-mode: scale-to-fit;
+}
+
+.lh-screen.hud .build-card__name {
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+    white-space: normal;
+}
+
+/* --- Yapı ipucu kutusu: üzerine gelinen yapının tepesinin üstünde, üstte yer yoksa altında (WorldAnchor). margin-bottom =
+   yapıya ve ekran kenarına bırakılan boşluk; margin-left/top sıfır kalmalı (konumu kod yazar). --- */
+
+/* Opak: başka bir HUD kutusunun üstüne binerse alttaki yazı okunmasın. */
+.lh-screen.hud .hud-tooltip {
+    position: absolute;
+    left: 0;
+    top: 0;
+    min-width: 320px;
+    margin: 0 0 var(--space) 0;
+    background-color: var(--color-window);
+}
+
+.lh-screen.hud .hud-tooltip__title {
+    margin-bottom: var(--space-small);
+}
+
+.lh-screen.hud .hud-tooltip__names {
+    align-items: flex-end;
+}
+
+.lh-screen.hud .hud-tooltip__level-name {
+    color: var(--color-accent);
+    margin-left: var(--space);
+}
+
+.lh-screen.hud .hud-tooltip__level {
+    color: var(--color-text-dim);
+    margin-left: var(--space-large);
+}
+
+.lh-screen.hud .bar-fill--structure {
+    background-color: var(--color-structure);
+}
+
+.lh-screen.hud .hud-tooltip__bar {
+    height: var(--bar-height-small);
+}
+
+.lh-screen.hud .hud-tooltip__action {
+    margin-top: var(--space);
+    align-items: center;
+}
+
+.lh-screen.hud .hud-tooltip__cost {
+    color: var(--color-money);
+    -unity-font-style: bold;
+}
+
+.lh-screen.hud .hud-tooltip__cost.hud-tooltip__cost--short {
+    color: var(--color-danger);
+}
+
+.lh-screen.hud .hud-tooltip__max {
+    color: var(--color-success);
+}

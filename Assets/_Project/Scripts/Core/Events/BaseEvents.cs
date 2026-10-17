@@ -20,7 +20,7 @@ namespace LastHaven.Core
         public DamageInfo KillingBlow { get; }
     }
 
-    /// <summary>Üssün güç durumu değiştiğinde gönderilir (<see cref="IPowerService.IsPowered"/>). Taretler ve üs ışıkları dinler.</summary>
+    /// <summary>Üssün güç durumu değiştiğinde gönderilir (<see cref="IPowerService.IsPowered"/>). Taretler, üs ışıkları ve HUD dinler.</summary>
     public readonly struct PowerChangedEvent : IEvent
     {
         public PowerChangedEvent(bool isPowered)
@@ -29,5 +29,33 @@ namespace LastHaven.Core
         }
 
         public bool IsPowered { get; }
+    }
+
+    /// <summary>Gücün neden kesildiği.</summary>
+    public enum PowerLossReason
+    {
+        /// <summary>Yakıt bitti (GDD §12).</summary>
+        OutOfFuel = 0,
+
+        /// <summary>Jeneratör yıkıldı.</summary>
+        GeneratorDestroyed = 1,
+    }
+
+    /// <summary>
+    /// Güç kesildiğinde bir kez gönderilir, aynı değişimin <see cref="PowerChangedEvent"/>'inden (false) sonra. Ses ve uyarılar
+    /// (Gün 14) dinler. Geri gelişi <see cref="PowerChangedEvent"/> (true) duyurur.
+    /// </summary>
+    public readonly struct PowerLostEvent : IEvent
+    {
+        public PowerLostEvent(Vector3 position, PowerLossReason reason)
+        {
+            Position = position;
+            Reason = reason;
+        }
+
+        /// <summary>Jeneratörün konumu (yer seviyesi, dünya).</summary>
+        public Vector3 Position { get; }
+
+        public PowerLossReason Reason { get; }
     }
 }

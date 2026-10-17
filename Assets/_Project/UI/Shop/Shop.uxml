@@ -1,0 +1,34 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <Style src="../Themes/Theme.uss" />
+    <Style src="Shop.uss" />
+    <!-- Element adları ShopElementNames.cs ile eşleşmeli (EditMode testi kontrol eder). Kartlar ShopCard.uxml'den kodla sayfalara
+         eklenir. Sekme/sayfa sırası ShopCategory ile aynı. Kök gizli başlar (hidden); UI Builder'da önizlemek için geçici kaldır.
+         Odak sırası ağaç sırasıdır: sekmeler, kartlar, Kapat. -->
+    <ui:VisualElement name="shop-panel" class="lh-screen lh-shop hidden">
+        <ui:VisualElement class="shop-backdrop">
+            <ui:VisualElement class="panel shop-window">
+                <ui:VisualElement class="row-spread shop-header">
+                    <ui:Label text="MARKET" class="label-big shop-title" />
+                    <ui:VisualElement class="row shop-money">
+                        <ui:Label text="PARA" class="label-small shop-caption" />
+                        <ui:Label name="shop-money-value" text="0" class="label-large shop-money-value" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+                <ui:VisualElement class="row shop-tabs">
+                    <ui:Button name="shop-tab-weapons" text="SİLAHLAR" class="shop-tab" />
+                    <ui:Button name="shop-tab-upgrades" text="YÜKSELTMELER" class="shop-tab" />
+                    <ui:Button name="shop-tab-supplies" text="MALZEME" class="shop-tab" />
+                </ui:VisualElement>
+                <ui:VisualElement class="shop-pages">
+                    <ui:VisualElement name="shop-page-weapons" class="shop-page" />
+                    <ui:VisualElement name="shop-page-upgrades" class="shop-page hidden" />
+                    <ui:VisualElement name="shop-page-supplies" class="shop-page hidden" />
+                </ui:VisualElement>
+                <ui:VisualElement class="row-spread shop-footer">
+                    <ui:Label text="Yön tuşları / D-pad: gez   ·   Enter / A: seç, satın al   ·   Tab / Esc / B: kapat" class="label-small shop-hint" />
+                    <ui:Button name="shop-close-button" text="Kapat" class="shop-close" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

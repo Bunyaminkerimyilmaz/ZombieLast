@@ -30,6 +30,26 @@ namespace LastHaven.UI
             return minutes.ToString(Invariant) + ":" + seconds.ToString("00", Invariant);
         }
 
+        /// <summary>
+        /// Tahmini süreyi (sn) ekranda gösterilecek tam saniyeye çevirir: yukarı yuvarlı, negatif 0; sonsuz veya NaN → -1.
+        /// Metin sadece bu değer değişince yeniden kurulur.
+        /// </summary>
+        public static int DisplaySeconds(float seconds)
+        {
+            if (float.IsNaN(seconds) || float.IsInfinity(seconds) || seconds >= int.MaxValue)
+            {
+                return -1;
+            }
+
+            return seconds > 0f ? Mathf.CeilToInt(seconds) : 0;
+        }
+
+        /// <summary>Tahmini süre metni: <see cref="DisplaySeconds"/> değeri "d:ss" (250 → "4:10"); -1 (sonsuz) → "∞".</summary>
+        public static string Estimate(int displaySeconds)
+        {
+            return displaySeconds < 0 ? Infinite : Timer(displaySeconds);
+        }
+
         /// <summary>"değer/toplam" (gece 3/10).</summary>
         public static string OfTotal(int value, int total)
         {

@@ -6,12 +6,12 @@
   <Project Path="LastHaven.Progression.csproj" />
   <Project Path="LastHaven.Feedback.csproj" />
   <Project Path="LastHaven.Economy.csproj" />
+  <Project Path="LastHaven.Tests.EditMode.csproj" />
   <Project Path="LastHaven.Waves.csproj" />
   <Project Path="LastHaven.Building.csproj" />
-  <Project Path="LastHaven.Tests.EditMode.csproj" />
+  <Project Path="LastHaven.UI.csproj" />
   <Project Path="LastHaven.DebugTools.csproj" />
   <Project Path="LastHaven.Combat.csproj" />
   <Project Path="LastHaven.GameFlow.csproj" />
-  <Project Path="LastHaven.UI.csproj" />
   <Project Path="LastHaven.Audio.csproj" />
 </Solution>

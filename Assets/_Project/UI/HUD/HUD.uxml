@@ -1,7 +1,11 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
     <Style src="../Themes/Theme.uss" />
     <Style src="HUD.uss" />
-    <!-- Element adları HudElementNames.cs ile eşleşmeli (EditMode testi kontrol eder). Metinler burada; kod sadece sayı yazar. -->
+    <Style src="HudBuild.uss" />
+    <Style src="HudInteraction.uss" />
+    <!-- Element adları HudElementNames.cs ile eşleşmeli (EditMode testi kontrol eder). Metinler burada; kod sadece sayı ve veri
+         adlarını yazar. Tuş ipuçlarında klavye ve gamepad karşılığı yan yana: kökteki lh-gamepad sınıfı hangisinin görüneceğini
+         seçer (HudInputHintsController). -->
     <ui:VisualElement name="hud" class="lh-screen hud" picking-mode="Ignore">
         <ui:VisualElement class="hud-top" picking-mode="Ignore">
             <ui:VisualElement class="panel hud-phase-panel" picking-mode="Ignore">
@@ -43,6 +47,18 @@
                     <ui:Label text="YAKIT" class="label-small" picking-mode="Ignore" />
                     <ui:Label name="fuel-value" text="0" class="label-large hud-fuel" picking-mode="Ignore" />
                 </ui:VisualElement>
+                <!-- Yakıt barı (yakıt / kapasite) ve bu gecenin tüketimiyle tahmini süre (HudFuelController). -->
+                <ui:VisualElement class="bar hud-fuel-bar" picking-mode="Ignore">
+                    <ui:VisualElement name="fuel-fill" class="bar-fill bar-fill--fuel" picking-mode="Ignore" />
+                </ui:VisualElement>
+                <ui:VisualElement class="row-spread hud-wallet-row" picking-mode="Ignore">
+                    <ui:Label text="TAHMİNİ SÜRE" class="label-small" picking-mode="Ignore" />
+                    <ui:Label name="fuel-estimate" text="0:00" class="label hud-fuel" picking-mode="Ignore" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <!-- Güç yokken görünür; kod "dim" sınıfını transition bitişlerinde açıp kapatarak yanıp söndürür (HudFuelController). -->
+            <ui:VisualElement name="power-warning" class="panel hud-power-warning hidden" picking-mode="Ignore">
+                <ui:Label text="GÜÇ YOK" class="label-big" picking-mode="Ignore" />
             </ui:VisualElement>
         </ui:VisualElement>
         <!-- Kombo (sağ orta): kombo yokken gizli; eşik atlanınca kod "pulse" sınıfıyla kısa büyütür (HudComboController.PulseClass). -->
@@ -68,6 +84,97 @@
         <ui:VisualElement class="panel hud-bottom-right" picking-mode="Ignore">
             <ui:Label name="weapon-name" text="—" class="label-large" picking-mode="Ignore" />
             <ui:Label name="ammo-value" text="0 / 0" class="label-big hud-ammo" picking-mode="Ignore" />
+        </ui:VisualElement>
+        <!-- İnşa çubuğu (alt orta, sadece inşa modunda): kartları BuildCard.uxml'den kod ekler (HudBuildBarController). -->
+        <ui:VisualElement name="build-bar" class="hud-build-bar hidden" picking-mode="Ignore">
+            <ui:VisualElement class="panel hud-build-panel" picking-mode="Ignore">
+                <ui:Label text="İNŞA" class="label-small hud-build-title" picking-mode="Ignore" />
+                <ui:VisualElement name="build-cards" class="row hud-build-cards" picking-mode="Ignore" />
+                <ui:Label name="build-description" text="" class="label-small hud-build-description hidden" picking-mode="Ignore" />
+                <ui:Label name="build-no-selection" text="Bir yapı seç ya da bir yapının üzerine gel." class="label-small hud-build-description" picking-mode="Ignore" />
+                <ui:VisualElement class="row hud-build-hints" picking-mode="Ignore">
+                    <ui:VisualElement class="row hud-build-hint" picking-mode="Ignore">
+                        <ui:Label text="1–5" class="key key--keyboard" picking-mode="Ignore" />
+                        <ui:Label text="D-pad ←→" class="key key--gamepad" picking-mode="Ignore" />
+                        <ui:Label text="seç" class="label-tiny" picking-mode="Ignore" />
+                    </ui:VisualElement>
+                    <ui:VisualElement class="row hud-build-hint" picking-mode="Ignore">
+                        <ui:Label text="Q" class="key key--keyboard" picking-mode="Ignore" />
+                        <ui:Label text="RB" class="key key--gamepad" picking-mode="Ignore" />
+                        <ui:Label text="döndür" class="label-tiny" picking-mode="Ignore" />
+                    </ui:VisualElement>
+                    <ui:VisualElement class="row hud-build-hint" picking-mode="Ignore">
+                        <ui:Label text="Sol tık" class="key key--keyboard" picking-mode="Ignore" />
+                        <ui:Label text="RT / A" class="key key--gamepad" picking-mode="Ignore" />
+                        <ui:Label text="yerleştir" class="label-tiny" picking-mode="Ignore" />
+                    </ui:VisualElement>
+                    <ui:VisualElement class="row hud-build-hint" picking-mode="Ignore">
+                        <ui:Label text="U" class="key key--keyboard" picking-mode="Ignore" />
+                        <ui:Label text="D-pad ↑" class="key key--gamepad" picking-mode="Ignore" />
+                        <ui:Label text="yükselt" class="label-tiny" picking-mode="Ignore" />
+                    </ui:VisualElement>
+                    <ui:VisualElement class="row hud-build-hint" picking-mode="Ignore">
+                        <ui:Label text="X" class="key key--keyboard" picking-mode="Ignore" />
+                        <ui:Label text="D-pad ↓" class="key key--gamepad" picking-mode="Ignore" />
+                        <ui:Label text="sat" class="label-tiny" picking-mode="Ignore" />
+                    </ui:VisualElement>
+                    <ui:VisualElement class="row hud-build-hint" picking-mode="Ignore">
+                        <ui:Label text="Sağ tık" class="key key--keyboard" picking-mode="Ignore" />
+                        <ui:Label text="B" class="key key--gamepad" picking-mode="Ignore" />
+                        <ui:Label text="iptal" class="label-tiny" picking-mode="Ignore" />
+                    </ui:VisualElement>
+                    <ui:VisualElement class="row hud-build-hint" picking-mode="Ignore">
+                        <ui:Label text="B" class="key key--keyboard" picking-mode="Ignore" />
+                        <ui:Label text="LB" class="key key--gamepad" picking-mode="Ignore" />
+                        <ui:Label text="kapat" class="label-tiny" picking-mode="Ignore" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <!-- Yapı ipucu (inşa modunda üzerine gelinen yapının tepesinde; HudStructureTooltipController konumlar). -->
+        <ui:VisualElement name="structure-tooltip" class="panel hud-tooltip hidden" picking-mode="Ignore">
+            <ui:VisualElement class="row-spread hud-tooltip__title" picking-mode="Ignore">
+                <ui:VisualElement class="row hud-tooltip__names" picking-mode="Ignore">
+                    <ui:Label name="tooltip-name" text="Yapı" class="label-large" picking-mode="Ignore" />
+                    <ui:Label name="tooltip-level-name" text="" class="label hud-tooltip__level-name" picking-mode="Ignore" />
+                </ui:VisualElement>
+                <ui:Label name="tooltip-level" text="1/1" class="label hud-tooltip__level" picking-mode="Ignore" />
+            </ui:VisualElement>
+            <ui:VisualElement class="row-spread" picking-mode="Ignore">
+                <ui:Label text="CAN" class="label-small" picking-mode="Ignore" />
+                <ui:Label name="tooltip-health-value" text="0/0" class="label" picking-mode="Ignore" />
+            </ui:VisualElement>
+            <ui:VisualElement class="bar hud-tooltip__bar" picking-mode="Ignore">
+                <ui:VisualElement name="tooltip-health-fill" class="bar-fill bar-fill--structure" picking-mode="Ignore" />
+            </ui:VisualElement>
+            <ui:VisualElement name="tooltip-upgrade" class="row-spread hud-tooltip__action" picking-mode="Ignore">
+                <ui:VisualElement class="row" picking-mode="Ignore">
+                    <ui:Label text="U" class="key key--keyboard" picking-mode="Ignore" />
+                    <ui:Label text="D-pad ↑" class="key key--gamepad" picking-mode="Ignore" />
+                    <ui:Label text="Yükselt" class="label" picking-mode="Ignore" />
+                </ui:VisualElement>
+                <ui:Label name="tooltip-upgrade-cost" text="0" class="label hud-tooltip__cost" picking-mode="Ignore" />
+            </ui:VisualElement>
+            <ui:VisualElement name="tooltip-max-level" class="row hud-tooltip__action hidden" picking-mode="Ignore">
+                <ui:Label text="En üst seviye" class="label hud-tooltip__max" picking-mode="Ignore" />
+            </ui:VisualElement>
+            <ui:VisualElement class="row-spread hud-tooltip__action" picking-mode="Ignore">
+                <ui:VisualElement class="row" picking-mode="Ignore">
+                    <ui:Label text="X" class="key key--keyboard" picking-mode="Ignore" />
+                    <ui:Label text="D-pad ↓" class="key key--gamepad" picking-mode="Ignore" />
+                    <ui:Label text="Sat" class="label" picking-mode="Ignore" />
+                </ui:VisualElement>
+                <ui:Label name="tooltip-sell-refund" text="+0" class="label hud-tooltip__cost" picking-mode="Ignore" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <!-- Etkileşim ipucu (onarım, acil yakıt...): nesnenin üstünde; halka basılı tutma ilerlemesi (HudInteractionPromptController). -->
+        <ui:VisualElement name="interaction-prompt" class="panel hud-prompt hidden" picking-mode="Ignore">
+            <ui:VisualElement name="interaction-ring" class="hud-prompt__ring" picking-mode="Ignore">
+                <ui:Label text="E" class="label hud-prompt__key key--keyboard" picking-mode="Ignore" />
+                <ui:Label text="B" class="label hud-prompt__key key--gamepad" picking-mode="Ignore" />
+            </ui:VisualElement>
+            <ui:Label text="—" class="label hud-prompt__dash" picking-mode="Ignore" />
+            <ui:Label name="interaction-text" text="" class="label hud-prompt__text" picking-mode="Ignore" />
         </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>

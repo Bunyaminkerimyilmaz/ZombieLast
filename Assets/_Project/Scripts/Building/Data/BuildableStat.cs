@@ -19,7 +19,10 @@ namespace LastHaven.Building
         /// <summary>Yavaşlatma oranı (0.4 = %40, tuzak).</summary>
         SlowFraction = 3,
 
-        /// <summary>Dayanıklılık: tik başına 1 düşer, bitince kırılır (tuzak).</summary>
+        /// <summary>
+        /// Kullanılmıyor (9.3): tuzağın dayanıklılığı seviyenin canıdır (<see cref="BuildableLevel.MaxHealth"/>); her tik canından
+        /// düşer (<see cref="SpikeTrap"/>). Değer asset'lerde int saklandığı için silinmedi.
+        /// </summary>
         Durability = 4,
 
         /// <summary>Hasar tiki aralığı (sn, tuzak).</summary>

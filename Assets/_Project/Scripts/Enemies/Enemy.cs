@@ -45,6 +45,12 @@ namespace LastHaven.Enemies
 
         public float DistanceToTarget => _targeting.Target.DistanceFrom(transform.position);
 
+        /// <summary>Yürüme hızı sınırı (m/sn): data hızı × hız çarpanı (yavaşlatma).</summary>
+        public float MaxSpeed => _navigator.MaxSpeed;
+
+        /// <summary>Hız çarpanı (<see cref="EnemyStatusEffects"/>: 1 − yavaşlatma). Her doğuşta 1'e döner.</summary>
+        internal void SetSpeedMultiplier(float multiplier) => _navigator?.SetSpeedMultiplier(multiplier); // Awake'ten önce (EditMode) yok.
+
         public void OnSpawned()
         {
             Spawn();

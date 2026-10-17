@@ -16,11 +16,8 @@ namespace LastHaven.Combat
         // WeaponData'daki alt sınırla aynı: perk/gece etkileri atış hızını 0'a indirse de silah kilitlenmesin.
         private const float MinFireRate = 0.01f;
 
-        private static readonly int UpgradeTypeCount = Enum.GetValues(typeof(WeaponUpgradeType)).Length;
-
-        private readonly WeaponUpgradeConfig _upgrades;
+        private readonly WeaponUpgrades _upgrades;
         private readonly IRunModifiers _modifiers;
-        private readonly int[] _upgradeLevels = new int[UpgradeTypeCount];
         private readonly Countdown _reload = new Countdown();
         private float _fireCooldown;
 
@@ -29,7 +26,7 @@ namespace LastHaven.Combat
         public WeaponRuntime(WeaponData data, WeaponUpgradeConfig upgrades = null, IRunModifiers modifiers = null)
         {
             Data = data != null ? data : throw new ArgumentNullException(nameof(data));
-            _upgrades = upgrades;
+            _upgrades = new WeaponUpgrades(upgrades);
             _modifiers = modifiers;
             Ammo = MagSize;
             Reserve = data.HasInfiniteReserve ? 0 : data.ReserveAmmo;
@@ -154,29 +151,41 @@ namespace LastHaven.Combat
 
         public int GetUpgradeLevel(WeaponUpgradeType type)
         {
-            return _upgradeLevels[(int)type];
+            return _upgrades.GetLevel(type);
         }
 
         /// <summary>Bu yükseltmenin en yüksek seviyesi; yükseltme verisi yoksa 0.</summary>
         public int GetMaxUpgradeLevel(WeaponUpgradeType type)
         {
-            return _upgrades != null ? _upgrades.GetMaxLevel(type) : 0;
+            return _upgrades.GetMaxLevel(type);
         }
 
         /// <summary>Yükseltmeyi bir seviye artırır; en yüksek seviyedeyse false. Ödeme çağıranın işi.</summary>
         public bool TryUpgrade(WeaponUpgradeType type)
         {
-            if (GetUpgradeLevel(type) >= GetMaxUpgradeLevel(type))
+            if (!_upgrades.TryUpgrade(type))
             {
                 return false;
             }
 
-            _upgradeLevels[(int)type]++;
             if (type == WeaponUpgradeType.MagSize)
             {
                 AmmoChanged?.Invoke();
             }
 
+            return true;
+        }
+
+        /// <summary>Yedek mermi ekler (market). Sonsuz yedekli silahta veya miktar ≤ 0 ise false. int sınırında doyar.</summary>
+        public bool AddReserve(int amount)
+        {
+            if (amount <= 0 || HasInfiniteReserve)
+            {
+                return false;
+            }
+
+            Reserve = (int)Math.Min((long)Reserve + amount, int.MaxValue);
+            AmmoChanged?.Invoke();
             return true;
         }
 
@@ -196,7 +205,7 @@ namespace LastHaven.Combat
 
         private float GetUpgradeMultiplier(WeaponUpgradeType type)
         {
-            return _upgrades != null ? _upgrades.GetMultiplier(type, GetUpgradeLevel(type)) : 1f;
+            return _upgrades.GetMultiplier(type);
         }
 
         private float ApplyStat(StatType stat, float value)

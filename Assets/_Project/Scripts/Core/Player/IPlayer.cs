@@ -18,6 +18,11 @@ namespace LastHaven.Core
 
         bool IsAlive { get; }
 
+        /// <summary>Mevcut can (market can paketi buna bakar).</summary>
+        float CurrentHealth { get; }
+
+        float MaxHealth { get; }
+
         /// <summary>Jeton mıknatısı yarıçapı (m).</summary>
         float PickupRadius { get; }
     }

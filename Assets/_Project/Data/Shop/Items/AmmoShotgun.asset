@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 274de1240c163194e9f1cec3898e6f2f, type: 3}
+  m_Name: AmmoShotgun
+  m_EditorClassIdentifier: LastHaven.Economy::LastHaven.Economy.ShopItemData
+  _id: ammo_shotgun
+  _displayName: "Pompal\u0131 Mermisi"
+  _description: "12 yedek pompal\u0131 mermisi."
+  _category: 2
+  _prices: 28000000
+  _maxLevel: 0
+  _requiredItemId: unlock_shotgun
+  _effect: 2
+  _targetId: shotgun
+  _upgradeType: 0
+  _value: 12

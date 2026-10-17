@@ -1,11 +1,13 @@
 /*
- * HUD yerleşimi (1920×1080 referans). Renk ve yazı boyutları Theme.uss değişkenlerinden.
+ * HUD yerleşimi (1920×1080 referans). Renkler, yazı boyutları, kenar boşlukları, bar ve kenarlık kalınlıkları Theme.uss
+ * değişkenlerinden; burada sadece kutuların konumu ve genişliği yazılır (renk/yazı değeri yazma: UIGenerationTests kontrol eder).
+ * İnşa çubuğu ve yapı ipucu HudBuild.uss'te, etkileşim ipucu HudInteraction.uss'te.
  * Seçiciler .lh-screen.hud ile başlar: Theme.uss'teki iki sınıflı .lh-screen .label-* kurallarını kesin ezsin diye.
  */
 
 .lh-screen.hud .hud-top {
     position: absolute;
-    top: 20px;
+    top: var(--hud-edge-top);
     left: 0;
     right: 0;
     align-items: center;
@@ -55,8 +57,8 @@
 /* Sağ üst sütun: jeneratör barı, altında cüzdan (para + yakıt). */
 .lh-screen.hud .hud-top-right {
     position: absolute;
-    top: 20px;
-    right: 24px;
+    top: var(--hud-edge-top);
+    right: var(--hud-edge);
     width: 380px;
 }
 
@@ -76,10 +78,34 @@
     color: var(--color-fuel);
 }
 
+.lh-screen.hud .hud-fuel-bar {
+    height: var(--bar-height-small);
+}
+
+.lh-screen.hud .bar-fill--fuel {
+    background-color: var(--color-fuel);
+}
+
+/* Güç yok: kırmızı kutu; kod hud-power-warning--dim'i her transition bitişinde açıp kapatır (yanıp sönme hızı burada). */
+.lh-screen.hud .hud-power-warning {
+    margin-top: var(--space);
+    align-items: center;
+    background-color: var(--color-danger-back);
+    border-width: var(--border);
+    border-color: var(--color-danger);
+    transition-property: opacity;
+    transition-duration: 0.45s;
+    transition-timing-function: ease-in-out;
+}
+
+.lh-screen.hud .hud-power-warning--dim {
+    opacity: 0.25;
+}
+
 /* Kombo: sağ orta. Eşik atlanınca kod hud-combo--pulse ekler; transition bitince kaldırır, aynı transition geri küçültür. */
 .lh-screen.hud .hud-combo {
     position: absolute;
-    right: 24px;
+    right: var(--hud-edge);
     top: 50%;
     translate: 0 -50%;
     min-width: 220px;
@@ -110,7 +136,7 @@
 
 .lh-screen.hud .hud-combo-bar {
     width: 100%;
-    height: 12px;
+    height: var(--bar-height-thin);
 }
 
 .lh-screen.hud .bar-fill--combo {
@@ -119,15 +145,15 @@
 
 .lh-screen.hud .hud-bottom-left {
     position: absolute;
-    bottom: 24px;
-    left: 24px;
+    bottom: var(--hud-edge);
+    left: var(--hud-edge);
     width: 440px;
 }
 
 .lh-screen.hud .hud-bottom-right {
     position: absolute;
-    bottom: 24px;
-    right: 24px;
+    bottom: var(--hud-edge);
+    right: var(--hud-edge);
     min-width: 280px;
     align-items: flex-end;
 }

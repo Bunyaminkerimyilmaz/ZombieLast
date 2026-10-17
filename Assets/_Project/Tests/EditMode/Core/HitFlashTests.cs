@@ -99,6 +99,103 @@ namespace LastHaven.Tests.EditMode
             Assert.IsFalse(body.HasPropertyBlock());
         }
 
+        [Test]
+        public void Tint_MixesTowardTintByAlpha_AndKeepsOriginalAlpha()
+        {
+            var original = new Color(0.2f, 0.8f, 0.2f, 0.5f);
+            var tint = new Color(0f, 0f, 1f, 0.25f);
+
+            Color mixed = HitFlash.Tint(original, tint);
+
+            Assert.AreEqual(0.15f, mixed.r, 0.001f);
+            Assert.AreEqual(0.6f, mixed.g, 0.001f);
+            Assert.AreEqual(0.4f, mixed.b, 0.001f);
+            Assert.AreEqual(0.5f, mixed.a, 0.001f, "Saydamlık korunur.");
+            Assert.AreEqual(original, HitFlash.Tint(original, new Color(0f, 0f, 1f, 0f)), "Alfa 0: değişmez.");
+        }
+
+        [Test]
+        public void SetTint_TintsMaterialColor_ClearTintRestores()
+        {
+            var green = new Color(0.2f, 0.8f, 0.2f, 1f);
+            _lit.SetColor(BaseColorId, green);
+            Renderer body = CreateRenderer(_visual, _lit);
+            var flash = _root.AddComponent<HitFlash>();
+            var tint = new Color(0.35f, 0.6f, 1f, 0.45f);
+
+            flash.SetTint(tint);
+
+            Assert.IsTrue(flash.HasTint);
+            AssertColor(HitFlash.Tint(green, tint), GetBaseColor(body), "Materyalin kendi rengi tona karışır.");
+
+            flash.ClearTint();
+
+            Assert.IsFalse(flash.HasTint);
+            Assert.IsFalse(body.HasPropertyBlock(), "Ton kalkınca materyal rengine döner.");
+        }
+
+        [Test]
+        public void Flash_OverridesTint_ThenTintReturns()
+        {
+            Renderer body = CreateRenderer(_visual, _lit);
+            var flash = _root.AddComponent<HitFlash>();
+            var tint = new Color(0f, 0f, 1f, 0.5f);
+            flash.SetTint(tint);
+            Color tinted = GetBaseColor(body);
+
+            flash.Flash(Color.white, 0.08f);
+            Assert.AreEqual(Color.white, GetBaseColor(body), "Flaş sürerken flaş rengi.");
+
+            flash.Advance(0.1f);
+            Assert.IsFalse(flash.IsFlashing);
+            Assert.IsTrue(body.HasPropertyBlock(), "Flaş bitince blok ton için kalır.");
+            AssertColor(tinted, GetBaseColor(body), "Ton geri gelir.");
+        }
+
+        [Test]
+        public void ClearTint_WhileFlashing_FlashEndsClean()
+        {
+            Renderer body = CreateRenderer(_visual, _lit);
+            var flash = _root.AddComponent<HitFlash>();
+            flash.SetTint(new Color(0f, 0f, 1f, 0.5f));
+            flash.Flash(Color.white, 0.08f);
+
+            flash.ClearTint();
+            Assert.AreEqual(Color.white, GetBaseColor(body), "Flaş sürüyor.");
+
+            flash.Advance(0.1f);
+            Assert.IsFalse(body.HasPropertyBlock());
+        }
+
+        [Test]
+        public void OnDespawned_ClearsTint()
+        {
+            Renderer body = CreateRenderer(_visual, _lit);
+            var flash = _root.AddComponent<HitFlash>();
+            flash.SetTint(new Color(0f, 0f, 1f, 0.5f));
+
+            ((IPoolable)flash).OnDespawned();
+
+            Assert.IsFalse(flash.HasTint);
+            Assert.IsFalse(body.HasPropertyBlock());
+        }
+
+        // Property block renkleri renk uzayı dönüşümünden geçebilir; küçük yuvarlama payı.
+        private static void AssertColor(Color expected, Color actual, string message)
+        {
+            Assert.AreEqual(expected.r, actual.r, 0.002f, message);
+            Assert.AreEqual(expected.g, actual.g, 0.002f, message);
+            Assert.AreEqual(expected.b, actual.b, 0.002f, message);
+            Assert.AreEqual(expected.a, actual.a, 0.002f, message);
+        }
+
+        private static Color GetBaseColor(Renderer renderer)
+        {
+            var block = new MaterialPropertyBlock();
+            renderer.GetPropertyBlock(block);
+            return block.GetColor(BaseColorId);
+        }
+
         private static Renderer CreateRenderer(Transform parent, Material material)
         {
             GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);

@@ -260,6 +260,57 @@ namespace LastHaven.Tests.EditMode
             Assert.IsFalse(float.IsInfinity(weapon.FireInterval));
         }
 
+        [Test]
+        public void AddReserve_IncreasesReserveAndRaisesAmmoChanged()
+        {
+            var weapon = new WeaponRuntime(_weapons.Create(magSize: 6, reserve: 36));
+            int changes = 0;
+            weapon.AmmoChanged += () => changes++;
+
+            Assert.IsTrue(weapon.AddReserve(12));
+
+            Assert.AreEqual(48, weapon.Reserve);
+            Assert.AreEqual(6, weapon.Ammo, "Şarjör değişmez.");
+            Assert.AreEqual(1, changes);
+        }
+
+        [Test]
+        public void AddReserve_InfiniteReserveOrNonPositive_DoesNothing()
+        {
+            var pistol = new WeaponRuntime(_weapons.Create());
+            var shotgun = new WeaponRuntime(_weapons.Create(reserve: 36));
+
+            Assert.IsFalse(pistol.AddReserve(12));
+            Assert.AreEqual(0, pistol.Reserve);
+            Assert.IsFalse(shotgun.AddReserve(0));
+            Assert.IsFalse(shotgun.AddReserve(-5));
+            Assert.AreEqual(36, shotgun.Reserve);
+        }
+
+        [Test]
+        public void AddReserve_WhenEmpty_LetsNextTickReload()
+        {
+            var weapon = new WeaponRuntime(_weapons.Create(magSize: 2, reserve: 0, reloadTime: 0.5f, fireRate: 100f));
+            FireAll(weapon);
+            weapon.Tick(Frame);
+            Assert.IsFalse(weapon.IsReloading, "Yedek yokken doldurma başlamaz.");
+
+            weapon.AddReserve(12);
+            weapon.Tick(Frame);
+
+            Assert.IsTrue(weapon.IsReloading);
+        }
+
+        [Test]
+        public void AddReserve_SaturatesAtIntMax()
+        {
+            var weapon = new WeaponRuntime(_weapons.Create(reserve: int.MaxValue - 5));
+
+            weapon.AddReserve(100);
+
+            Assert.AreEqual(int.MaxValue, weapon.Reserve);
+        }
+
         private static void FireAll(WeaponRuntime weapon)
         {
             // Atış hızı yüksek test silahlarında bekleme süresini Tick ile geçerek şarjörü boşaltır.

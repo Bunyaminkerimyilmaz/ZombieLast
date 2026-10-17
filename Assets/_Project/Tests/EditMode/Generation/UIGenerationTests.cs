@@ -1,3 +1,6 @@
+using System.IO;
+using System.Text.RegularExpressions;
+using LastHaven.Core;
 using LastHaven.Editor;
 using LastHaven.UI;
 using NUnit.Framework;
@@ -13,6 +16,9 @@ namespace LastHaven.Tests.EditMode
     /// </summary>
     public class UIGenerationTests
     {
+        private const string KeyboardKeyClass = "key--keyboard";
+        private const string GamepadKeyClass = "key--gamepad";
+
         [Test]
         public void Hud_ContainsAllElements()
         {
@@ -36,10 +42,104 @@ namespace LastHaven.Tests.EditMode
             AssertHas<Label>(root, HudElementNames.AmmoValue);
             AssertHas<Label>(root, HudElementNames.MoneyValue);
             AssertHas<Label>(root, HudElementNames.FuelValue);
+            AssertHas<VisualElement>(root, HudElementNames.FuelFill);
+            AssertHas<Label>(root, HudElementNames.FuelEstimate);
+            AssertHas<VisualElement>(root, HudElementNames.PowerWarning);
             AssertHas<VisualElement>(root, HudElementNames.ComboGroup);
             AssertHas<Label>(root, HudElementNames.ComboCount);
             AssertHas<Label>(root, HudElementNames.ComboMultiplier);
             AssertHas<VisualElement>(root, HudElementNames.ComboWindowFill);
+
+            AssertHas<VisualElement>(root, HudElementNames.BuildBar);
+            AssertHas<VisualElement>(root, HudElementNames.BuildCards);
+            AssertHas<Label>(root, HudElementNames.BuildDescription);
+            AssertHas<Label>(root, HudElementNames.BuildNoSelection);
+            AssertHas<VisualElement>(root, HudElementNames.StructureTooltip);
+            AssertHas<Label>(root, HudElementNames.TooltipName);
+            AssertHas<Label>(root, HudElementNames.TooltipLevelName);
+            AssertHas<Label>(root, HudElementNames.TooltipLevel);
+            AssertHas<Label>(root, HudElementNames.TooltipHealthValue);
+            AssertHas<VisualElement>(root, HudElementNames.TooltipHealthFill);
+            AssertHas<VisualElement>(root, HudElementNames.TooltipUpgrade);
+            AssertHas<Label>(root, HudElementNames.TooltipUpgradeCost);
+            AssertHas<VisualElement>(root, HudElementNames.TooltipMaxLevel);
+            AssertHas<Label>(root, HudElementNames.TooltipSellRefund);
+            AssertHas<VisualElement>(root, HudElementNames.InteractionPrompt);
+            AssertHas<VisualElement>(root, HudElementNames.InteractionRing);
+            AssertHas<Label>(root, HudElementNames.InteractionText);
+        }
+
+        [Test]
+        public void Hud_BuildBarTooltipAndPromptStartHidden()
+        {
+            TemplateContainer root = Instantiate(UIGenerator.HudPath);
+
+            Assert.IsTrue(root.Q(HudElementNames.BuildBar).ClassListContains(UIClassNames.Hidden), "İnşa modu dışında gizli.");
+            Assert.IsTrue(root.Q(HudElementNames.StructureTooltip).ClassListContains(UIClassNames.Hidden));
+            Assert.IsTrue(root.Q(HudElementNames.InteractionPrompt).ClassListContains(UIClassNames.Hidden));
+        }
+
+        [Test]
+        public void Hud_WorldAnchoredBoxes_AreDirectChildrenOfScreen()
+        {
+            TemplateContainer root = Instantiate(UIGenerator.HudPath);
+            VisualElement screen = root.Q(className: UIClassNames.Screen);
+
+            // WorldAnchor ebeveynin boyutunu ekran sayar ve konumu ebeveyne göre yazar.
+            Assert.AreSame(screen, root.Q(HudElementNames.StructureTooltip).parent);
+            Assert.AreSame(screen, root.Q(HudElementNames.InteractionPrompt).parent);
+        }
+
+        [Test]
+        public void Hud_KeyHints_HaveKeyboardAndGamepadVariants_NeverHiddenClass()
+        {
+            TemplateContainer root = Instantiate(UIGenerator.HudPath);
+            var keyboard = root.Query(className: KeyboardKeyClass).ToList();
+            var gamepad = root.Query(className: GamepadKeyClass).ToList();
+
+            Assert.Greater(keyboard.Count, 0);
+            Assert.AreEqual(keyboard.Count, gamepad.Count, "Her klavye tuşunun gamepad karşılığı olmalı.");
+            foreach (VisualElement key in keyboard)
+            {
+                Assert.IsFalse(key.ClassListContains(UIClassNames.Hidden), "Tuş görünürlüğünü lh-gamepad yönetir.");
+            }
+
+            foreach (VisualElement key in gamepad)
+            {
+                Assert.IsFalse(key.ClassListContains(UIClassNames.Hidden), "Tuş görünürlüğünü lh-gamepad yönetir.");
+            }
+        }
+
+        [Test]
+        public void BuildCard_ContainsAllElements()
+        {
+            TemplateContainer root = Instantiate(UIGenerator.BuildCardPath);
+
+            Assert.IsNotNull(root.Q(className: BuildCardView.CardClass), $"Kart kökünde '{BuildCardView.CardClass}' sınıfı yok.");
+            AssertHas<Label>(root, HudElementNames.CardKey);
+            AssertHas<Label>(root, HudElementNames.CardPrice);
+            AssertHas<VisualElement>(root, HudElementNames.CardSwatch);
+            AssertHas<Label>(root, HudElementNames.CardName);
+        }
+
+        /// <summary>
+        /// 10.3: renkler ve yazı boyutları sadece Theme.uss'te tanımlı; ekran USS'leri değişkenle (<c>var(--...)</c>) kullanır.
+        /// </summary>
+        [TestCase(UIGenerator.HudStylePath)]
+        [TestCase(UIGenerator.HudBuildStylePath)]
+        [TestCase(UIGenerator.HudInteractionStylePath)]
+        [TestCase(UIGenerator.PanelsStylePath)]
+        [TestCase(UIGenerator.ShopStylePath)]
+        public void StyleSheets_TakeColorsAndFontSizesFromTheme(string path)
+        {
+            string text = Regex.Replace(File.ReadAllText(path), @"/\*.*?\*/", string.Empty, RegexOptions.Singleline);
+
+            Assert.IsFalse(Regex.IsMatch(text, @"rgba?\(|#[0-9a-fA-F]{3,8}\b"), $"{path}: renk değeri yazılmış; Theme.uss değişkeni kullan.");
+            foreach (Match property in Regex.Matches(text, @"(?<name>[\w-]*color|font-size|text-shadow)\s*:\s*(?<value>[^;]+);"))
+            {
+                Assert.IsTrue(property.Groups["value"].Value.Trim().StartsWith("var(", System.StringComparison.Ordinal),
+                    $"{path}: '{property.Value}' Theme.uss değişkeni kullanmalı.");
+            }
         }
 
         [Test]
@@ -49,6 +149,14 @@ namespace LastHaven.Tests.EditMode
 
             Assert.IsTrue(root.Q(HudElementNames.ComboGroup).ClassListContains(UIClassNames.Hidden), "Kombo yokken gizli olmalı.");
             Assert.IsTrue(root.Q(HudElementNames.ComboMultiplier).ClassListContains(UIClassNames.Hidden));
+        }
+
+        [Test]
+        public void Hud_PowerWarningStartsHidden()
+        {
+            TemplateContainer root = Instantiate(UIGenerator.HudPath);
+
+            Assert.IsTrue(root.Q(HudElementNames.PowerWarning).ClassListContains(UIClassNames.Hidden), "Güç varken gizli olmalı.");
         }
 
         [Test]
@@ -78,9 +186,52 @@ namespace LastHaven.Tests.EditMode
             AssertHas<Button>(root, PanelElementNames.RestartButton);
         }
 
+        [Test]
+        public void ShopPanel_ContainsAllElements_StartsHidden()
+        {
+            TemplateContainer root = Instantiate(UIGenerator.ShopPanelPath);
+
+            AssertScreenRoot(root, startsHidden: true);
+            AssertHas<Label>(root, ShopElementNames.MoneyValue);
+            AssertHas<Button>(root, ShopElementNames.CloseButton);
+            Assert.AreEqual(System.Enum.GetValues(typeof(ShopCategory)).Length, ShopElementNames.Tabs.Length,
+                "Her market sekmesi için bir buton olmalı.");
+            Assert.AreEqual(ShopElementNames.Tabs.Length, ShopElementNames.Pages.Length);
+            for (int i = 0; i < ShopElementNames.Tabs.Length; i++)
+            {
+                AssertHas<Button>(root, ShopElementNames.Tabs[i]);
+                AssertHas<VisualElement>(root, ShopElementNames.Pages[i]);
+            }
+        }
+
+        [Test]
+        public void ShopCard_ContainsAllElements_NoticesStartHidden()
+        {
+            TemplateContainer root = Instantiate(UIGenerator.ShopCardPath);
+
+            Assert.IsNotNull(root.Q(className: ShopCardView.CardClass), $"Kart kökünde '{ShopCardView.CardClass}' sınıfı yok.");
+            AssertHas<Label>(root, ShopElementNames.CardName);
+            AssertHas<Label>(root, ShopElementNames.CardDescription);
+            AssertHas<VisualElement>(root, ShopElementNames.CardDots);
+            AssertHas<Label>(root, ShopElementNames.CardPrice);
+            AssertHas<Label>(root, ShopElementNames.CardMax);
+            AssertHas<Label>(root, ShopElementNames.CardOwned);
+            AssertHas<VisualElement>(root, ShopElementNames.CardLocked);
+            AssertHas<Label>(root, ShopElementNames.CardRequirement);
+            AssertHas<Label>(root, ShopElementNames.CardUnavailable);
+            AssertHas<Button>(root, ShopElementNames.CardBuyButton);
+            Assert.IsTrue(root.Q(ShopElementNames.CardMax).ClassListContains(UIClassNames.Hidden));
+            Assert.IsTrue(root.Q(ShopElementNames.CardOwned).ClassListContains(UIClassNames.Hidden));
+            Assert.IsTrue(root.Q(ShopElementNames.CardLocked).ClassListContains(UIClassNames.Hidden));
+            Assert.IsTrue(root.Q(ShopElementNames.CardUnavailable).ClassListContains(UIClassNames.Hidden));
+        }
+
         [TestCase(UIGenerator.ThemeStylePath)]
-        [TestCase(UIGenerator.Folder + "/HUD/HUD.uss")]
-        [TestCase(UIGenerator.Folder + "/Panels/Panels.uss")]
+        [TestCase(UIGenerator.HudStylePath)]
+        [TestCase(UIGenerator.HudBuildStylePath)]
+        [TestCase(UIGenerator.HudInteractionStylePath)]
+        [TestCase(UIGenerator.PanelsStylePath)]
+        [TestCase(UIGenerator.ShopStylePath)]
         public void StyleSheets_ImportWithoutErrors(string path)
         {
             var sheet = AssetDatabase.LoadAssetAtPath<StyleSheet>(path);

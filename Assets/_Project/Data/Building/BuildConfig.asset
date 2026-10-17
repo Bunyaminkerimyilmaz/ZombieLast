@@ -14,6 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: LastHaven.Building::LastHaven.Building.BuildConfig
   _slots:
   - {fileID: 11400000, guid: b08bda0286bab634796da4f0ad64c6e4, type: 2}
+  - {fileID: 11400000, guid: a67981ae314a03949ab122708dd77c43, type: 2}
+  - {fileID: 11400000, guid: 7ade43480588cfd409656e451316fcd1, type: 2}
   _structurePrewarm: 12
   _cellSize: 1
   _generatorHalfSize: 1
@@ -24,6 +26,9 @@ MonoBehaviour:
   _gamepadPlacementDistance: 3
   _highlightColor: {r: 1, g: 0.85, b: 0.3, a: 0.35}
   _highlightScale: 1.04
+  _rangeColor: {r: 0.35, g: 0.85, b: 1, a: 0.6}
+  _rangeLineWidth: 0.1
+  _rangeSegments: 72
   _blockingLayers:
     serializedVersion: 2
     m_Bits: 2432
