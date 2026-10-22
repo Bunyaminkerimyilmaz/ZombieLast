@@ -40,16 +40,20 @@ namespace LastHaven.Enemies
             _agent = GetComponent<NavMeshAgent>();
             _flash = GetComponent<HitFlash>();
             _animation = GetComponent<AnimationDriver>();
+            // Havuzlanan obje: abonelik ömür boyu bir kez (OnEnable/OnDisable her doğuşta delegate ayırırdı). Health aynı objede.
+            _health.Damaged += OnDamaged;
         }
 
-        private void OnEnable()
+        private void OnDestroy()
         {
-            _health.Damaged += OnDamaged;
+            if (_health != null)
+            {
+                _health.Damaged -= OnDamaged;
+            }
         }
 
         private void OnDisable()
         {
-            _health.Damaged -= OnDamaged;
             _knockback.Stop();
         }
 
@@ -73,6 +77,11 @@ namespace LastHaven.Enemies
 
         private void OnDamaged(DamagedEvent damaged)
         {
+            if (!isActiveAndEnabled)
+            {
+                return;
+            }
+
             if (_flash != null)
             {
                 _flash.Flash();

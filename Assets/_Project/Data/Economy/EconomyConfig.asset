@@ -22,7 +22,7 @@ MonoBehaviour:
   _maxCoinsPerDrop: 5
   _targetCoinValue: 5
   _coinPrefab: {fileID: 2798059012890047966, guid: 89bd79e5e01dda942b5f561175805af4, type: 3}
-  _coinPrewarm: 200
+  _coinPrewarm: 300
   _coinMotion:
     _spawnHeight: 0.8
     _restHeight: 0.3

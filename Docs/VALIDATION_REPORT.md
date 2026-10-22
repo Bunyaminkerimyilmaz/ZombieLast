@@ -1,13 +1,13 @@
 # Doğrulama Raporu
 
 > `Tools/Last Haven/Validate Project` üretir; elle düzenleme, menüyü yeniden çalıştır.
-> Son çalıştırma: 2026-10-20 21:23
+> Son çalıştırma: 2026-10-22 22:16
 
 **Sonuç:** 0 hata, 26 uyarı.
 
 ## Zorunlu referanslar (Data)
 
-- Assets/_Project/Data altında 108 ScriptableObject kontrol edildi (gece verisi kendi bölümünde). Boş bırakılabilir alanlar: Tooltip'inde "Opsiyonel" geçenler, ses ve görsel (AudioClip, SoundData, Sprite, Texture).
+- Assets/_Project/Data altında 109 ScriptableObject kontrol edildi (gece verisi kendi bölümünde). Boş bırakılabilir alanlar: Tooltip'inde "Opsiyonel" geçenler, ses ve görsel (AudioClip, SoundData, Sprite, Texture).
 - Sorun yok.
 
 ## Prefab görsel katmanı (Visual)

@@ -88,6 +88,32 @@ namespace LastHaven.Waves
         }
 
         /// <inheritdoc />
+        public int CancelPendingSpawns()
+        {
+            int cancelled = _runner != null ? _runner.CancelPending() : 0;
+            if (cancelled > 0)
+            {
+                Debug.Log($"[Waves] Gece {_nightNumber}: doğmamış {cancelled} düşman iptal edildi (debug).", this);
+            }
+
+            return cancelled;
+        }
+
+        /// <inheritdoc />
+        public bool AbortNight()
+        {
+            if (_runner == null || !_runner.Abort())
+            {
+                return false;
+            }
+
+            _aliveEnemies.Clear();
+            _modifier.End();
+            Debug.Log($"[Waves] Gece {_nightNumber} durduruldu; tamamlanmış sayılmadı (debug).", this);
+            return true;
+        }
+
+        /// <inheritdoc />
         public NightInfo GetTonightInfo(int nightIndex)
         {
             if (nightIndex < 0 || nightIndex >= TotalNights)

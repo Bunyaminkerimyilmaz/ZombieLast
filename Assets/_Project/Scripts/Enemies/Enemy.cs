@@ -112,6 +112,8 @@ namespace LastHaven.Enemies
             _body = new EnemyBody(gameObject, _navigator, _targeting, _animation, _attack, _health, collider);
             _machine = new EnemyStateMachine(_body);
             _baseScale = transform.localScale;
+            // Havuzlanan obje: abonelik ömür boyu bir kez (OnEnable/OnDisable her doğuşta delegate ayırırdı). Health aynı objede.
+            _health.Died += OnDied;
 
             if (_data == null)
             {
@@ -120,12 +122,7 @@ namespace LastHaven.Enemies
             }
         }
 
-        private void OnEnable()
-        {
-            _health.Died += OnDied;
-        }
-
-        private void OnDisable()
+        private void OnDestroy()
         {
             _health.Died -= OnDied;
         }

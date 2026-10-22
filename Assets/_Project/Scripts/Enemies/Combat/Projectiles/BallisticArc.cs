@@ -13,7 +13,8 @@ namespace LastHaven.Enemies
         {
             float distance = PlanarDistance.Between(start, target);
             float time = horizontalSpeed > 0f ? distance / horizontalSpeed : minFlightTime;
-            return Mathf.Max(minFlightTime, time, 0.01f);
+            // İki argümanlı Max: üç argümanlı aşırı yükleme params dizisi ayırır.
+            return Mathf.Max(Mathf.Max(minFlightTime, time), 0.01f);
         }
 
         /// <summary><paramref name="flightTime"/> sn sonra <paramref name="target"/>'a varan başlangıç hızı.</summary>

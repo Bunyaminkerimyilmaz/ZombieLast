@@ -61,17 +61,20 @@ namespace LastHaven.Enemies
         private void Awake()
         {
             EnsureInitialized();
+            // Havuzlanan obje: abonelik ömür boyu bir kez (OnEnable/OnDisable her doğuşta delegate ayırırdı). Health aynı objede.
+            _health.Died += OnDied;
         }
 
-        private void OnEnable()
+        private void OnDestroy()
         {
-            EnsureInitialized();
-            _health.Died += OnDied;
+            if (_health != null)
+            {
+                _health.Died -= OnDied;
+            }
         }
 
         private void OnDisable()
         {
-            _health.Died -= OnDied;
             ClearEffects();
         }
 

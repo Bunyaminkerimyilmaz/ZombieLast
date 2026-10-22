@@ -62,7 +62,7 @@ namespace LastHaven.Building
 
             _loggedLevel = -1;
             _cadence.Reset();
-            _tracker.Reset(transform.eulerAngles.y);
+            _tracker.Reset(transform.eulerAngles.y, UnityEngine.Random.Range(0f, _config.ScanInterval));
             _isPowered = _power == null || _power.IsPowered;
             ApplyAim();
             if (_visual != null)

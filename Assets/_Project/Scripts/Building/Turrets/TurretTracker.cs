@@ -27,12 +27,15 @@ namespace LastHaven.Building
         /// <summary>Seçili hedef (geçersiz olabilir: <see cref="TurretTarget.IsValid"/>).</summary>
         public TurretTarget Target => _target;
 
-        /// <summary>Yönü anında ayarlar, hedefi bırakır; ilk <see cref="Tick"/> hemen tarar.</summary>
-        public void Reset(float yaw)
+        /// <summary>
+        /// Yönü anında ayarlar, hedefi bırakır. İlk tarama <paramref name="firstScanDelay"/> sn sonra (0: ilk <see cref="Tick"/>'te);
+        /// aynı karede kurulan taretler rastgele gecikme verirse taramaları ayrı karelere dağılır, faz sonra korunur.
+        /// </summary>
+        public void Reset(float yaw, float firstScanDelay = 0f)
         {
             _aim.Reset(yaw);
             _target = default;
-            _scanTimer = 0f;
+            _scanTimer = Mathf.Max(0f, firstScanDelay);
         }
 
         public void ClearTarget()

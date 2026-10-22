@@ -32,6 +32,7 @@ namespace LastHaven.UI
         private BarView _generatorBarView;
         private Label _weaponName;
         private Label _ammoValue;
+        private Label _ammoReserve;
 
         private IGameStateService _gameState;
         private int _totalNights;
@@ -50,6 +51,7 @@ namespace LastHaven.UI
             _remainingValue = Require<Label>(HudElementNames.RemainingValue);
             _weaponName = Require<Label>(HudElementNames.WeaponName);
             _ammoValue = Require<Label>(HudElementNames.AmmoValue);
+            _ammoReserve = Require<Label>(HudElementNames.AmmoReserve);
 
             var playerFill = Require<VisualElement>(HudElementNames.PlayerHealthFill);
             var playerValue = Require<Label>(HudElementNames.PlayerHealthValue);
@@ -157,7 +159,7 @@ namespace LastHaven.UI
             if (showTimer)
             {
                 // İlk DayTimerTickEvent'e kadar önceki gündüzün son değeri görünmesin.
-                _dayTimer.text = HudFormat.Timer(Mathf.CeilToInt(timeRemaining));
+                _dayTimer.text = NumberText.Timer(Mathf.CeilToInt(timeRemaining));
             }
 
             _remainingGroup.SetShown(HudPhaseRules.ShowsRemainingEnemies(phase));
@@ -170,17 +172,17 @@ namespace LastHaven.UI
 
         private void OnDayTimerTick(DayTimerTickEvent tick)
         {
-            _dayTimer.text = HudFormat.Timer(tick.RemainingSeconds);
+            _dayTimer.text = NumberText.Timer(tick.RemainingSeconds);
         }
 
         private void OnNightStarted(NightStartedEvent started)
         {
-            _remainingValue.text = HudFormat.Count(started.TotalEnemies);
+            _remainingValue.text = NumberText.Count(started.TotalEnemies);
         }
 
         private void OnWaveProgress(WaveProgressEvent progress)
         {
-            _remainingValue.text = HudFormat.Count(progress.RemainingEnemies);
+            _remainingValue.text = NumberText.Count(progress.RemainingEnemies);
         }
 
         private void OnPlayerRespawned(PlayerRespawnedEvent respawned)
@@ -193,9 +195,11 @@ namespace LastHaven.UI
             _weaponName.text = changed.DisplayName;
         }
 
+        // Şarjör ve yedek ayrı etiketler: her atışta sadece önbellekli şarjör sayısı değişir, yeni string oluşmaz.
         private void OnAmmoChanged(AmmoChangedEvent changed)
         {
-            _ammoValue.text = HudFormat.Ammo(changed.Ammo, changed.Reserve, changed.HasInfiniteReserve);
+            _ammoValue.text = NumberText.Count(changed.Ammo);
+            _ammoReserve.text = changed.HasInfiniteReserve ? HudFormat.Infinite : NumberText.Count(changed.Reserve);
         }
     }
 }

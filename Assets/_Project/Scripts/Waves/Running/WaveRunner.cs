@@ -138,6 +138,49 @@ namespace LastHaven.Waves
             return true;
         }
 
+        /// <summary>
+        /// Henüz doğmamış düşmanları (bekleyen + kuyrukta) iptal eder: gruplar bitmiş sayılır, gece canlılar ölünce
+        /// <see cref="Tick"/>'te biter. İptal edilen sayıyı döndürür (toplam değişmez). Gece sürmüyorsa 0.
+        /// </summary>
+        public int CancelPending()
+        {
+            if (!IsRunning)
+            {
+                return 0;
+            }
+
+            int cancelled = PendingCount + _queue.Count;
+            for (int i = 0; i < _groups.Length; i++)
+            {
+                _groups[i].Emitted = _groups[i].Group.Count;
+            }
+
+            PendingCount = 0;
+            _queue.Clear();
+            if (cancelled > 0)
+            {
+                RemainingChanged?.Invoke();
+            }
+
+            return cancelled;
+        }
+
+        /// <summary>Geceyi bitirmeden durdurur: <see cref="Completed"/> çağrılmaz, sayaçlar sıfırlanır. Gece sürmüyorsa false.</summary>
+        public bool Abort()
+        {
+            if (!IsRunning)
+            {
+                return false;
+            }
+
+            IsRunning = false;
+            _groups = Array.Empty<GroupState>();
+            _queue.Clear();
+            PendingCount = 0;
+            AliveCount = 0;
+            return true;
+        }
+
         /// <summary>Bu gecenin canlı bir düşmanı öldü. Gece sürmüyorsa veya canlı düşman yoksa yok sayılır (false).</summary>
         public bool ReportDeath()
         {

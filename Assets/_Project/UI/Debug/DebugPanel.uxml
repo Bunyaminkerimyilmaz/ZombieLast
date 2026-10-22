@@ -1,0 +1,116 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <Style src="../Themes/Theme.uss" />
+    <Style src="DebugPanel.uss" />
+    <!-- Debug paneli (15.1; F12, sadece editör ve development build). Element adları DebugPanelElementNames.cs ile eşleşmeli
+         (DebugPanelController). Kök gizli başlar (hidden). "{0}" içeren düğme metinleri şablondur: kod miktarı inspector'daki değerle doldurur.
+         Gece ve zaman ölçeği düğmelerini kod üretir (gece sayısı ve ölçekler veriden). -->
+    <ui:VisualElement name="debug-panel" class="lh-screen lh-debug hidden" picking-mode="Ignore">
+        <ui:ScrollView name="debug-window" class="debug-window" mode="Vertical">
+            <ui:VisualElement class="debug-header">
+                <ui:Label text="DEBUG" class="debug-title" />
+                <ui:Label text="F12 kapat · açıkken oyuncu girdisi durur" class="debug-hint" />
+            </ui:VisualElement>
+
+            <ui:Label text="Durum" class="debug-section-title" />
+            <ui:VisualElement class="debug-stat-row">
+                <ui:Label text="FPS" class="debug-stat-name" />
+                <ui:Label name="fps-value" text="—" class="debug-stat-value" />
+            </ui:VisualElement>
+            <ui:VisualElement class="debug-stat-row">
+                <ui:Label text="Canlı düşman" class="debug-stat-name" />
+                <ui:Label name="enemies-value" text="—" class="debug-stat-value" />
+            </ui:VisualElement>
+            <ui:VisualElement class="debug-stat-row">
+                <ui:Label text="Evre" class="debug-stat-name" />
+                <ui:Label name="phase-value" text="—" class="debug-stat-value" />
+            </ui:VisualElement>
+            <ui:VisualElement class="debug-stat-row">
+                <ui:Label text="Gece" class="debug-stat-name" />
+                <ui:VisualElement class="debug-stat-pair">
+                    <ui:Label name="night-value" text="—" class="debug-stat-value" />
+                    <ui:Label text="/" class="debug-stat-value debug-stat-separator" />
+                    <ui:Label name="night-total" text="—" class="debug-stat-value" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <ui:VisualElement class="debug-stat-row">
+                <ui:Label text="Dalga kalan / toplam" class="debug-stat-name" />
+                <ui:VisualElement class="debug-stat-pair">
+                    <ui:Label name="remaining-value" text="—" class="debug-stat-value" />
+                    <ui:Label text="/" class="debug-stat-value debug-stat-separator" />
+                    <ui:Label name="remaining-total" text="—" class="debug-stat-value" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <ui:VisualElement class="debug-stat-row">
+                <ui:Label text="Zaman ölçeği" class="debug-stat-name" />
+                <ui:Label name="time-scale-value" text="—" class="debug-stat-value" />
+            </ui:VisualElement>
+            <ui:VisualElement class="debug-stat-row">
+                <ui:Label text="GC / kare, ort. (bayt; editörde editör dahil)" class="debug-stat-name" />
+                <ui:Label name="gc-value" text="—" class="debug-stat-value" />
+            </ui:VisualElement>
+            <ui:VisualElement class="debug-stat-row">
+                <ui:Label text="GC ayıran kare (%)" class="debug-stat-name" />
+                <ui:Label name="gc-frames-value" text="—" class="debug-stat-value" />
+            </ui:VisualElement>
+
+            <ui:Label text="Stres testi" class="debug-section-title" />
+            <ui:Label name="stress-info" text="{0} düşman (dalga tavanı yok) + {1} taret; jeneratör ve taretler hasar almaz, öldürmeler XP vermez" class="debug-label" />
+            <ui:VisualElement class="debug-button-row">
+                <ui:Button name="stress-start-button" text="Stres testini başlat" class="debug-button" />
+                <ui:Button name="stress-stop-button" text="Durdur (özet konsola)" class="debug-button" />
+            </ui:VisualElement>
+            <ui:VisualElement class="debug-stat-row">
+                <ui:Label text="Stres: canlı / hedef" class="debug-stat-name" />
+                <ui:VisualElement class="debug-stat-pair">
+                    <ui:Label name="stress-alive" text="—" class="debug-stat-value" />
+                    <ui:Label text="/" class="debug-stat-value debug-stat-separator" />
+                    <ui:Label name="stress-target" text="—" class="debug-stat-value" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+
+            <ui:Label text="Kaynak ve oyuncu" class="debug-section-title" />
+            <ui:VisualElement class="debug-button-row">
+                <ui:Button name="add-money-button" text="+{0} para · F7" class="debug-button" />
+                <ui:Button name="add-fuel-button" text="+{0} yakıt · F8" class="debug-button" />
+            </ui:VisualElement>
+            <ui:VisualElement class="debug-button-row">
+                <ui:Button name="drain-fuel-button" text="Yakıt → {0} · Shift+F8" class="debug-button" />
+            </ui:VisualElement>
+            <ui:Toggle name="invulnerable-toggle" label="Ölümsüzlük (oyuncu hasar almaz)" class="debug-toggle" />
+
+            <ui:Label text="Gece" class="debug-section-title" />
+            <ui:VisualElement class="debug-button-row">
+                <ui:Button name="skip-night-button" text="Geceyi atla · F5" class="debug-button" />
+                <ui:Button name="kill-all-button" text="Tüm düşmanları öldür · F6" class="debug-button" />
+            </ui:VisualElement>
+            <ui:VisualElement class="debug-button-row">
+                <ui:Button name="spawn-horde-button" text="Kenardan {0} düşman · F4" class="debug-button" />
+            </ui:VisualElement>
+            <ui:Label text="N. geceye git (o gecenin gündüzü; düşmanlar ölür)" class="debug-label" />
+            <ui:VisualElement name="night-buttons" class="debug-button-row debug-button-row--wrap" />
+
+            <ui:Label text="İlerleme" class="debug-section-title" />
+            <ui:VisualElement class="debug-button-row">
+                <ui:Button name="level-up-button" text="Seviye atla · F10" class="debug-button" />
+                <ui:Button name="random-perk-button" text="Rastgele perk · Shift+F10" class="debug-button" />
+            </ui:VisualElement>
+            <ui:VisualElement class="debug-button-row">
+                <ui:DropdownField name="perk-dropdown" class="debug-dropdown" />
+                <ui:Button name="give-perk-button" text="Perk ver" class="debug-button" />
+            </ui:VisualElement>
+
+            <ui:Label text="Zaman ölçeği" class="debug-section-title" />
+            <ui:VisualElement name="time-scale-buttons" class="debug-button-row" />
+
+            <ui:Label text="Kısayollar" class="debug-section-title" />
+            <ui:Label text="F1 / F2 / F3   imleçte Yürüyen / Koşucu / Tank" class="debug-shortcut" />
+            <ui:Label text="F4   rastgele kenardan sürü" class="debug-shortcut" />
+            <ui:Label text="F5   geceyi atla (gece sürerken)" class="debug-shortcut" />
+            <ui:Label text="F6   tüm canlı düşmanları öldür" class="debug-shortcut" />
+            <ui:Label text="F7 / F8   +para / +yakıt · Shift+F8 yakıtı az bırak" class="debug-shortcut" />
+            <ui:Label text="F9   kamera preset'i" class="debug-shortcut" />
+            <ui:Label text="F10   seviye atla · Shift+F10 rastgele perk" class="debug-shortcut" />
+            <ui:Label text="F12   bu paneli aç / kapat" class="debug-shortcut" />
+        </ui:ScrollView>
+    </ui:VisualElement>
+</ui:UXML>

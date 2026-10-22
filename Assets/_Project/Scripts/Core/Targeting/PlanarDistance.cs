@@ -21,8 +21,9 @@ namespace LastHaven.Core
         {
             Vector3 min = bounds.min;
             Vector3 max = bounds.max;
-            float dx = Mathf.Max(min.x - from.x, 0f, from.x - max.x);
-            float dz = Mathf.Max(min.z - from.z, 0f, from.z - max.z);
+            // İç içe iki argümanlı Max: üç argümanlı aşırı yükleme params dizisi ayırır (düşman başına her kare çağrılır).
+            float dx = Mathf.Max(Mathf.Max(min.x - from.x, 0f), from.x - max.x);
+            float dz = Mathf.Max(Mathf.Max(min.z - from.z, 0f), from.z - max.z);
             return Mathf.Sqrt(dx * dx + dz * dz);
         }
     }

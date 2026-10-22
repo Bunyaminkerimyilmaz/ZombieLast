@@ -9,11 +9,11 @@ using UnityEngine.InputSystem;
 namespace LastHaven.DebugTools
 {
     /// <summary>
-    /// Perk kısayolları ([Systems]/DebugPerks): F10 bir seviye atlatır (sonraki seviyeye yetecek XP; seviye kartları açılır, 13.3),
-    /// Shift+F10 kartsız rastgele bir perk verir (13.2). Rastgele perk normal kart çekilişiyle seçilir
-    /// (<see cref="IPerkService.GenerateOffer"/>, nadirlik ağırlıklı, maks. yığındakiler çıkmaz) ve normal yoldan alınır
-    /// (<see cref="IPerkService.ApplyPerk"/>). Sol üstte, ekonomi kısayollarının altında küçük panel. Sadece editörde ve development
-    /// build'de çalışır (sınıf her build'de var; "missing script" olmasın).
+    /// Perk kısayolları ([Systems]/DebugPerks; debug panelinin "İlerleme" bölümü de bunları çağırır): F10 bir seviye atlatır (sonraki
+    /// seviyeye yetecek XP; seviye kartları açılır, 13.3), Shift+F10 kartsız rastgele bir perk verir (13.2), panel seçilen perk'i verir
+    /// (<see cref="GivePerk"/>). Rastgele perk normal kart çekilişiyle seçilir (<see cref="IPerkService.GenerateOffer"/>, nadirlik
+    /// ağırlıklı, maks. yığındakiler çıkmaz); hepsi normal yoldan alınır (<see cref="IPerkService.ApplyPerk"/>). Sadece editörde ve
+    /// development build'de çalışır (sınıf her build'de var; "missing script" olmasın).
     /// </summary>
     [DisallowMultipleComponent]
     public sealed class DebugPerkControls : MonoBehaviour
@@ -23,16 +23,10 @@ namespace LastHaven.DebugTools
 
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
         private const string Prefix = "[Debug] ";
-        private const string PanelTitle = "Perk Kısayolu\nF10   seviye atla (kartlar)\nShift+F10   rastgele perk ver\n";
-
-        // DebugEconomyControls panelinin (y 210–294) altında.
-        private static readonly Rect PanelRect = new Rect(10f, 300f, 290f, 84f);
-        private static readonly Rect PanelTextRect = new Rect(18f, 304f, 274f, 76f);
 
         private readonly List<string> _offer = new List<string>(1);
         private InputAction _action;
         private IPerkService _perks;
-        private string _panelText = PanelTitle;
 
         private void Awake()
         {
@@ -62,12 +56,6 @@ namespace LastHaven.DebugTools
             _action.Dispose();
         }
 
-        private void OnGUI()
-        {
-            GUI.Box(PanelRect, GUIContent.none);
-            GUI.Label(PanelTextRect, _panelText);
-        }
-
         // F10 tek action; Shift basılıysa seviye yerine doğrudan perk verir (iki ayrı bağlama ikisini birden tetiklerdi).
         private void OnF10()
         {
@@ -95,7 +83,7 @@ namespace LastHaven.DebugTools
             Debug.Log($"{Prefix}F10: +{amount} XP (seviye {_experience.Level}).", this);
         }
 
-        /// <summary>Ağırlıklı rastgele bir perk verir (Shift+F10), kartsız. Debug için açık.</summary>
+        /// <summary>Ağırlıklı rastgele bir perk verir (Shift+F10), kartsız.</summary>
         public void GiveRandomPerk()
         {
             if (_perks == null)
@@ -106,17 +94,32 @@ namespace LastHaven.DebugTools
 
             if (_perks.GenerateOffer(_offer, 1) == 0)
             {
-                Debug.Log($"{Prefix}Shift+F10: alınabilecek perk kalmadı (hepsi maks. yığında).", this);
-                _panelText = PanelTitle + "Hepsi alındı (" + _perks.TotalStacks + " yığın)";
+                Debug.Log($"{Prefix}Shift+F10: alınabilecek perk kalmadı (hepsi maks. yığında, toplam {_perks.TotalStacks}).", this);
                 return;
             }
 
-            string perkId = _offer[0];
-            if (_perks.ApplyPerk(perkId))
+            GivePerk(_offer[0]);
+        }
+
+        /// <summary>Id'si verilen perk'i kartsız verir (maks. yığın kuralı geçerli). Alındıysa true.</summary>
+        public bool GivePerk(string perkId)
+        {
+            if (_perks == null)
             {
-                _panelText = PanelTitle + "Son: " + perkId + " " + _perks.GetStacks(perkId) + "/" + _perks.GetMaxStacks(perkId)
-                             + " (toplam " + _perks.TotalStacks + ")";
+                Debug.LogWarning($"{Prefix}Perk ver: IPerkService yok; perk verilmedi.", this);
+                return false;
             }
+
+            if (!_perks.ApplyPerk(perkId))
+            {
+                Debug.LogWarning($"{Prefix}Perk ver: '{perkId}' alınamadı (bilinmiyor veya maks. yığında: "
+                                 + $"{_perks.GetStacks(perkId)}/{_perks.GetMaxStacks(perkId)}).", this);
+                return false;
+            }
+
+            Debug.Log($"{Prefix}Perk verildi: {perkId} {_perks.GetStacks(perkId)}/{_perks.GetMaxStacks(perkId)} "
+                      + $"(toplam {_perks.TotalStacks} yığın).", this);
+            return true;
         }
 #endif
     }

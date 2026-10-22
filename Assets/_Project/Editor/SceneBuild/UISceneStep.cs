@@ -70,6 +70,7 @@ namespace LastHaven.Editor
             AddController<HudReadyHintController>(hud.gameObject, hud.GetComponent<UIDocument>());
             AddController<HudBossController>(hud.gameObject, hud.GetComponent<UIDocument>());
             AddController<HudXpController>(hud.gameObject, hud.GetComponent<UIDocument>());
+            AddController<HudTextWarmupController>(hud.gameObject, hud.GetComponent<UIDocument>()); // 15.2
             AddController<HudPerksController>(hud.gameObject, hud.GetComponent<UIDocument>());
             HudFeelConfig feel = UIGenerator.LoadOrCreateHudFeelConfig();
             AssignConfig(AddController<HudFloatingTextController>(hud.gameObject, hud.GetComponent<UIDocument>()), feel);

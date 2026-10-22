@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a139196a116fd0e46ac714a22a8e7cda, type: 3}
+  m_Name: PlayerBuildConfig
+  m_EditorClassIdentifier: LastHaven.Editor::LastHaven.Editor.PlayerBuildConfig
+  _productName: Last Haven
+  _companyName: Last Haven Team
+  _version: 0.1.0
+  _applicationIdentifier: com.lasthaven.game
+  _fullScreenMode: 1
+  _windowedWidth: 1600
+  _windowedHeight: 900
+  _resizableWindow: 1
+  _keptFogModes: 03000000
+  _outputFolder: Builds
+  _executableName: LastHaven

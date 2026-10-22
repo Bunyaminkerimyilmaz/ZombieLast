@@ -7,7 +7,8 @@ using Object = UnityEngine.Object;
 namespace LastHaven.Editor
 {
     /// <summary>
-    /// <see cref="GameLayers"/>'taki layer'ları TagManager'a sabit indekslerle, <see cref="GameTags.Custom"/>'ı tag olarak yazar.
+    /// <see cref="GameLayers"/>'taki layer'ları TagManager'a sabit indekslerle, <see cref="GameTags.Custom"/>'ı tag olarak yazar; sonra
+    /// Player Settings'i <see cref="PlayerSettingsSetup"/> ile uygular (15.3).
     /// Tekrar çalıştırmak güvenlidir; sadece eksik veya farklı olanı değiştirir ve her değişikliği loglar.
     /// </summary>
     public static class ProjectSetup
@@ -36,6 +37,9 @@ namespace LastHaven.Editor
 
             Debug.Log($"{LogPrefix} {layerChanges} layer ve {tagChanges} tag değişti " +
                       $"({GameLayers.All.Count} layer, {GameTags.Custom.Count} özel tag kontrol edildi).");
+
+            // 15.3: ürün adı, sürüm, pencere modu ve sis modları Data/Build/PlayerBuildConfig.asset'ten.
+            PlayerSettingsSetup.Run();
         }
 
         private static int SetupLayers(SerializedProperty layers)

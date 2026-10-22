@@ -48,8 +48,9 @@ namespace LastHaven.Economy
         private Coin _coinPrefab;
 
         [SerializeField, Min(0), Tooltip("Oyun başında havuzda hazırlanan jeton sayısı. Aşılınca havuz büyür (uyarıyla). " +
-                                         "×3 komboda Yürüyen 5 jeton düşürür; 12 sn'lik ömür boyunca yüzlerce jeton olabilir.")]
-        private int _coinPrewarm = 200;
+                                         "×3 komboda Yürüyen 5 jeton düşürür; 12 sn'lik ömür boyunca yüzlerce jeton olabilir. " +
+                                         "15.2: 10. gecede 200 aşıldı.")]
+        private int _coinPrewarm = 300;
 
         [SerializeField, Tooltip("Saçılma yayı, dönme, yanıp sönme ve mıknatıs uçuşu.")]
         private CoinMotionSettings _coinMotion = new CoinMotionSettings();

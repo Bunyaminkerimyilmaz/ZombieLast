@@ -30,8 +30,8 @@ namespace LastHaven.Feedback
         [SerializeField, Min(0), Tooltip("Vuruş efekti ömrü boyunca aynı anda görünebilecek en fazla isabet.")]
         private int _impactPrewarm = 24;
 
-        [SerializeField, Min(0)]
-        private int _muzzleFlashPrewarm = 4;
+        [SerializeField, Min(0), Tooltip("Aynı anda yanan namlu ışığı: oyuncu + her taret (15.2 stres testinde 6 taretle 4 aşıldı).")]
+        private int _muzzleFlashPrewarm = 12;
 
         [SerializeField, Min(0), Tooltip("Aynı anda yıkılabilecek yapı sayısı (efekt ~1.2 sn sürer).")]
         private int _debrisPrewarm = 4;

@@ -8,7 +8,7 @@ namespace LastHaven.Editor
     /// <summary>
     /// [Gameplay]/SpawnZones altına dört yöne birer <see cref="SpawnZone"/> koyar (GDD §8; her birinin altında kapalı istihbarat ışık
     /// sütunu, GDD §9) ve [Systems]/WaveSpawner'ı (<see cref="WaveSpawner"/>: config üreticiden, bölgeler buradan; aynı objede
-    /// sütunları yakan <see cref="SpawnZoneBeacons"/>) kurar.
+    /// sütunları yakan <see cref="SpawnZoneBeacons"/> ve havuzları gecelere göre ısıtan <see cref="WavePrewarmer"/>) kurar.
     /// </summary>
     public sealed class WavesSceneStep : ISceneBuildStep
     {
@@ -73,6 +73,13 @@ namespace LastHaven.Editor
             }
 
             serializedBeacons.ApplyModifiedPropertiesWithoutUndo();
+
+            // 15.2: havuzları gecelerin ihtiyacına göre ısıt (oynanışta Instantiate olmasın).
+            var prewarmer = spawnerObject.AddComponent<WavePrewarmer>();
+            var serializedPrewarmer = new SerializedObject(prewarmer);
+            serializedPrewarmer.FindProperty("_waves").objectReferenceValue = WavesGenerator.LoadOrCreateConfig();
+            serializedPrewarmer.FindProperty("_wanderers").objectReferenceValue = DayWanderersGenerator.LoadOrCreateConfig();
+            serializedPrewarmer.ApplyModifiedPropertiesWithoutUndo();
         }
     }
 }

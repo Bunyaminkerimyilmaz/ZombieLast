@@ -75,13 +75,6 @@ namespace LastHaven.Tests.EditMode
             Assert.AreEqual(expected, HudFormat.Gain(value));
         }
 
-        [Test]
-        public void Ammo_ShowsReserveOrInfinite()
-        {
-            Assert.AreEqual("8 / 24", HudFormat.Ammo(8, 24, false));
-            Assert.AreEqual("12 / " + HudFormat.Infinite, HudFormat.Ammo(12, 0, true));
-        }
-
         [TestCase(249.2f, 250)]
         [TestCase(250f, 250)]
         [TestCase(0.01f, 1)]
@@ -111,7 +104,6 @@ namespace LastHaven.Tests.EditMode
                 Thread.CurrentThread.CurrentCulture = new CultureInfo("tr-TR");
                 Assert.AreEqual("12:05", HudFormat.Timer(725));
                 Assert.AreEqual("1500/1500", HudFormat.Health(1500f, 1500f));
-                Assert.AreEqual("30 / 120", HudFormat.Ammo(30, 120, false));
                 Assert.AreEqual("×1.5", HudFormat.Multiplier(1.5f), "tr-TR'de ondalık ayırıcı virgül olmamalı.");
             }
             finally

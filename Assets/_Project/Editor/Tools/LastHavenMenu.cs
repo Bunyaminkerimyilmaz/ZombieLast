@@ -88,6 +88,42 @@ namespace LastHaven.Editor
             }
         }
 
+        [MenuItem(Root + "Export Balance Sheet", priority = 41)]
+        public static void ExportBalanceSheet()
+        {
+            if (CanRun())
+            {
+                BalanceSheetExporter.Export();
+            }
+        }
+
+        [MenuItem(Root + "Build/Windows", priority = 60)]
+        public static void BuildWindows()
+        {
+            if (CanRun())
+            {
+                PlayerBuilder.Build(PlayerBuildPlatform.Windows);
+            }
+        }
+
+        [MenuItem(Root + "Build/macOS", priority = 61)]
+        public static void BuildMacOS()
+        {
+            if (CanRun())
+            {
+                PlayerBuilder.Build(PlayerBuildPlatform.MacOS);
+            }
+        }
+
+        [MenuItem(Root + "Build/Apply Player Settings", priority = 80)]
+        public static void ApplyPlayerSettings()
+        {
+            if (CanRun())
+            {
+                PlayerSettingsSetup.Run();
+            }
+        }
+
         private static bool CanRun()
         {
             if (EditorApplication.isPlayingOrWillChangePlaymode)

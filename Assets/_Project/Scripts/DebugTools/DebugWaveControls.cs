@@ -1,6 +1,6 @@
-using System.Collections.Generic;
 using LastHaven.Core;
 using LastHaven.Enemies;
+using LastHaven.GameFlow;
 using UnityEngine;
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
 using UnityEngine.InputSystem;
@@ -9,11 +9,16 @@ using UnityEngine.InputSystem;
 namespace LastHaven.DebugTools
 {
     /// <summary>
-    /// Gece kısayolları ([Systems]/DebugWaves): F5 sıradaki geceyi hemen başlatır (<see cref="IWaveService"/>; oyun akışı
-    /// <see cref="IGameStateService"/> varsa geceleri o yönettiği için kapalıdır), F6 tüm canlı
-    /// düşmanları öldürür (<see cref="EnemySpawner"/>'ın doğurdukları: dalga + debug spawner). Öldürme normal hasarla yapılır;
-    /// ölümler dalga sayacına, olaylara ve ödüllere her zamanki gibi gider. Sol üstte, DebugSpawner panelinin altında durum kutusu.
-    /// Sadece editörde ve development build'de çalışır (sınıf ve alanları her build'de var; sahnede "missing script" olmasın).
+    /// Gece kısayolları ([Systems]/DebugWaves; debug panelinin "Gece" bölümü de bunları çağırır):
+    /// <list type="bullet">
+    /// <item>F5 — gece sürüyorsa <b>geceyi atla</b>: doğmamış düşmanlar iptal (<see cref="IWaveService.CancelPendingSpawns"/>), canlılar
+    /// öldürülür; gece normal yoldan biter, şafak gelir. Gece yoksa ve oyun akışı yoksa sıradaki geceyi başlatır (akış varken
+    /// geceyi akış başlatır: Enter = Hazırım).</item>
+    /// <item>F6 — <see cref="EnemySpawner"/>'ın doğurduğu tüm canlı düşmanları öldürür (dalga + gezgin + debug spawner).</item>
+    /// <item><see cref="GoToNight"/> — düşmanları öldürüp <see cref="GameFlowController.JumpToNight"/> ile N. gecenin gündüzüne atlar.</item>
+    /// </list>
+    /// Öldürme normal hasarla yapılır (<see cref="EnemyCull"/>); ölümler olaylara ve ödüllere her zamanki gibi gider. Sadece editörde
+    /// ve development build'de çalışır (sınıf ve alanları her build'de var; sahnede "missing script" olmasın).
     /// </summary>
     [DisallowMultipleComponent]
     public sealed class DebugWaveControls : MonoBehaviour
@@ -21,28 +26,93 @@ namespace LastHaven.DebugTools
         [SerializeField, Tooltip("F6 bunun doğurduğu canlı düşmanları öldürür. Sahne adımı bağlar.")]
         private EnemySpawner _enemySpawner;
 
+        [SerializeField, Tooltip("Oyun akışı ([Systems]/GameFlow; opsiyonel). Varsa \"N. geceye git\" çalışır ve F5 gündüz geceyi başlatmaz. "
+                                 + "Sahne adımı bağlar.")]
+        private GameFlowController _gameFlow;
+
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
         private const string Prefix = "[Debug] ";
 
-        // DebugSpawner panelinin (y 10–114) altında.
-        private static readonly Rect PanelRect = new Rect(10f, 120f, 290f, 84f);
-        private static readonly Rect PanelTextRect = new Rect(18f, 124f, 274f, 76f);
-
-        private readonly List<Enemy> _alive = new List<Enemy>();
+        private readonly EnemyCull _cull = new EnemyCull();
         private InputAction[] _actions;
         private IWaveService _waves;
-        private IGameStateService _gameFlow;
         private int _nextNightIndex;
-        private int _currentNightNumber;
-        private string _status = "Gece yok";
-        private string _panelText = string.Empty;
+
+        /// <summary>Toplam gece; dalga servisi yoksa 0.</summary>
+        public int TotalNights => _waves != null ? _waves.TotalNights : 0;
+
+        /// <summary>Canlı düşman sayısı (<see cref="EnemyCull.CountAlive"/>).</summary>
+        public int CountAliveEnemies()
+        {
+            return _cull.CountAlive(_enemySpawner);
+        }
+
+        /// <summary>F6: tüm canlı düşmanları öldürür; ölen sayısını döndürür.</summary>
+        public int KillAllEnemies()
+        {
+            if (_enemySpawner == null)
+            {
+                Debug.LogWarning(Prefix + "F6: EnemySpawner bağlı değil; Tools/Last Haven/Build Game Scene çalıştır.", this);
+                return 0;
+            }
+
+            int killed = _cull.KillAll(_enemySpawner, gameObject);
+            Debug.Log($"{Prefix}F6: {killed} düşman öldürüldü.", this);
+            return killed;
+        }
+
+        /// <summary>F5 (gece sürerken): doğmamışları iptal eder, canlıları öldürür; gece bir sonraki karede biter.</summary>
+        public void SkipNight()
+        {
+            if (_waves == null || !_waves.IsNightRunning)
+            {
+                Debug.LogWarning(Prefix + "Geceyi atla: sürmekte olan gece yok (gündüzü Enter ile bitir veya \"N. geceye git\").", this);
+                return;
+            }
+
+            int cancelled = _waves.CancelPendingSpawns();
+            int killed = KillAllEnemies();
+            Debug.Log($"{Prefix}Geceyi atla: {cancelled} düşman iptal edildi, {killed} düşman öldürüldü; gece bitince şafak gelir.", this);
+        }
+
+        /// <summary>
+        /// <paramref name="nightNumber"/>. (1 tabanlı) gecenin gündüzüne atlar: önce düşmanlar öldürülür, sonra akış sürmekte olan
+        /// geceyi durdurup gündüze geçer (sandıklar ve gezginler yeniden çıkar). Akış yoksa, oyun bittiyse veya numara geçersizse false.
+        /// </summary>
+        public bool GoToNight(int nightNumber)
+        {
+            if (_gameFlow == null || !_gameFlow.isActiveAndEnabled)
+            {
+                Debug.LogWarning(Prefix + "N. geceye git: oyun akışı yok ([Systems]/GameFlow).", this);
+                return false;
+            }
+
+            GamePhase phase = _gameFlow.CurrentPhase;
+            if (phase == GamePhase.Boot || phase == GamePhase.GameOver || phase == GamePhase.Victory
+                || nightNumber < 1 || nightNumber > TotalNights)
+            {
+                Debug.LogWarning($"{Prefix}N. geceye git: {nightNumber}. geceye atlanamaz (evre {phase}, toplam {TotalNights}).", this);
+                return false;
+            }
+
+            // Önce öldür: gece hâlâ sürüyorsa ölümler sayılır ama bitiş sadece dalganın Update'inde kontrol edilir; hemen ardından
+            // akış geceyi durdurduğu için şafak gelmez. Sonra öldürmek yeni gündüzün gezginlerini de öldürürdü.
+            int killed = _cull.KillAll(_enemySpawner, gameObject);
+            if (!_gameFlow.JumpToNight(nightNumber - 1))
+            {
+                return false;
+            }
+
+            Debug.Log($"{Prefix}{nightNumber}. gecenin gündüzüne atlandı ({killed} düşman öldürüldü).", this);
+            return true;
+        }
 
         private void Awake()
         {
             _actions = new[]
             {
-                DebugHotkeys.Create("<Keyboard>/f5", StartNextNight),
-                DebugHotkeys.Create("<Keyboard>/f6", KillAllEnemies),
+                DebugHotkeys.Create("<Keyboard>/f5", OnF5),
+                DebugHotkeys.Create("<Keyboard>/f6", () => KillAllEnemies()),
             };
         }
 
@@ -52,9 +122,6 @@ namespace LastHaven.DebugTools
             {
                 Debug.LogWarning("DebugWaveControls: IWaveService bulunamadı; F5 çalışmayacak. Sahnede [Systems]/WaveSpawner var mı?", this);
             }
-
-            ServiceLocator.TryGet(out _gameFlow);
-            RefreshPanel();
         }
 
         private void OnEnable()
@@ -65,8 +132,6 @@ namespace LastHaven.DebugTools
             }
 
             EventBus<NightStartedEvent>.Subscribe(OnNightStarted);
-            EventBus<WaveProgressEvent>.Subscribe(OnWaveProgress);
-            EventBus<NightCompletedEvent>.Subscribe(OnNightCompleted);
         }
 
         private void OnDisable()
@@ -77,8 +142,6 @@ namespace LastHaven.DebugTools
             }
 
             EventBus<NightStartedEvent>.Unsubscribe(OnNightStarted);
-            EventBus<WaveProgressEvent>.Unsubscribe(OnWaveProgress);
-            EventBus<NightCompletedEvent>.Unsubscribe(OnNightCompleted);
         }
 
         private void OnDestroy()
@@ -89,31 +152,29 @@ namespace LastHaven.DebugTools
             }
         }
 
-        private void OnGUI()
+        private void OnF5()
         {
-            GUI.Box(PanelRect, GUIContent.none);
-            GUI.Label(PanelTextRect, _panelText);
+            if (_waves != null && _waves.IsNightRunning)
+            {
+                SkipNight();
+            }
+            else if (_gameFlow != null)
+            {
+                // Akış dışında başlatılan gece evreleri karıştırır (gündüz ortasında gece, aynı gecenin tekrarı).
+                Debug.LogWarning(Prefix + "F5: Gece sürmüyor; geceyi oyun akışı başlatır (Enter = Hazırım) ya da panelden \"N. geceye git\".", this);
+            }
+            else
+            {
+                StartNextNight();
+            }
         }
 
+        /// <summary>Akışsız sahnelerde (testler) sıradaki geceyi başlatır.</summary>
         private void StartNextNight()
         {
             if (_waves == null)
             {
                 Debug.LogWarning(Prefix + "F5: IWaveService yok; gece başlatılamadı.", this);
-                return;
-            }
-
-            // Akış dışında başlatılan gece evreleri karıştırır (gündüz ortasında gece, aynı gecenin tekrarı).
-            if (_gameFlow != null)
-            {
-                Debug.LogWarning(Prefix + "F5: Geceleri oyun akışı yönetiyor; gündüzü Enter (Hazırım) ile bitir.", this);
-                return;
-            }
-
-            if (_waves.IsNightRunning)
-            {
-                Debug.LogWarning($"{Prefix}F5: Gece {_currentNightNumber} hâlâ sürüyor; önce bitmeli (F6 canlıları öldürür, "
-                                 + "kalan gruplar doğup ölünce gece biter).", this);
                 return;
             }
 
@@ -127,76 +188,9 @@ namespace LastHaven.DebugTools
             _waves.StartNight(_nextNightIndex);
         }
 
-        private void KillAllEnemies()
-        {
-            if (_enemySpawner == null)
-            {
-                Debug.LogWarning(Prefix + "F6: EnemySpawner bağlı değil; Tools/Last Haven/Build Game Scene çalıştır.", this);
-                return;
-            }
-
-            // Önce kopyala: ölüm olayları dinleyicileri tetikler, liste öldürürken değişmesin.
-            _enemySpawner.GetAlive(_alive);
-            int killed = 0;
-            for (int i = 0; i < _alive.Count; i++)
-            {
-                if (Kill(_alive[i]))
-                {
-                    killed++;
-                }
-            }
-
-            _alive.Clear();
-            Debug.Log($"{Prefix}F6: {killed} düşman öldürüldü.", this);
-        }
-
-        private bool Kill(Enemy enemy)
-        {
-            var health = enemy.GetComponent<Health>();
-            if (health == null || !health.IsAlive)
-            {
-                return false;
-            }
-
-            // Kaynak bu obje (Player tag'i yok): EnemyKilledEvent.KilledByPlayer = false. Yön sıfır: geri itilme yok.
-            health.TakeDamage(new DamageInfo(health.Current, DamageType.Bullet, gameObject, enemy.transform.position, Vector3.zero));
-            return !health.IsAlive;
-        }
-
         private void OnNightStarted(NightStartedEvent started)
         {
             _nextNightIndex = started.NightIndex + 1;
-            _currentNightNumber = started.NightNumber;
-            SetStatus(started.TotalEnemies, started.TotalEnemies);
-        }
-
-        private void OnWaveProgress(WaveProgressEvent progress)
-        {
-            SetStatus(progress.RemainingEnemies, progress.TotalEnemies);
-        }
-
-        private void OnNightCompleted(NightCompletedEvent completed)
-        {
-            _status = $"Gece {completed.NightNumber} tamamlandı";
-            RefreshPanel();
-        }
-
-        private void SetStatus(int remaining, int total)
-        {
-            _status = $"Gece {_currentNightNumber} sürüyor · kalan {remaining}/{total}";
-            RefreshPanel();
-        }
-
-        /// <summary>Metin sadece olaylarda kurulur (OnGUI'de string birleştirme yok).</summary>
-        private void RefreshPanel()
-        {
-            int total = _waves != null ? _waves.TotalNights : 0;
-            string next = _gameFlow != null ? "kapalı (akış var: Enter = Hazırım)"
-                : _nextNightIndex < total ? $"Gece {_nextNightIndex + 1}/{total} başlat" : "sıradaki gece yok";
-            _panelText = "Gece Kısayolları\n"
-                         + "F5   " + next + "\n"
-                         + "F6   Tüm canlı düşmanları öldür\n"
-                         + _status;
         }
 #endif
     }

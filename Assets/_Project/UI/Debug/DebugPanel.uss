@@ -1,0 +1,173 @@
+/*
+ * Debug paneli (15.1): sol üstte kaydırılabilir pencere. Renkler Theme.uss değişkenlerinden; sadece geliştirici aracı.
+ * Kök (.lh-debug) tıklamayı geçirir (picking-mode Ignore); pencere tıklanır.
+ */
+
+.lh-screen.lh-debug .debug-window {
+    position: absolute;
+    left: var(--space);
+    top: var(--space);
+    width: 480px;
+    max-height: 94%;
+    background-color: var(--color-window);
+    border-width: var(--border-thin);
+    border-color: var(--color-accent);
+    border-radius: var(--radius);
+    padding: var(--space-small) var(--space);
+}
+
+.lh-screen.lh-debug .debug-header {
+    flex-direction: row;
+    align-items: flex-end;
+    justify-content: space-between;
+    margin-bottom: var(--space-small);
+}
+
+.lh-screen.lh-debug .debug-title {
+    font-size: var(--font-normal);
+    -unity-font-style: bold;
+    color: var(--color-accent);
+    margin: 0;
+    padding: 0;
+}
+
+.lh-screen.lh-debug .debug-hint,
+.lh-screen.lh-debug .debug-label,
+.lh-screen.lh-debug .debug-shortcut {
+    font-size: var(--font-tiny);
+    color: var(--color-text-dim);
+    margin: 0;
+    padding: 0;
+}
+
+.lh-screen.lh-debug .debug-label {
+    margin-top: var(--space-small);
+    white-space: normal;
+}
+
+.lh-screen.lh-debug .debug-section-title {
+    font-size: var(--font-small);
+    -unity-font-style: bold;
+    color: var(--color-text);
+    margin: var(--space) 0 var(--space-small) 0;
+    padding: 0 0 2px 0;
+    border-bottom-width: var(--border-thin);
+    border-color: var(--color-panel-border);
+}
+
+/* --- Durum satırları: ad solda, değer sağda --- */
+
+.lh-screen.lh-debug .debug-stat-row {
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.lh-screen.lh-debug .debug-stat-name,
+.lh-screen.lh-debug .debug-stat-value {
+    font-size: var(--font-tiny);
+    margin: 0;
+    padding: 1px 0;
+}
+
+.lh-screen.lh-debug .debug-stat-name {
+    color: var(--color-text-dim);
+}
+
+/* "12 / 52": iki sayı ayrı etiket (yenilemede string birleştirilmesin). */
+.lh-screen.lh-debug .debug-stat-pair {
+    flex-direction: row;
+}
+
+/* Etiket metnindeki boşluklar kırpılır; "/" çevresindeki boşluk kenar boşluğuyla. */
+.lh-screen.lh-debug .debug-stat-separator {
+    margin: 0 4px;
+}
+
+.lh-screen.lh-debug .debug-button:disabled {
+    opacity: 0.4;
+}
+
+.lh-screen.lh-debug .debug-stat-value {
+    color: var(--color-text);
+    -unity-font-style: bold;
+}
+
+/* --- Düğmeler --- */
+
+.lh-screen.lh-debug .debug-button-row {
+    flex-direction: row;
+    align-items: center;
+}
+
+.lh-screen.lh-debug .debug-button-row--wrap {
+    flex-wrap: wrap;
+}
+
+.lh-screen.lh-debug .debug-button {
+    flex-grow: 1;
+    font-size: var(--font-tiny);
+    color: var(--color-text);
+    background-color: var(--color-button);
+    border-width: var(--border-thin);
+    border-color: var(--color-panel-border);
+    border-radius: var(--radius);
+    margin: 2px;
+    padding: 4px var(--space-small);
+}
+
+.lh-screen.lh-debug .debug-button:hover {
+    background-color: var(--color-button-hover);
+    border-color: var(--color-accent);
+}
+
+.lh-screen.lh-debug .debug-button:active {
+    background-color: var(--color-button-active);
+}
+
+/* Gece numaraları ve zaman ölçekleri: dar, eşit düğmeler. */
+.lh-screen.lh-debug .debug-button--small {
+    flex-grow: 0;
+    min-width: 40px;
+}
+
+.lh-screen.lh-debug .debug-button--selected {
+    color: var(--color-window);
+    background-color: var(--color-accent);
+    border-color: var(--color-accent);
+}
+
+/* --- Ölümsüzlük ve perk seçimi --- */
+
+.lh-screen.lh-debug .debug-toggle {
+    margin: var(--space-small) 2px 0 2px;
+}
+
+.lh-screen.lh-debug .debug-toggle .unity-toggle__label,
+.lh-screen.lh-debug .debug-toggle .unity-label {
+    font-size: var(--font-tiny);
+    color: var(--color-text);
+    min-width: 0;
+}
+
+.lh-screen.lh-debug .debug-toggle .unity-toggle__checkmark {
+    background-color: var(--color-bar-back);
+    border-color: var(--color-key-border);
+}
+
+.lh-screen.lh-debug .debug-toggle:checked .unity-toggle__checkmark {
+    background-color: var(--color-danger);
+    border-color: var(--color-danger);
+}
+
+.lh-screen.lh-debug .debug-dropdown {
+    flex-grow: 2;
+    margin: 2px;
+}
+
+.lh-screen.lh-debug .debug-dropdown .unity-base-popup-field__input,
+.lh-screen.lh-debug .debug-dropdown .unity-base-popup-field__text {
+    font-size: var(--font-tiny);
+    color: var(--color-text);
+    background-color: var(--color-button);
+    border-color: var(--color-panel-border);
+}

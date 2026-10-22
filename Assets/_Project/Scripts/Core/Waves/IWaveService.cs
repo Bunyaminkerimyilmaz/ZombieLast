@@ -24,6 +24,19 @@ namespace LastHaven.Core
         bool StartNight(int nightIndex);
 
         /// <summary>
+        /// Sürmekte olan gecenin henüz doğmamış düşmanlarını (zamanı gelmemiş + tavan yüzünden kuyrukta bekleyen) iptal eder; gece,
+        /// kalan canlılar ölünce normal yoldan biter (<see cref="NightCompletedEvent"/>). İptal edilen sayıyı döndürür; gece yoksa 0.
+        /// Debug "geceyi atla" için.
+        /// </summary>
+        int CancelPendingSpawns();
+
+        /// <summary>
+        /// Sürmekte olan geceyi bitmiş saymadan durdurur: <see cref="NightCompletedEvent"/> gönderilmez, gece olayı biter, sahnedeki
+        /// düşmanlar artık sayılmaz (yerlerinde kalırlar; ölümleri geceyi etkilemez). Gece yoksa false. Debug "N. geceye git" için.
+        /// </summary>
+        bool AbortNight();
+
+        /// <summary>
         /// Gecenin istihbarat bilgisi: saldırı yönleri, düşman tipleri ve adetleri, olay adı. Gündüz HUD'u gösterir.
         /// Geçersiz indekste <see cref="System.ArgumentOutOfRangeException"/> fırlatır.
         /// </summary>

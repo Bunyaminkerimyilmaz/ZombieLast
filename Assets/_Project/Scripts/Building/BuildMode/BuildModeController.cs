@@ -4,12 +4,11 @@ using UnityEngine;
 namespace LastHaven.Building
 {
     /// <summary>
-    /// İnşa modu (GDD §11): sadece gündüz, B ile açılır/kapanır (<see cref="InputMode.BuildMode"/>). 1–5 (gamepad: D-pad)
-    /// yapı seçer, Q döndürür; imlecin altındaki hücrede yarı saydam önizleme (yeşil/kırmızı, para dahil). Sol tık parayı
-    /// ödeyip yerleştirir; sağ tık seçimi, seçim yoksa modu iptal eder. Var olan yapının üzerine gelince vurgulanır; U yükseltir,
-    /// X satar. Taret seçiliyken ve üzerine gelince menzil dairesi görünür. Gündüz bitince (alacakaranlık) kendiliğinden kapanır.
-    /// Bu bileşen mod, evre, B ve iptali yönetir; yapı tuşları mod açıkken <see cref="BuildPlacementTool"/>'a bağlanır, ızgara
-    /// <see cref="BuildSite"/>'ta.
+    /// İnşa modu (GDD §11): gündüz ve oyuncu canlıyken (<see cref="BuildModeEntryRule"/>) B ile açılır/kapanır (<see cref="InputMode.BuildMode"/>).
+    /// 1–5 (gamepad: D-pad) yapı seçer, Q döndürür; imlecin altındaki hücrede yarı saydam önizleme (yeşil/kırmızı, para dahil). Sol tık
+    /// parayı ödeyip yerleştirir; sağ tık seçimi, seçim yoksa modu iptal eder. Yapının üzerine gelince vurgulanır; U yükseltir, X satar.
+    /// Taret seçiliyken ve üzerine gelince menzil dairesi görünür. Gündüz bitince veya oyuncu ölünce kapanır (<see cref="BuildModeExitTriggers"/>).
+    /// Bu bileşen mod, B ve iptali yönetir; yapı tuşları mod açıkken <see cref="BuildPlacementTool"/>'a bağlanır, ızgara <see cref="BuildSite"/>'ta.
     /// </summary>
     [DisallowMultipleComponent]
     public sealed class BuildModeController : MonoBehaviour
@@ -34,6 +33,8 @@ namespace LastHaven.Building
         private BuildPlacementTool _tool;
         private IInputReader _input;
         private IGameStateService _gameState;
+        private IPlayer _player;
+        private BuildModeExitTriggers _exitTriggers;
         private bool _started;
 
         /// <summary>İnşa modu açık mı.</summary>
@@ -47,8 +48,11 @@ namespace LastHaven.Building
 
         private bool IsInputAlive => _input is Object unityObject ? unityObject != null : _input != null;
 
+        private bool IsPlayerAlive => _player is Object playerObject ? playerObject == null || _player.IsAlive : _player == null || _player.IsAlive;
+
         private void Awake()
         {
+            _exitTriggers = new BuildModeExitTriggers(ExitIfActive);
             if (_site == null || _ghostRoot == null)
             {
                 Debug.LogError("BuildModeController: BuildSite veya önizleme kökü atanmamış; Tools/Last Haven/Build Game Scene çalıştır.", this);
@@ -66,7 +70,7 @@ namespace LastHaven.Building
             }
 
             ServiceLocator.TryGet(out _gameState);
-            ServiceLocator.TryGet(out IPlayer player);
+            ServiceLocator.TryGet(out _player);
             if (!ServiceLocator.TryGet(out ICameraService camera))
             {
                 Debug.LogWarning("BuildModeController: ICameraService bulunamadı; fareyle yerleşim çalışmayacak.", this);
@@ -86,7 +90,7 @@ namespace LastHaven.Building
 
             ServiceLocator.TryGet(out IRunModifiers modifiers);
             var range = new BuildRangePreview(_rangeIndicator, modifiers, config.RangeColor, config.RangeLineWidth, config.RangeSegments);
-            var pointer = new BuildPointer(_input, camera, player, config.GamepadPlacementDistance);
+            var pointer = new BuildPointer(_input, camera, _player, config.GamepadPlacementDistance);
             var hover = new StructureHoverTool(_site, highlight, pointer, config.HighlightColor);
             _tool = new BuildPlacementTool(_site, new BuildSelection(config.Slots), ghost, pointer, hover, range);
 
@@ -96,7 +100,7 @@ namespace LastHaven.Building
 
         private void OnEnable()
         {
-            EventBus<PhaseChangedEvent>.Subscribe(OnPhaseChanged);
+            _exitTriggers.Subscribe();
 
             // Servis Start'ta alınır; ilk aboneliği Start yapar.
             if (_started)
@@ -107,7 +111,7 @@ namespace LastHaven.Building
 
         private void OnDisable()
         {
-            EventBus<PhaseChangedEvent>.Unsubscribe(OnPhaseChanged);
+            _exitTriggers.Unsubscribe();
             if (IsActive)
             {
                 Exit();
@@ -148,9 +152,10 @@ namespace LastHaven.Building
 
         private void TryEnter()
         {
-            if (_gameState != null && _gameState.CurrentPhase != GamePhase.Day)
+            BuildModeEntry entry = BuildModeEntryRule.Evaluate(_gameState != null ? _gameState.CurrentPhase : (GamePhase?)null, IsPlayerAlive);
+            if (entry != BuildModeEntry.Allowed)
             {
-                Debug.Log($"{LogPrefix}İnşa modu sadece gündüz açılır.", this);
+                Debug.Log(LogPrefix + BuildModeEntryRule.Describe(entry), this);
                 return;
             }
 
@@ -188,11 +193,11 @@ namespace LastHaven.Building
             }
         }
 
-        private void OnPhaseChanged(PhaseChangedEvent changed)
+        private void ExitIfActive(string reason)
         {
-            if (IsActive && changed.Phase != GamePhase.Day)
+            if (IsActive)
             {
-                Debug.Log($"{LogPrefix}Gündüz bitti ({changed.Phase}); inşa modu kapanıyor.", this);
+                Debug.Log($"{LogPrefix}{reason}; inşa modu kapanıyor.", this);
                 Exit();
             }
         }

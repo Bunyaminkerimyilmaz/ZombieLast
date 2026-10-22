@@ -93,8 +93,8 @@ namespace LastHaven.UI
 
         private void Show(int level, int xp, int xpToNextLevel)
         {
-            _level.text = HudFormat.Count(level);
-            _value.text = HudFormat.OfTotal(xp, xpToNextLevel);
+            _level.text = NumberText.Count(level);
+            _value.text = FractionText.Get(xp, xpToNextLevel);
             _fill.style.width = Length.Percent(HudFormat.Ratio(xp, xpToNextLevel) * 100f);
         }
 

@@ -27,6 +27,9 @@ namespace LastHaven.UI
         public const string WeaponName = "weapon-name";
         public const string AmmoValue = "ammo-value";
 
+        /// <summary>Yedek mermi ("∞" veya sayı); şarjörden ayrı etiket (15.2: atış başına string ayrılmasın).</summary>
+        public const string AmmoReserve = "ammo-reserve";
+
         // Cüzdan (HudWalletController).
         public const string MoneyValue = "money-value";
         public const string FuelValue = "fuel-value";

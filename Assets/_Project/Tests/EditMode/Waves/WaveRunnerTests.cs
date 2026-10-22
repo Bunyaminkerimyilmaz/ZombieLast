@@ -444,6 +444,82 @@ namespace LastHaven.Tests.EditMode
             Assert.AreEqual(1, _runner.TotalCount);
         }
 
+        // --- Debug: iptal ve durdurma (15.1) ---
+
+        [Test]
+        public void CancelPending_DropsUnspawnedAndQueued_NightEndsWhenAliveDie()
+        {
+            _runner.Start(new[] { Group(5, interval: 1f) }, 2);
+            _runner.Tick(3f); // t 0..3 arası 4 istek: tavan 2 → 2 canlı, 2 kuyrukta, 1 bekliyor.
+            Assert.AreEqual(2, _runner.AliveCount);
+            Assert.AreEqual(2, _runner.QueuedCount);
+            Assert.AreEqual(1, _runner.PendingCount);
+            int changes = _remainingChangedCount;
+
+            Assert.AreEqual(3, _runner.CancelPending());
+
+            Assert.AreEqual(0, _runner.PendingCount);
+            Assert.AreEqual(0, _runner.QueuedCount);
+            Assert.AreEqual(2, _runner.RemainingCount);
+            Assert.AreEqual(5, _runner.TotalCount, "Toplam değişmez.");
+            Assert.AreEqual(changes + 1, _remainingChangedCount);
+
+            _runner.Tick(10f);
+            Assert.AreEqual(2, _spawned.Count, "İptal edilenler doğmaz.");
+            Assert.AreEqual(0, _completedCount, "Canlılar ölmeden gece bitmez.");
+
+            _runner.ReportDeath();
+            _runner.ReportDeath();
+            _runner.Tick(0f);
+            Assert.AreEqual(1, _completedCount);
+        }
+
+        [Test]
+        public void CancelPending_WithNothingLeftOrNoNight_ReturnsZero()
+        {
+            Assert.AreEqual(0, _runner.CancelPending(), "Gece yok.");
+
+            _runner.Start(new[] { Group(1) }, 10);
+            _runner.Tick(0f);
+            int changes = _remainingChangedCount;
+            Assert.AreEqual(0, _runner.CancelPending());
+            Assert.AreEqual(changes, _remainingChangedCount, "İptal yoksa olay yok.");
+        }
+
+        [Test]
+        public void Abort_StopsWithoutCompleted_AndClearsCounts()
+        {
+            _runner.Start(new[] { Group(5) }, 10);
+            _runner.Tick(1f);
+            Assert.AreEqual(2, _runner.AliveCount);
+
+            Assert.IsTrue(_runner.Abort());
+
+            Assert.IsFalse(_runner.IsRunning);
+            Assert.AreEqual(0, _runner.RemainingCount);
+            _runner.Tick(10f);
+            Assert.AreEqual(2, _spawned.Count, "Durdurulan gece doğurmaya devam etmez.");
+            Assert.AreEqual(0, _completedCount);
+            Assert.IsFalse(_runner.ReportDeath(), "Durdurulan gecenin ölümleri sayılmaz.");
+            Assert.IsFalse(_runner.Abort(), "Gece yokken false.");
+        }
+
+        [Test]
+        public void Abort_ThenStart_RunsNextNightNormally()
+        {
+            _runner.Start(new[] { Group(3) }, 10);
+            _runner.Tick(0f);
+            _runner.Abort();
+
+            _runner.Start(new[] { Group(1) }, 10);
+            _runner.Tick(0f);
+            Assert.AreEqual(1, _runner.AliveCount);
+            _runner.ReportDeath();
+            _runner.Tick(0f);
+
+            Assert.AreEqual(1, _completedCount);
+        }
+
         [Test]
         public void WaveGroup_ClampsNegativeValues()
         {

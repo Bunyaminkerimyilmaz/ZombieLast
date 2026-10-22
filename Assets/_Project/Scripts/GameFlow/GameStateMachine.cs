@@ -12,6 +12,7 @@ namespace LastHaven.GameFlow
     /// <item>Night: <see cref="NotifyNightCompleted"/> → Dawn; son gecedeyse Victory.</item>
     /// <item>Dawn: <see cref="RequestDawnContinue"/> → Day (sıradaki gece).</item>
     /// <item>Her evrede <see cref="NotifyGeneratorDestroyed"/> → GameOver. GameOver ve Victory son durumdur; sonraki çağrılar yok sayılır.</item>
+    /// <item>Debug: <see cref="JumpToDay"/> her evreden (Boot ve son durumlar hariç) istenen gecenin gündüzüne.</item>
     /// </list>
     /// Tick başına en fazla bir süreli geçiş olur; biten evreden artan süre sonrakine devretmez.
     /// </summary>
@@ -138,6 +139,21 @@ namespace LastHaven.GameFlow
             }
 
             EnterDay(NightIndex + 1);
+            return true;
+        }
+
+        /// <summary>
+        /// Debug: herhangi bir evreden <paramref name="nightIndex"/>. gecenin gündüzüne atlar (erken hazır bonusu, şafak, faiz yok).
+        /// Sürmekte olan dalgayı durdurmak çağıranın işi. Akış başlamadıysa (Boot), oyun bittiyse veya indeks geçersizse false.
+        /// </summary>
+        public bool JumpToDay(int nightIndex)
+        {
+            if (Phase == GamePhase.Boot || IsOver || nightIndex < 0 || nightIndex >= TotalNights)
+            {
+                return false;
+            }
+
+            EnterDay(nightIndex);
             return true;
         }
 

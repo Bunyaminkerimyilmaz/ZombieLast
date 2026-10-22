@@ -85,7 +85,7 @@ namespace LastHaven.UI
             }
 
             _seconds = tick.RemainingSeconds;
-            _countdown.text = HudFormat.Count(_seconds);
+            _countdown.text = NumberText.Count(_seconds);
             _countdown.AddToClassList(TickClass);
         }
 
@@ -94,7 +94,7 @@ namespace LastHaven.UI
             _warning.SetShown(_active);
             _pulse.RemoveFromClassList(PulseDimClass);
             _countdown.RemoveFromClassList(TickClass);
-            _countdown.text = HudFormat.Count(_seconds);
+            _countdown.text = NumberText.Count(_seconds);
             if (_active)
             {
                 // Az önce görünür oldu: transition'ın başlaması için sönükleşme bir sonraki karede.

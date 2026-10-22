@@ -267,7 +267,12 @@
         </ui:VisualElement>
         <ui:VisualElement class="panel hud-bottom-right" picking-mode="Ignore">
             <ui:Label name="weapon-name" text="—" class="label-large" picking-mode="Ignore" />
-            <ui:Label name="ammo-value" text="0 / 0" class="label-big hud-ammo" picking-mode="Ignore" />
+            <!-- Şarjör ve yedek ayrı etiketler (HUDController): atış başına sadece şarjör sayısı değişir. -->
+            <ui:VisualElement class="row hud-ammo" picking-mode="Ignore">
+                <ui:Label name="ammo-value" text="0" class="label-big" picking-mode="Ignore" />
+                <ui:Label text="/" class="label-big hud-ammo__separator" picking-mode="Ignore" />
+                <ui:Label name="ammo-reserve" text="0" class="label-big" picking-mode="Ignore" />
+            </ui:VisualElement>
         </ui:VisualElement>
         <!-- XP ve seviye (alt orta, ince şerit; HudXpController): seviye numarası, bu seviyenin XP barı ve "XP/eşik". Seviye
              atlayınca kod seviye numarasını "pulse" sınıfıyla kısa büyütür (HudXpController.PulseClass). İnşa çubuğundan önce:

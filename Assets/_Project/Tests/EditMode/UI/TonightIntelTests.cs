@@ -28,6 +28,10 @@ namespace LastHaven.Tests.EditMode
 
             public bool StartNight(int nightIndex) => false;
 
+            public int CancelPendingSpawns() => 0;
+
+            public bool AbortNight() => false;
+
             public NightInfo GetTonightInfo(int nightIndex)
             {
                 if (nightIndex < 0 || nightIndex >= TotalNights)

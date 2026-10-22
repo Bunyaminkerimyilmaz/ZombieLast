@@ -54,21 +54,23 @@ namespace LastHaven.Enemies
             {
                 Debug.LogError("BossBehaviour: BossConfig atanmamış; Tools/Last Haven/Generate Prefabs çalıştır.", this);
                 enabled = false;
+                return;
             }
-        }
 
-        private void OnEnable()
-        {
+            // Havuzlanan obje: abonelik ömür boyu bir kez (OnEnable/OnDisable her doğuşta delegate ayırırdı). Health aynı objede.
             _health.Damaged += OnDamaged;
             _health.Healed += OnHealed;
             _health.Died += OnDied;
         }
 
-        private void OnDisable()
+        private void OnDestroy()
         {
-            _health.Damaged -= OnDamaged;
-            _health.Healed -= OnHealed;
-            _health.Died -= OnDied;
+            if (_health != null)
+            {
+                _health.Damaged -= OnDamaged;
+                _health.Healed -= OnHealed;
+                _health.Died -= OnDied;
+            }
         }
 
         private void Start()

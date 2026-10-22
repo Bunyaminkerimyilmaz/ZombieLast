@@ -10,7 +10,8 @@ namespace LastHaven.DebugTools
 {
     /// <summary>
     /// Geliştirme kısayolları ([Systems]/DebugSpawner): F1 imleçteki noktaya Yürüyen, F2 Koşucu, F3 Tank; F4 rastgele bir spawn
-    /// bölgesinden 20 Yürüyen. Sol üstte kısayol listesi (OnGUI). Düşmanlar <see cref="IEnemySpawner"/> ile id üzerinden doğar.
+    /// bölgesinden 20 Yürüyen (debug panelinde "Kenardan sürü" düğmesi de). Kısayol listesi debug panelinde (F12).
+    /// Düşmanlar <see cref="IEnemySpawner"/> ile id üzerinden doğar.
     /// Sadece editörde ve development build'de çalışır; sürüm build'inde bileşen boş kalır (sahnede "missing script" olmasın diye
     /// sınıf ve alanları her zaman var).
     /// </summary>
@@ -37,17 +38,16 @@ namespace LastHaven.DebugTools
         [SerializeField, Tooltip("F4 bunlardan birini rastgele seçer; düşmanlar bölgenin dairesi içinde rastgele noktalarda doğar.")]
         private SpawnZone[] _edgeZones = new SpawnZone[0];
 
+        /// <summary>F4'te doğan düşman sayısı (panel düğme metni).</summary>
+        public int EdgeCount => _edgeCount;
+
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
         private const string Prefix = "[Debug] ";
         private const float CursorRayDistance = 500f;
 
-        private static readonly Rect PanelRect = new Rect(10f, 10f, 290f, 104f);
-        private static readonly Rect PanelTextRect = new Rect(18f, 14f, 274f, 96f);
-
         private InputAction[] _actions;
         private IEnemySpawner _spawner;
         private ICameraService _camera;
-        private string _panelText;
 
         private void Awake()
         {
@@ -59,12 +59,6 @@ namespace LastHaven.DebugTools
                 DebugHotkeys.Create("<Keyboard>/f3", () => SpawnAtCursor(_tank)),
                 DebugHotkeys.Create("<Keyboard>/f4", SpawnAtRandomEdge),
             };
-
-            _panelText = "Debug Spawner\n"
-                         + "F1   " + NameOf(_walker) + " (imleç)\n"
-                         + "F2   " + NameOf(_runner) + " (imleç)\n"
-                         + "F3   " + NameOf(_tank) + " (imleç)\n"
-                         + "F4   " + _edgeCount + " × " + NameOf(_edgeEnemy) + " (rastgele kenar)";
         }
 
         private void Start()
@@ -101,12 +95,6 @@ namespace LastHaven.DebugTools
             }
         }
 
-        private void OnGUI()
-        {
-            GUI.Box(PanelRect, GUIContent.none);
-            GUI.Label(PanelTextRect, _panelText);
-        }
-
         private static string NameOf(EnemyData data)
         {
             return data != null ? data.DisplayName : "—";
@@ -126,7 +114,8 @@ namespace LastHaven.DebugTools
             }
         }
 
-        private void SpawnAtRandomEdge()
+        /// <summary>F4: rastgele bir spawn bölgesinden <see cref="EdgeCount"/> düşman doğurur.</summary>
+        public void SpawnAtRandomEdge()
         {
             if (_edgeZones.Length == 0)
             {

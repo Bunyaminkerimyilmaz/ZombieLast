@@ -93,12 +93,5 @@ namespace LastHaven.UI
         {
             return OfTotal(DisplayHealth(current), DisplayHealth(max));
         }
-
-        /// <summary>Mermi: "şarjör / yedek", sonsuz yedekte "şarjör / ∞" (GDD §16).</summary>
-        public static string Ammo(int ammo, int reserve, bool hasInfiniteReserve)
-        {
-            string reserveText = hasInfiniteReserve ? Infinite : reserve.ToString(Invariant);
-            return ammo.ToString(Invariant) + " / " + reserveText;
-        }
     }
 }

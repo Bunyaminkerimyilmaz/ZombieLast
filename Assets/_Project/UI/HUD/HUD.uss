@@ -186,6 +186,11 @@
     margin-top: var(--space-small);
 }
 
+/* Şarjör ile yedek arasındaki "/" (15.2: ayrı etiketler; boşluklar etiket metninden kırpıldığı için kenar boşluğu). */
+.lh-screen.hud .hud-ammo__separator {
+    margin: 0 var(--space);
+}
+
 /* XP ve seviye: alt ortada ince şerit (can ve silah kutularının arasında; inşa çubuğu bunun üstünde, HudBuild.uss).
  * Seviye atlayınca kod hud-xp__level--pulse ekler; transition bitince kaldırır, aynı transition geri küçültür. */
 .lh-screen.hud .hud-xp {

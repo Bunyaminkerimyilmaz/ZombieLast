@@ -43,11 +43,15 @@ namespace LastHaven.UI
             _bar = null;
         }
 
-        /// <summary>Barı can bileşeninin o anki değerleriyle yeniler.</summary>
+        /// <summary>
+        /// Barı can bileşeninin o anki değerleriyle yeniler. Maks. canın tüm "x/maks" metinleri burada hazırlanır
+        /// (<see cref="FractionText.Prefill"/>): vuruşlarda string ayrılmaz.
+        /// </summary>
         public void Refresh()
         {
             if (_health != null)
             {
+                FractionText.Prefill(HudFormat.DisplayHealth(_health.Max));
                 _bar.Set(_health.Current, _health.Max);
             }
         }

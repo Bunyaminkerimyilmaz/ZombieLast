@@ -73,20 +73,17 @@ namespace LastHaven.Enemies
             {
                 Debug.LogError($"EnemyHealthBar: '{name}' üstünde Health yok; can barı çalışmayacak.", this);
             }
+            else
+            {
+                // Havuzlanan obje: abonelik ömür boyu bir kez (OnEnable/OnDisable her doğuşta delegate ayırırdı). Health aynı düşmanda.
+                _health.Damaged += OnDamaged;
+                _health.Died += OnDied;
+            }
 
             Hide();
         }
 
-        private void OnEnable()
-        {
-            if (_health != null)
-            {
-                _health.Damaged += OnDamaged;
-                _health.Died += OnDied;
-            }
-        }
-
-        private void OnDisable()
+        private void OnDestroy()
         {
             if (_health != null)
             {
@@ -114,7 +111,7 @@ namespace LastHaven.Enemies
         private void OnDamaged(DamagedEvent damaged)
         {
             // Öldüren vuruşta Died gizler.
-            if (_health.IsAlive && damaged.MaxHealth > 0f)
+            if (isActiveAndEnabled && _health.IsAlive && damaged.MaxHealth > 0f)
             {
                 Show(damaged.CurrentHealth / damaged.MaxHealth);
             }

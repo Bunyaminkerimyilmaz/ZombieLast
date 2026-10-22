@@ -88,7 +88,7 @@ namespace LastHaven.UI
             if (seconds != _shownSeconds)
             {
                 _shownSeconds = seconds;
-                _estimate.text = HudFormat.Estimate(seconds);
+                _estimate.text = NumberText.Estimate(seconds);
             }
         }
 

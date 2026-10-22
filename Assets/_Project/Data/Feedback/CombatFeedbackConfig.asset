@@ -18,7 +18,7 @@ MonoBehaviour:
   _debrisPrefab: {fileID: 1982724232414044156, guid: 528b132f7cbb6d14b9de8124710e51c8, type: 3}
   _tracerPrewarm: 16
   _impactPrewarm: 24
-  _muzzleFlashPrewarm: 4
+  _muzzleFlashPrewarm: 12
   _debrisPrewarm: 4
   _weapons:
   - {fileID: 11400000, guid: 77077437a72965740855faafb92a63e9, type: 2}

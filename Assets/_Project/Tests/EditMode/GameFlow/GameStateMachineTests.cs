@@ -515,6 +515,70 @@ namespace LastHaven.Tests.EditMode
 
         // --- Yardımcılar ---
 
+        // --- Debug: geceye atlama (15.1) ---
+
+        [Test]
+        public void JumpToDay_FromNight_EntersDayOfGivenNight_WithoutStartingIt()
+        {
+            DriveToNight();
+            _phases.Clear();
+            _startedNights.Clear();
+            _timerTicks.Clear();
+            _earlyReady.Clear();
+
+            Assert.IsTrue(_machine.JumpToDay(2));
+
+            Assert.AreEqual(GamePhase.Day, _machine.Phase);
+            Assert.AreEqual(2, _machine.NightIndex);
+            Assert.AreEqual(120f, _machine.PhaseTimeRemaining, Tolerance);
+            CollectionAssert.AreEqual(new[] { GamePhase.Day }, _phases);
+            Assert.AreEqual(1, _timerTicks.Count, "Gündüz başı sayaç olayı gider.");
+            Assert.IsEmpty(_startedNights);
+            Assert.IsEmpty(_earlyReady, "Atlama erken hazır sayılmaz (bonus yok).");
+        }
+
+        [Test]
+        public void JumpToDay_ThenFlowContinues_ToTheJumpedNight()
+        {
+            _machine.Begin();
+            Assert.IsTrue(_machine.JumpToDay(2));
+
+            _machine.RequestReady();
+            _machine.Tick(4f);
+            CollectionAssert.AreEqual(new[] { 2 }, _startedNights);
+
+            _machine.NotifyNightCompleted();
+            Assert.AreEqual(GamePhase.Victory, _machine.Phase, "2. indeks 3 gecenin sonuncusu.");
+        }
+
+        [Test]
+        public void JumpToDay_FromDawn_SkipsAhead()
+        {
+            _machine.Begin();
+            DriveDayToDawn();
+            Assert.AreEqual(GamePhase.Dawn, _machine.Phase);
+
+            Assert.IsTrue(_machine.JumpToDay(2));
+            Assert.AreEqual(GamePhase.Day, _machine.Phase);
+            Assert.AreEqual(2, _machine.NightIndex);
+        }
+
+        [Test]
+        public void JumpToDay_RejectedInBoot_ForInvalidIndex_AndAfterRunEnd()
+        {
+            Assert.IsFalse(_machine.JumpToDay(0), "Akış başlamadı.");
+            Assert.AreEqual(GamePhase.Boot, _machine.Phase);
+
+            _machine.Begin();
+            Assert.IsFalse(_machine.JumpToDay(-1));
+            Assert.IsFalse(_machine.JumpToDay(3));
+            Assert.AreEqual(0, _machine.NightIndex);
+
+            _machine.NotifyGeneratorDestroyed();
+            Assert.IsFalse(_machine.JumpToDay(1));
+            Assert.AreEqual(GamePhase.GameOver, _machine.Phase);
+        }
+
         private GameStateMachine Create(int totalNights, GameFlowSettings? settings = null)
         {
             var machine = new GameStateMachine(settings ?? DefaultSettings, totalNights, index => _startedNights.Add(index));

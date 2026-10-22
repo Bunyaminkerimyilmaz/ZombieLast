@@ -68,19 +68,19 @@ namespace LastHaven.UI
                 return false;
             }
 
-            _moneyValue.text = HudFormat.Count(wallet.Money);
-            _fuelValue.text = HudFormat.Count(wallet.Fuel);
+            _moneyValue.text = NumberText.Count(wallet.Money);
+            _fuelValue.text = NumberText.Count(wallet.Fuel);
             return true;
         }
 
         private void OnMoneyChanged(MoneyChangedEvent changed)
         {
-            _moneyValue.text = HudFormat.Count(changed.Money);
+            _moneyValue.text = NumberText.Count(changed.Money);
         }
 
         private void OnFuelChanged(FuelChangedEvent changed)
         {
-            _fuelValue.text = HudFormat.Count(changed.Fuel);
+            _fuelValue.text = NumberText.Count(changed.Fuel);
         }
     }
 }

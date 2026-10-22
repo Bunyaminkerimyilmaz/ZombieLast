@@ -64,7 +64,7 @@ namespace LastHaven.UI
             if (combo.Count != _shownCount)
             {
                 _shownCount = combo.Count;
-                _count.text = HudFormat.Count(combo.Count);
+                _count.text = NumberText.Count(combo.Count);
             }
 
             if (!Mathf.Approximately(combo.Multiplier, _shownMultiplier))

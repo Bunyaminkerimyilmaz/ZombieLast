@@ -7,7 +7,8 @@ namespace LastHaven.Editor
 {
     /// <summary>
     /// [Gameplay]/TestDummies: silah testi için üs dışında gri kapsül <see cref="TestDummy"/>'ler ve olayları konsola yazan
-    /// <see cref="CombatDebugLogger"/>. <see cref="TestDummiesConfig.Enabled"/> kapalıysa hiçbiri kurulmaz.
+    /// <see cref="CombatDebugLogger"/>. <see cref="TestDummiesConfig.Enabled"/> kapalıysa hiçbiri kurulmaz. Grup <see cref="DevelopmentOnly"/>
+    /// taşır: sürüm build'inde kapanır (sadece editör ve development build).
     /// Kukla kökü: CapsuleCollider + Health + TestDummy, Enemy layer. "Visual": collider'sız gri kapsül.
     /// </summary>
     public sealed class TestDummiesSceneStep : ISceneBuildStep
@@ -30,6 +31,7 @@ namespace LastHaven.Editor
             }
 
             GameObject group = context.CreateObject(GroupName, context.Gameplay);
+            group.AddComponent<DevelopmentOnly>(); // 15.3: sürüm build'inde kuklalar ve logger kapalı.
             group.AddComponent<CombatDebugLogger>();
 
             for (int i = 0; i < config.Positions.Count; i++)

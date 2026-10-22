@@ -40,6 +40,7 @@ namespace LastHaven.Tests.EditMode
             AssertHas<Label>(root, HudElementNames.GeneratorHealthValue);
             AssertHas<Label>(root, HudElementNames.WeaponName);
             AssertHas<Label>(root, HudElementNames.AmmoValue);
+            AssertHas<Label>(root, HudElementNames.AmmoReserve);
             AssertHas<Label>(root, HudElementNames.MoneyValue);
             AssertHas<Label>(root, HudElementNames.FuelValue);
             AssertHas<VisualElement>(root, HudElementNames.FuelFill);

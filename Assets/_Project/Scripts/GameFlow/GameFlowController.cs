@@ -103,6 +103,25 @@ namespace LastHaven.GameFlow
             }
         }
 
+        /// <summary>
+        /// Debug ("N. geceye git"): sürmekte olan geceyi bitmiş saymadan durdurur (<see cref="IWaveService.AbortNight"/>) ve
+        /// <paramref name="nightIndex"/>. gecenin (0 tabanlı) gündüzüne atlar. Sahnedeki düşmanları temizlemek çağıranın işi; gündüz
+        /// başı olayları (sandıklar, gezginler) her zamanki gibi çalışır. Akış başlamadıysa, oyun bittiyse veya indeks geçersizse false.
+        /// </summary>
+        public bool JumpToNight(int nightIndex)
+        {
+            if (_machine == null || _machine.Phase == GamePhase.Boot || _machine.IsOver
+                || nightIndex < 0 || nightIndex >= _machine.TotalNights)
+            {
+                Debug.LogWarning($"{LogPrefix}{nightIndex + 1}. geceye atlanamadı (evre {CurrentPhase}).", this);
+                return false;
+            }
+
+            _waves.AbortNight();
+            Debug.Log($"{LogPrefix}Debug: {nightIndex + 1}. gecenin gündüzüne atlanıyor.", this);
+            return _machine.JumpToDay(nightIndex);
+        }
+
         private void Update()
         {
             if (_machine.Phase == GamePhase.Boot)
