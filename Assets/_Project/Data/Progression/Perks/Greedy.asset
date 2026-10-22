@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5cedf0d0ca142c24392cada69411d88d, type: 3}
+  m_Name: Greedy
+  m_EditorClassIdentifier: LastHaven.Progression::LastHaven.Progression.PerkData
+  _id: greedy
+  _displayName: "A\xE7g\xF6zl\xFC"
+  _description: "Jeton de\u011Feri +%25."
+  _icon: {fileID: 0}
+  _rarity: 1
+  _maxStacks: 2
+  _effects:
+  - rid: 2348788195056943400
+  references:
+    version: 2
+    RefIds:
+    - rid: 2348788195056943400
+      type: {class: StatModifierEffect, ns: LastHaven.Progression, asm: LastHaven.Progression}
+      data:
+        _stat: 6
+        _type: 1
+        _value: 0.25

@@ -90,11 +90,13 @@ namespace LastHaven.Tests.EditMode
         }
 
         [Test]
-        public void IsExcluded_OnlyFeedbackFolder()
+        public void IsExcluded_OnlyFeedbackAndAudioFolders()
         {
             Assert.IsTrue(PrefabVisualValidationStep.IsExcluded("Assets/_Project/Prefabs/Feedback/Tracer.prefab"));
+            Assert.IsTrue(PrefabVisualValidationStep.IsExcluded("Assets/_Project/Prefabs/Audio/SoundVoice.prefab"));
             Assert.IsFalse(PrefabVisualValidationStep.IsExcluded("Assets/_Project/Prefabs/Enemies/Walker.prefab"));
             Assert.IsFalse(PrefabVisualValidationStep.IsExcluded("Assets/_Project/Prefabs/FeedbackExtra/X.prefab"));
+            Assert.IsFalse(PrefabVisualValidationStep.IsExcluded("Assets/_Project/Prefabs/AudioExtra/X.prefab"));
         }
 
         // --- Build Settings kuralları ---
@@ -223,6 +225,84 @@ namespace LastHaven.Tests.EditMode
 
             Assert.AreEqual(BuildSceneList.Change.None, BuildSceneList.Ensure(scenes, Game, Folder));
             CollectionAssert.AreEqual(new[] { Game, Sample }, Paths(scenes));
+        }
+
+        // --- 14.3: ana menü açılış sahnesi ---
+
+        [Test]
+        public void EnsureFirst_MovesMenuToFront_KeepsOthersOrder()
+        {
+            List<EditorBuildSettingsScene> scenes = List(Game, Sample, Menu);
+
+            BuildSceneList.Change change = BuildSceneList.EnsureFirst(scenes, Menu);
+
+            Assert.AreEqual(BuildSceneList.Change.MovedForward, change);
+            CollectionAssert.AreEqual(new[] { Menu, Game, Sample }, Paths(scenes));
+        }
+
+        [Test]
+        public void EnsureFirst_AddsAtFront()
+        {
+            List<EditorBuildSettingsScene> scenes = List(Game, Sample);
+
+            Assert.AreEqual(BuildSceneList.Change.Added, BuildSceneList.EnsureFirst(scenes, Menu));
+            CollectionAssert.AreEqual(new[] { Menu, Game, Sample }, Paths(scenes));
+            Assert.IsTrue(scenes[0].enabled);
+        }
+
+        [Test]
+        public void EnsureFirst_AlreadyFirstAndEnabled_ChangesNothing()
+        {
+            List<EditorBuildSettingsScene> scenes = List(Menu, Game);
+
+            Assert.AreEqual(BuildSceneList.Change.None, BuildSceneList.EnsureFirst(scenes, Menu));
+            CollectionAssert.AreEqual(new[] { Menu, Game }, Paths(scenes));
+        }
+
+        [Test]
+        public void EnsureFirst_EnablesDisabledFirst()
+        {
+            List<EditorBuildSettingsScene> scenes = List(Menu, Game);
+            scenes[0].enabled = false;
+
+            Assert.AreEqual(BuildSceneList.Change.Enabled, BuildSceneList.EnsureFirst(scenes, Menu));
+            Assert.IsTrue(scenes[0].enabled);
+        }
+
+        [Test]
+        public void EnsureGameAfterMenu_KeepsMenuFirst()
+        {
+            List<EditorBuildSettingsScene> scenes = List(Menu, Sample);
+
+            BuildSceneList.Ensure(scenes, Game, Folder);
+
+            CollectionAssert.AreEqual(new[] { Menu, Game, Sample }, Paths(scenes), "Build Game Scene ana menünün önüne geçmez.");
+        }
+
+        [Test]
+        public void Validate_StartSceneFirst_IsClean()
+        {
+            BuildSettingsValidator.Validate(new[] { Scene(Menu), Scene(Game) }, new[] { Game, Menu }, Folder, Menu, _report);
+
+            Assert.IsTrue(_report.IsClean);
+        }
+
+        [Test]
+        public void Validate_StartSceneNotFirst_IsWarning()
+        {
+            BuildSettingsValidator.Validate(new[] { Scene(Game), Scene(Menu) }, new[] { Game, Menu }, Folder, Menu, _report);
+
+            Assert.AreEqual(0, _report.ErrorCount);
+            Assert.AreEqual(1, _report.WarningCount);
+            StringAssert.Contains(Menu, _report.Issues[0].Message);
+        }
+
+        [Test]
+        public void Validate_StartSceneNotInProject_IsIgnored()
+        {
+            BuildSettingsValidator.Validate(new[] { Scene(Game) }, new[] { Game }, Folder, Menu, _report);
+
+            Assert.IsTrue(_report.IsClean, "Ana menü sahnesi henüz üretilmediyse kural uygulanmaz.");
         }
 
         private void Validate(BuildSceneEntry[] build, params string[] projectScenes)

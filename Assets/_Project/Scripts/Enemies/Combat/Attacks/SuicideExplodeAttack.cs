@@ -180,6 +180,7 @@ namespace LastHaven.Enemies
                     _context.Pool.Get(_settings._explosionVfx, center, Quaternion.identity);
                 }
 
+                EventBus<ExplosionEvent>.Raise(new ExplosionEvent(center, _settings._radius, _context.GameObject));
                 ExplosionChain.Shared.PrimeAround(ground, _settings._chainRadius, _settings._chainDelay);
 
                 Health health = _context.Health;

@@ -16,14 +16,23 @@ namespace LastHaven.Editor
         public const string UpgradeConfigPath = Folder + "/WeaponUpgradeConfig.asset";
         public const string PerkConfigPath = Folder + "/CombatPerkConfig.asset";
 
+        /// <summary>Pompalının id'si (oyun hissi: orta atış sarsıntısı).</summary>
+        public const string ShotgunId = "shotgun";
+
+        /// <summary>Tabancanın id'si (14.2: atış sesi eşlemesi).</summary>
+        public const string PistolId = "pistol";
+
+        /// <summary>Tüfeğin id'si (14.2: atış sesi eşlemesi).</summary>
+        public const string RifleId = "rifle";
+
         // GDD §6. Mermi izi renkleri GDD'de yok; silahları ayırt etmek için seçildi.
         private static readonly WeaponDefinition[] Definitions =
         {
-            new WeaponDefinition("Pistol", "pistol", "Tabanca", damage: 20f, pellets: 1, fireRate: 4f,
+            new WeaponDefinition("Pistol", PistolId, "Tabanca", damage: 20f, pellets: 1, fireRate: 4f,
                 magSize: 12, reserve: WeaponData.InfiniteReserve, reloadTime: 1.2f, spread: 2f, range: 25f, tracer: "#FFE08A"),
-            new WeaponDefinition("Shotgun", "shotgun", "Pompalı", damage: 12f, pellets: 8, fireRate: 1.1f,
+            new WeaponDefinition("Shotgun", ShotgunId, "Pompalı", damage: 12f, pellets: 8, fireRate: 1.1f,
                 magSize: 6, reserve: 36, reloadTime: 2f, spread: 18f, range: 12f, tracer: "#FF9F43"),
-            new WeaponDefinition("Rifle", "rifle", "Tüfek", damage: 18f, pellets: 1, fireRate: 10f,
+            new WeaponDefinition("Rifle", RifleId, "Tüfek", damage: 18f, pellets: 1, fireRate: 10f,
                 magSize: 30, reserve: 180, reloadTime: 1.8f, spread: 4f, range: 35f, tracer: "#8FE3FF"),
         };
 

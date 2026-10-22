@@ -166,6 +166,7 @@
     background-color: var(--color-combo);
 }
 
+/* Sol alt sütun (saydam): perk listesi (HudPerks.uss) + can kutusu; alttan büyür. */
 .lh-screen.hud .hud-bottom-left {
     position: absolute;
     bottom: var(--hud-edge);
@@ -183,4 +184,51 @@
 
 .lh-screen.hud .hud-ammo {
     margin-top: var(--space-small);
+}
+
+/* XP ve seviye: alt ortada ince şerit (can ve silah kutularının arasında; inşa çubuğu bunun üstünde, HudBuild.uss).
+ * Seviye atlayınca kod hud-xp__level--pulse ekler; transition bitince kaldırır, aynı transition geri küçültür. */
+.lh-screen.hud .hud-xp {
+    position: absolute;
+    bottom: var(--hud-edge);
+    left: 50%;
+    translate: -50% 0;
+    width: 760px;
+    padding: var(--space-small) var(--space);
+}
+
+.lh-screen.hud .hud-xp__caption {
+    color: var(--color-xp);
+    margin-right: var(--space-small);
+}
+
+.lh-screen.hud .hud-xp__level {
+    color: var(--color-xp);
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+    min-width: 32px;
+    transition-property: scale;
+    transition-duration: 0.15s;
+    transition-timing-function: ease-out;
+}
+
+.lh-screen.hud .hud-xp__level--pulse {
+    scale: 1.6 1.6;
+}
+
+.lh-screen.hud .hud-xp__bar {
+    flex-grow: 1;
+    height: var(--bar-height-xp);
+    margin: 0 var(--space);
+}
+
+/* Dolum genişliğini kod yazar; ilk kareye kadar boş görünsün. */
+.lh-screen.hud .bar-fill--xp {
+    width: 0;
+    background-color: var(--color-xp);
+}
+
+.lh-screen.hud .hud-xp__value {
+    min-width: 72px;
+    -unity-text-align: middle-right;
 }

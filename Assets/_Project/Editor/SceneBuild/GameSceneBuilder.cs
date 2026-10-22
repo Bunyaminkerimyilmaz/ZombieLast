@@ -1,160 +1,34 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using UnityEditor;
-using UnityEditor.SceneManagement;
-using UnityEngine;
-using UnityEngine.SceneManagement;
-using Object = UnityEngine.Object;
+using LastHaven.Core;
 
 namespace LastHaven.Editor
 {
     /// <summary>
     /// Game.unity'yi açar veya oluşturur, [Systems] ve [Gameplay] köklerini silip tüm <see cref="ISceneBuildStep"/>'lerle
-    /// yeniden kurar, sahneyi kaydeder ve Build Settings'e ekler (proje dışı sahnelerin önüne: <see cref="BuildSceneList"/>).
-    /// [Environment] yoksa boş oluşturulur, varsa dokunulmaz.
+    /// yeniden kurar, sahneyi kaydeder ve Build Settings'e ekler (proje dışı sahnelerin önüne; proje sahneleri arasındaki sıra korunur,
+    /// ana menü önde kalır: <see cref="BuildSceneList"/>). [Environment] yoksa boş oluşturulur, varsa dokunulmaz
+    /// (<see cref="SceneBuildRunner"/>).
     /// </summary>
     public static class GameSceneBuilder
     {
+        public const string MenuName = "Build Game Scene";
         public const string ScenesFolder = "Assets/_Project/Scenes";
-        public const string GameScenePath = ScenesFolder + "/Game.unity";
-        public const string SystemsRootName = "[Systems]";
-        public const string GameplayRootName = "[Gameplay]";
-        public const string EnvironmentRootName = "[Environment]";
+        public const string GameScenePath = ScenesFolder + "/" + SceneNames.Game + ".unity";
+        public const string SystemsRootName = SceneBuildRunner.SystemsRootName;
+        public const string GameplayRootName = SceneBuildRunner.GameplayRootName;
+        public const string EnvironmentRootName = SceneBuildRunner.EnvironmentRootName;
 
-        /// <summary>Sahneyi kurar. Kullanıcı kaydetmeyi iptal ederse veya Play Mode'daysa false döner.</summary>
+        /// <summary>Sahneyi kurar. Kullanıcı kaydetmeyi iptal ederse, Play Mode'daysa veya bir adım hata verirse false döner.</summary>
         public static bool Build()
         {
-            if (!TryOpenGameScene(out Scene scene))
+            int failed = SceneBuildRunner.Run<ISceneBuildStep>(GameScenePath, MenuName, step => step.Order,
+                (step, context) => step.Build(context));
+            if (failed < 0)
             {
                 return false;
             }
 
-            Transform systems = RecreateRoot(scene, SystemsRootName);
-            Transform gameplay = RecreateRoot(scene, GameplayRootName);
-            Transform environment = FindRoot(scene, EnvironmentRootName);
-            if (environment == null)
-            {
-                environment = CreateRoot(EnvironmentRootName);
-            }
-
-            systems.SetSiblingIndex(0);
-            gameplay.SetSiblingIndex(1);
-            environment.SetSiblingIndex(2);
-
-            var context = new SceneBuildContext(scene, systems, gameplay, new PlaceholderMaterials());
-            List<ISceneBuildStep> steps = StepDiscovery.CreateAll<ISceneBuildStep>(step => step.Order);
-            int failed = 0;
-            foreach (ISceneBuildStep step in steps)
-            {
-                try
-                {
-                    step.Build(context);
-                }
-                catch (Exception exception)
-                {
-                    failed++;
-                    Debug.LogError($"[Last Haven] Build Game Scene: {step.GetType().Name} başarısız.");
-                    Debug.LogException(exception);
-                }
-            }
-
-            EditorSceneManager.MarkSceneDirty(scene);
-            EditorSceneManager.SaveScene(scene);
-            EnsureInBuildSettings(GameScenePath);
-
-            string summary = $"[Last Haven] Build Game Scene: {steps.Count} adım, {failed} hata. Kaydedildi: {GameScenePath}";
-            if (failed > 0)
-            {
-                Debug.LogError(summary);
-            }
-            else
-            {
-                Debug.Log(summary);
-            }
-
+            SceneBuildRunner.UpdateBuildSettings(GameScenePath, scenes => BuildSceneList.Ensure(scenes, GameScenePath, ScenesFolder));
             return failed == 0;
-        }
-
-        private static bool TryOpenGameScene(out Scene scene)
-        {
-            scene = SceneManager.GetActiveScene();
-            if (EditorApplication.isPlayingOrWillChangePlaymode)
-            {
-                Debug.LogError("[Last Haven] Build Game Scene Play Mode'dayken çalışmaz. Önce Play Mode'dan çık.");
-                return false;
-            }
-
-            if (string.Equals(scene.path, GameScenePath, StringComparison.Ordinal))
-            {
-                return true;
-            }
-
-            // Açık sahnede kaydedilmemiş değişiklik varsa kullanıcıya sorulur; iptal ederse hiçbir şey yapılmaz.
-            if (!EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo())
-            {
-                Debug.LogWarning("[Last Haven] Build Game Scene iptal edildi.");
-                return false;
-            }
-
-            if (File.Exists(GameScenePath))
-            {
-                scene = EditorSceneManager.OpenScene(GameScenePath, OpenSceneMode.Single);
-                return true;
-            }
-
-            EditorAssetUtility.EnsureFolder(ScenesFolder);
-            scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
-            EditorSceneManager.SaveScene(scene, GameScenePath);
-            Debug.Log($"[Last Haven] {GameScenePath} oluşturuldu.");
-            return true;
-        }
-
-        private static Transform RecreateRoot(Scene scene, string name)
-        {
-            GameObject[] roots = scene.GetRootGameObjects();
-            for (int i = 0; i < roots.Length; i++)
-            {
-                if (string.Equals(roots[i].name, name, StringComparison.Ordinal))
-                {
-                    Object.DestroyImmediate(roots[i]);
-                }
-            }
-
-            return CreateRoot(name);
-        }
-
-        private static Transform FindRoot(Scene scene, string name)
-        {
-            GameObject[] roots = scene.GetRootGameObjects();
-            for (int i = 0; i < roots.Length; i++)
-            {
-                if (string.Equals(roots[i].name, name, StringComparison.Ordinal))
-                {
-                    return roots[i].transform;
-                }
-            }
-
-            return null;
-        }
-
-        private static Transform CreateRoot(string name)
-        {
-            return new GameObject(name).transform;
-        }
-
-        private static void EnsureInBuildSettings(string scenePath)
-        {
-            var scenes = new List<EditorBuildSettingsScene>(EditorBuildSettings.scenes);
-            BuildSceneList.Change change = BuildSceneList.Ensure(scenes, scenePath, ScenesFolder);
-            if (change == BuildSceneList.Change.None)
-            {
-                return;
-            }
-
-            EditorBuildSettings.scenes = scenes.ToArray();
-            AssetDatabase.SaveAssets(); // ProjectSettings/EditorBuildSettings.asset hemen diske (yoksa editör kapanınca yazılır).
-            Debug.Log($"[Last Haven] Build Settings: {scenePath} — {change} (proje dışı sahnelerin önünde; player build buradan açılır).");
         }
     }
 }

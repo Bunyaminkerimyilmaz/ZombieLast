@@ -16,7 +16,19 @@ namespace LastHaven.UI
 
         // GameOverPanel.uxml / VictoryPanel.uxml
         public const string RunEndNightValue = "run-end-night-value";
+        public const string TotalMoneyValue = "total-money-value";
+        public const string BestComboValue = "best-combo-value";
+
+        /// <summary>Alınan perk'lerin satırı (kod her perk için bir <see cref="RunEndPerkChip"/> ekler).</summary>
+        public const string RunEndPerks = "run-end-perks";
+
+        /// <summary>Hiç perk alınmadıysa görünen yazı.</summary>
+        public const string RunEndNoPerks = "run-end-no-perks";
+
+        /// <summary>"Tekrar Oyna".</summary>
         public const string RestartButton = "restart-button";
+
+        public const string RunEndMainMenuButton = "main-menu-button";
 
         // Hepsinde
         public const string TotalKillsValue = "total-kills-value";

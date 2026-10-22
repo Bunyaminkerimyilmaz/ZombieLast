@@ -37,6 +37,7 @@ namespace LastHaven.Player
         public event Action ReadyPressed;
         public event Action PausePressed;
         public event Action ConfirmPressed;
+        public event Action<int> OptionPressed;
 
         public InputMode Mode => _mode;
         public Vector2 MoveInput => _locomotion != null ? _locomotion.Move.ReadValue<Vector2>() : Vector2.zero;
@@ -116,6 +117,7 @@ namespace LastHaven.Player
             BindPressed(Names.Confirm, () => ConfirmPressed?.Invoke());
             BindSlots(Names.WeaponSlot, GameInputActions.WeaponSlotCount, slot => WeaponSlotPressed?.Invoke(slot));
             BindSlots(Names.BuildSlot, GameInputActions.BuildSlotCount, slot => BuildSlotPressed?.Invoke(slot));
+            BindSlots(Names.OptionSlot, GameInputActions.OptionSlotCount, slot => OptionPressed?.Invoke(slot));
             BindCycle(Names.WeaponCycle, direction => WeaponCyclePressed?.Invoke(direction));
             BindCycle(Names.BuildCycle, direction => BuildCyclePressed?.Invoke(direction));
 

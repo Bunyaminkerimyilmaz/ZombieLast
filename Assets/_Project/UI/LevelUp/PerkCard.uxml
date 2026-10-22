@@ -1,0 +1,25 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <!-- Seviye kartı şablonu: PerkCardView her kart için örnekler ve panelin kart satırına ekler. Stil LevelUp.uss'ten (panelden)
+         gelir. Element adları LevelUpElementNames.Card* ile eşleşmeli (EditMode testi kontrol eder). Kök odaklanabilir buton (tıklama,
+         Enter / A); alt elementler fareyi yakalamaz. Nadirlik etiketlerinden kartın nadirlik sınıfına (PerkStyle: common / rare /
+         epic) uyan görünür; metinler burada, kod sadece kısayol numarası, perk verisi ve yığın yazar. -->
+    <ui:Button name="perk-card" class="perk-card">
+        <ui:VisualElement class="perk-card__top" picking-mode="Ignore">
+            <ui:Label name="perk-card-key" text="1" class="key key--keyboard perk-card__key" picking-mode="Ignore" />
+            <ui:VisualElement class="perk-card__rarities" picking-mode="Ignore">
+                <ui:Label text="SIRADAN" class="label-small perk-card__rarity perk-card__rarity--common" picking-mode="Ignore" />
+                <ui:Label text="NADİR" class="label-small perk-card__rarity perk-card__rarity--rare" picking-mode="Ignore" />
+                <ui:Label text="EPİK" class="label-small perk-card__rarity perk-card__rarity--epic" picking-mode="Ignore" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <ui:VisualElement name="perk-card-icon" class="perk-card__icon" picking-mode="Ignore">
+            <ui:Label name="perk-card-initials" text="" class="label-big perk-card__initials" picking-mode="Ignore" />
+        </ui:VisualElement>
+        <ui:Label name="perk-card-name" text="Perk" class="label-large perk-card__name" picking-mode="Ignore" />
+        <ui:Label name="perk-card-description" text="Açıklama" class="label perk-card__description" picking-mode="Ignore" />
+        <ui:VisualElement class="row perk-card__stacks" picking-mode="Ignore">
+            <ui:Label text="YIĞIN" class="label-small" picking-mode="Ignore" />
+            <ui:Label name="perk-card-stacks" text="0/1" class="label perk-card__stacks-value" picking-mode="Ignore" />
+        </ui:VisualElement>
+    </ui:Button>
+</ui:UXML>

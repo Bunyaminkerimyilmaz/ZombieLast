@@ -116,7 +116,8 @@ namespace LastHaven.GameFlow
 
             _overlay.Flash(_eventLighting.LightningDuration, _eventLighting.LightningIntensity, _eventLighting.LightningColor,
                 _eventLighting.LightningAmbient);
-            EventBus<CameraShakeRequestedEvent>.Raise(new CameraShakeRequestedEvent(_eventLighting.LightningShake, lost.Position));
+            // Şimşek her yerde aynı hissedilir: konumsuz (genel) istek.
+            EventBus<CameraShakeRequestedEvent>.Raise(new CameraShakeRequestedEvent(_eventLighting.LightningShake));
         }
 
         private void OnPhaseChanged(PhaseChangedEvent changed)

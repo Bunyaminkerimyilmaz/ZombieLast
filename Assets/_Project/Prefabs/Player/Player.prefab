@@ -111,6 +111,7 @@ GameObject:
   - component: {fileID: 1373807415888184079}
   - component: {fileID: 4323042195547702670}
   - component: {fileID: 2270396725924238465}
+  - component: {fileID: 4907931987368671289}
   m_Layer: 7
   m_Name: Player
   m_TagString: Player
@@ -249,6 +250,10 @@ MonoBehaviour:
     _toppleAngle: 90
     _toppleDuration: 0.4
     _toppleLift: 0.5
+    _walkPulseScale: 0
+    _walkPulseFrequency: 2.5
+    _walkPulseMinSpeed: 0.2
+    _walkPulseBlendTime: 0.2
 --- !u!114 &1785814851286194416
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -312,6 +317,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5b33a9d9522d7384b91152e0a58226a9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: LastHaven.Player::LastHaven.Player.PlayerPurchaseEffects
+--- !u!114 &4907931987368671289
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3648926223191454246}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2d430be8df538e04787f804307c04260, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: LastHaven.Player::LastHaven.Player.PlayerPerkEffects
+  _data: {fileID: 11400000, guid: 90c673c6090673c4e854608dec06111a, type: 2}
 --- !u!1 &5433735704821789898
 GameObject:
   m_ObjectHideFlags: 0

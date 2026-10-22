@@ -1,0 +1,17 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <Style src="../Themes/Theme.uss" />
+    <Style src="Menus.uss" />
+    <!-- Element adları MenuElementNames.cs ile eşleşmeli (PauseMenuController).
+         Kök gizli başlar (hidden); kod gerektiğinde gösterir. UI Builder'da önizlemek için kökten "hidden" sınıfını geçici kaldır. -->
+    <ui:VisualElement name="pause-menu" class="lh-screen lh-pause hidden">
+        <ui:VisualElement class="overlay">
+            <ui:VisualElement class="panel menu-panel">
+                <ui:Label text="DURAKLATILDI" class="label-big menu-panel-title" />
+                <ui:Button name="resume-button" text="Devam" class="button menu-button" />
+                <ui:Button name="settings-button" text="Ayarlar" class="button menu-button" />
+                <ui:Button name="main-menu-button" text="Ana Menü" class="button menu-button" />
+                <ui:Label text="Esc / Start: devam  ·  İlerleme ana menüye dönünce kaybolur" class="label-small menu-hint" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

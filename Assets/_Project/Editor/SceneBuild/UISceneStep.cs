@@ -12,9 +12,11 @@ namespace LastHaven.Editor
     /// [Systems]/UI: her ekran için bir <see cref="UIDocument"/> (ortak PanelSettings) + denetleyicisi. HUD'a oyuncunun ve
     /// jeneratörün <see cref="Health"/>'i bağlanır (Player ve Base adımlarından sonra çalışır); HUD'un bölüm denetleyicileri
     /// (cüzdan, kombo, yakıt/güç, inşa çubuğu, yapı ipucu, etkileşim ipucu, tuş ipuçları, sandık göstergeleri, saldırı okları, istihbarat
-    /// paneli, gündüz sonu uyarısı, "Hazırım" ipucu) aynı UIDocument'ı paylaşır. İnşa
+    /// paneli, gündüz sonu uyarısı, "Hazırım" ipucu, boss barı, XP şeridi, perk listesi; 14.1: uçan yazılar ve evre başlığı,
+    /// ikisine de <see cref="HudFeelConfig"/>) aynı UIDocument'ı paylaşır. İnşa
     /// çubuğuna sahnedeki <see cref="BuildSite"/>'ın <see cref="BuildConfig"/>'i (Building adımından sonra) ve kart şablonu,
-    /// market paneline kart şablonu bağlanır. Sıralama: HUD altta, market onun üstünde, şafak ve run sonu panelleri en üstte.
+    /// market paneline kart şablonu, seviye kartları paneline (13.3) <see cref="LevelUpPanelConfig"/> ve kart şablonu bağlanır.
+    /// Sıralama: HUD altta, market onun üstünde, şafak paneli, seviye kartları (şafakta da açılabilir), en üstte run sonu panelleri.
     /// </summary>
     public sealed class UISceneStep : ISceneBuildStep
     {
@@ -22,12 +24,14 @@ namespace LastHaven.Editor
         public const string HudName = "HUD";
         public const string ShopPanelName = "ShopPanel";
         public const string DawnPanelName = "DawnPanel";
+        public const string LevelUpPanelName = "LevelUpPanel";
         public const string GameOverPanelName = "GameOverPanel";
         public const string VictoryPanelName = "VictoryPanel";
 
         public const float HudSortingOrder = 0f;
         public const float ShopPanelSortingOrder = 5f;
         public const float DawnPanelSortingOrder = 10f;
+        public const float LevelUpPanelSortingOrder = 15f;
         public const float RunEndPanelSortingOrder = 20f;
 
         private const string DocumentField = "_document";
@@ -65,6 +69,11 @@ namespace LastHaven.Editor
             AddController<HudDayWarningController>(hud.gameObject, hud.GetComponent<UIDocument>());
             AddController<HudReadyHintController>(hud.gameObject, hud.GetComponent<UIDocument>());
             AddController<HudBossController>(hud.gameObject, hud.GetComponent<UIDocument>());
+            AddController<HudXpController>(hud.gameObject, hud.GetComponent<UIDocument>());
+            AddController<HudPerksController>(hud.gameObject, hud.GetComponent<UIDocument>());
+            HudFeelConfig feel = UIGenerator.LoadOrCreateHudFeelConfig();
+            AssignConfig(AddController<HudFloatingTextController>(hud.gameObject, hud.GetComponent<UIDocument>()), feel);
+            AssignConfig(AddController<HudBannerController>(hud.gameObject, hud.GetComponent<UIDocument>()), feel);
 
             var shop = CreateScreen<ShopPanelController>(
                 context, group, ShopPanelName, settings, UIGenerator.ShopPanelPath, ShopPanelSortingOrder);
@@ -74,6 +83,14 @@ namespace LastHaven.Editor
 
             CreateScreen<DawnPanelController>(
                 context, group, DawnPanelName, settings, UIGenerator.DawnPanelPath, DawnPanelSortingOrder);
+
+            var levelUp = CreateScreen<LevelUpPanelController>(
+                context, group, LevelUpPanelName, settings, UIGenerator.LevelUpPanelPath, LevelUpPanelSortingOrder);
+            var serializedLevelUp = new SerializedObject(levelUp);
+            serializedLevelUp.FindProperty(ConfigField).objectReferenceValue = UIGenerator.LoadOrCreateLevelUpConfig();
+            serializedLevelUp.FindProperty(CardTemplateField).objectReferenceValue = UIGenerator.LoadLayout(UIGenerator.PerkCardPath);
+            serializedLevelUp.ApplyModifiedPropertiesWithoutUndo();
+
             CreateRunEndPanel(context, group, GameOverPanelName, settings, UIGenerator.GameOverPanelPath, GamePhase.GameOver);
             CreateRunEndPanel(context, group, VictoryPanelName, settings, UIGenerator.VictoryPanelPath, GamePhase.Victory);
         }
@@ -87,7 +104,7 @@ namespace LastHaven.Editor
             serialized.ApplyModifiedPropertiesWithoutUndo();
         }
 
-        private static T CreateScreen<T>(
+        public static T CreateScreen<T>(
             SceneBuildContext context, Transform group, string name, PanelSettings settings, string layoutPath, float sortingOrder)
             where T : UIScreen
         {
@@ -100,13 +117,20 @@ namespace LastHaven.Editor
         }
 
         /// <summary>Denetleyiciyi ekler ve UIDocument'ını bağlar (bir UIDocument'ı birden çok denetleyici paylaşabilir).</summary>
-        private static T AddController<T>(GameObject screenObject, UIDocument document) where T : UIDocumentController
+        public static T AddController<T>(GameObject screenObject, UIDocument document) where T : UIDocumentController
         {
             var controller = screenObject.AddComponent<T>();
             var serialized = new SerializedObject(controller);
             serialized.FindProperty(DocumentField).objectReferenceValue = document;
             serialized.ApplyModifiedPropertiesWithoutUndo();
             return controller;
+        }
+
+        private static void AssignConfig(Object controller, Object config)
+        {
+            var serialized = new SerializedObject(controller);
+            serialized.FindProperty(ConfigField).objectReferenceValue = config;
+            serialized.ApplyModifiedPropertiesWithoutUndo();
         }
 
         private static Health FindPlayerHealth(SceneBuildContext context)

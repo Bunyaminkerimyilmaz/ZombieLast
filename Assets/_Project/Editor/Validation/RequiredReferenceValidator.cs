@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
+using LastHaven.Core;
 using UnityEditor;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -10,8 +11,8 @@ namespace LastHaven.Editor
 {
     /// <summary>
     /// ScriptableObject'lerin nesne referansı kuralları. Serileştirilen her <see cref="Object"/> alanı zorunludur; şunlar hariç:
-    /// Tooltip'inde "Opsiyonel" geçen alanlar ve ses/görsel tipleri (<see cref="AudioClip"/>, <see cref="Sprite"/>,
-    /// <see cref="Texture"/>; CLAUDE.md "Ses/VFX/ikon referansları opsiyonel"). Projenin <c>[Serializable]</c> iç tipleri ve
+    /// Tooltip'inde "Opsiyonel" geçen alanlar ve ses/görsel tipleri (<see cref="AudioClip"/>, <see cref="SoundData"/> (14.2),
+    /// <see cref="Sprite"/>, <see cref="Texture"/>; CLAUDE.md "Ses/VFX/ikon referansları opsiyonel"). Projenin <c>[Serializable]</c> iç tipleri ve
     /// onların listeleri de gezilir. Object listelerinin boş elemanları sorun sayılmaz (ör. boş inşa yuvası).
     /// Kayıp referans (silinmiş/taşınmış asset'e işaret eden) opsiyonel alanda da hatadır.
     /// </summary>
@@ -35,7 +36,8 @@ namespace LastHaven.Editor
         public static bool IsOptional(FieldInfo field)
         {
             Type type = field.FieldType;
-            if (typeof(AudioClip).IsAssignableFrom(type) || typeof(Sprite).IsAssignableFrom(type) || typeof(Texture).IsAssignableFrom(type))
+            if (typeof(AudioClip).IsAssignableFrom(type) || typeof(SoundData).IsAssignableFrom(type)
+                || typeof(Sprite).IsAssignableFrom(type) || typeof(Texture).IsAssignableFrom(type))
             {
                 return true;
             }

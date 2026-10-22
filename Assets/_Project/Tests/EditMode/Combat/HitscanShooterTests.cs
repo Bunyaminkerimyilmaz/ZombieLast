@@ -204,6 +204,75 @@ namespace LastHaven.Tests.EditMode
             StatusEffectLookup.Clear();
         }
 
+        [Test]
+        public void Ricochet_BouncesOnceToNearestOtherEnemy_AtHalfDamage()
+        {
+            CombatPerkConfig perks = ScriptableObject.CreateInstance<CombatPerkConfig>();
+            try
+            {
+                Health primary = CreateTarget(Origin + Vector3.forward * 5f, GameLayers.Enemy, 100f);
+                Health nearest = CreateTarget(Origin + new Vector3(3f, 0f, 5f), GameLayers.Enemy, 100f);
+                Health farther = CreateTarget(Origin + new Vector3(6f, 0f, 5f), GameLayers.Enemy, 100f);
+                var modifiers = new RunModifiers();
+                modifiers.AddFlag(PerkFlag.Ricochet);
+                _shooter.SetPerks(modifiers, perks);
+
+                IReadOnlyList<ShotResult> results = _shooter.Fire(Request(damage: 20f, pellets: 1, range: 10f));
+
+                Assert.AreEqual(1, results.Count, "Sekme sonuç listesine girmez.");
+                Assert.AreEqual(80f, primary.Current, 0.01f);
+                Assert.AreEqual(90f, nearest.Current, 0.01f, "En yakın ikinci düşmana %50.");
+                Assert.AreEqual(100f, farther.Current, 0.01f, "Tek sekme: sekme tekrar sekmez.");
+                Assert.AreEqual(2, _hits.Count);
+                Assert.AreSame(nearest.gameObject, _hits[1].Target);
+                Assert.AreEqual(10f, _hits[1].Damage, 0.01f);
+                Assert.AreEqual(2, _traces.Count);
+                Assert.AreEqual(results[0].EndPoint, _traces[1].Start, "Sekme izi ilk isabet noktasından başlar.");
+                Assert.AreEqual(nearest.transform.position, _traces[1].End);
+            }
+            finally
+            {
+                Object.DestroyImmediate(perks);
+            }
+        }
+
+        [Test]
+        public void Ricochet_WithoutFlagOrTarget_DoesNotBounce()
+        {
+            CombatPerkConfig perks = ScriptableObject.CreateInstance<CombatPerkConfig>();
+            try
+            {
+                Health primary = CreateTarget(Origin + Vector3.forward * 5f, GameLayers.Enemy, 100f);
+                Health other = CreateTarget(Origin + new Vector3(3f, 0f, 5f), GameLayers.Enemy, 100f);
+                var modifiers = new RunModifiers();
+                _shooter.SetPerks(modifiers, perks);
+
+                _shooter.Fire(Request(damage: 20f, pellets: 1, range: 10f));
+                Assert.AreEqual(100f, other.Current, 0.01f, "Bayrak kapalı.");
+
+                modifiers.AddFlag(PerkFlag.Ricochet);
+                other.transform.position = Origin + new Vector3(30f, 0f, 5f);
+                Physics.SyncTransforms();
+                _shooter.Fire(Request(damage: 20f, pellets: 1, range: 10f));
+
+                Assert.AreEqual(60f, primary.Current, 0.01f);
+                Assert.AreEqual(100f, other.Current, 0.01f, "Yarıçap dışında hedef yok.");
+                Assert.AreEqual(2, _hits.Count);
+            }
+            finally
+            {
+                Object.DestroyImmediate(perks);
+            }
+        }
+
+        [Test]
+        public void Ricochet_Damage_IsFractionOfPellet()
+        {
+            Assert.AreEqual(6f, Ricochet.GetDamage(12f, 0.5f), 0.0001f);
+            Assert.AreEqual(0f, Ricochet.GetDamage(12f, 0f), 0.0001f);
+            Assert.AreEqual(0f, Ricochet.GetDamage(-5f, 0.5f), 0.0001f);
+        }
+
         private static HitscanRequest Request(float damage, int pellets, float range, float spread = 0f)
         {
             LayerMask mask = GameLayers.EnemyMask | GameLayers.ObstacleMask;

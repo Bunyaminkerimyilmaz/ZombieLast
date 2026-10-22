@@ -4,9 +4,11 @@ using UnityEngine;
 namespace LastHaven.Feedback
 {
     /// <summary>
-    /// Oyun olaylarını görsel efektlere bağlar ([Systems]/Feedback): <see cref="WeaponFiredEvent"/> → namlu ışığı,
+    /// Oyun olaylarını efektlere bağlar ([Systems]/Feedback): <see cref="WeaponFiredEvent"/> → namlu ışığı,
     /// <see cref="ShotTracedEvent"/> → mermi izi, <see cref="ShotHitEvent"/> → vuruş efekti, <see cref="StructureDestroyedEvent"/> →
-    /// moloz. Efektler <see cref="IPoolService"/>'ten alınır ve oyun başında ön ısıtılır. Combat ve Building bu sınıfı bilmez.
+    /// moloz. Efektler <see cref="IPoolService"/>'ten alınır ve oyun başında ön ısıtılır. 14.1'den beri oyun hissi de buradan
+    /// (<see cref="GameFeelEffects"/>, <see cref="FeedbackConfig"/>): atış / ölüm / patlama → kamera sarsıntısı, ağır ölüm → vuruş
+    /// donması, <see cref="PlayerDamagedEvent"/> → kırmızı ekran kenarı. Combat, Enemies ve Building bu sınıfı bilmez.
     /// </summary>
     [DisallowMultipleComponent]
     public sealed class FeedbackDirector : MonoBehaviour
@@ -14,8 +16,15 @@ namespace LastHaven.Feedback
         [SerializeField, Tooltip("Efekt prefab'ları, havuz sayıları, iz renkleri.")]
         private CombatFeedbackConfig _config;
 
+        [SerializeField, Tooltip("Oyun hissi: sarsıntı şiddetleri, vuruş donması, ekran kenarı.")]
+        private FeedbackConfig _feel;
+
+        [SerializeField, Tooltip("Hasar flaşı ve düşük can nabzı (kırmızı vignette). Opsiyonel.")]
+        private ScreenVignette _screenVignette;
+
         private IPoolService _pool;
         private TracerPalette _palette;
+        private GameFeelEffects _feelEffects;
 
         /// <summary>İz namludan ileriye en az <paramref name="minLength"/> uzanıyorsa çizilir (geriye düşen isabetler çizilmez).</summary>
         public static bool ShouldDrawTracer(Vector3 start, Vector3 end, Vector3 direction, float minLength)
@@ -37,6 +46,20 @@ namespace LastHaven.Feedback
 
         private void Start()
         {
+            if (_feel != null)
+            {
+                if (!ServiceLocator.TryGet(out IHitStopService hitStop))
+                {
+                    Debug.LogWarning("FeedbackDirector: IHitStopService bulunamadı; vuruş donması olmayacak.", this);
+                }
+
+                _feelEffects = new GameFeelEffects(_feel, _screenVignette, hitStop);
+            }
+            else
+            {
+                Debug.LogError("FeedbackDirector: FeedbackConfig atanmamış; sarsıntı, donma ve ekran flaşı olmayacak.", this);
+            }
+
             if (!ServiceLocator.TryGet(out _pool))
             {
                 Debug.LogWarning("FeedbackDirector: IPoolService bulunamadı; atış efektleri gösterilmeyecek.", this);
@@ -55,6 +78,9 @@ namespace LastHaven.Feedback
             EventBus<ShotTracedEvent>.Subscribe(OnShotTraced);
             EventBus<ShotHitEvent>.Subscribe(OnShotHit);
             EventBus<StructureDestroyedEvent>.Subscribe(OnStructureDestroyed);
+            EventBus<EnemyKilledEvent>.Subscribe(OnEnemyKilled);
+            EventBus<ExplosionEvent>.Subscribe(OnExplosion);
+            EventBus<PlayerDamagedEvent>.Subscribe(OnPlayerDamaged);
         }
 
         private void OnDisable()
@@ -63,6 +89,9 @@ namespace LastHaven.Feedback
             EventBus<ShotTracedEvent>.Unsubscribe(OnShotTraced);
             EventBus<ShotHitEvent>.Unsubscribe(OnShotHit);
             EventBus<StructureDestroyedEvent>.Unsubscribe(OnStructureDestroyed);
+            EventBus<EnemyKilledEvent>.Unsubscribe(OnEnemyKilled);
+            EventBus<ExplosionEvent>.Unsubscribe(OnExplosion);
+            EventBus<PlayerDamagedEvent>.Unsubscribe(OnPlayerDamaged);
         }
 
         private void OnWeaponFired(WeaponFiredEvent fired)
@@ -71,6 +100,23 @@ namespace LastHaven.Feedback
             {
                 _pool.Get(_config.MuzzleFlashPrefab, fired.Origin, Quaternion.identity);
             }
+
+            _feelEffects?.OnWeaponFired(fired);
+        }
+
+        private void OnEnemyKilled(EnemyKilledEvent killed)
+        {
+            _feelEffects?.OnEnemyKilled(killed);
+        }
+
+        private void OnExplosion(ExplosionEvent explosion)
+        {
+            _feelEffects?.OnExplosion(explosion);
+        }
+
+        private void OnPlayerDamaged(PlayerDamagedEvent damaged)
+        {
+            _feelEffects?.OnPlayerDamaged();
         }
 
         private void OnShotTraced(ShotTracedEvent traced)

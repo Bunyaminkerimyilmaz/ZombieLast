@@ -247,6 +247,52 @@ namespace LastHaven.Tests.EditMode
             Assert.AreSame(_wood, _body.sharedMaterials[0]);
         }
 
+        [Test]
+        public void SturdyWalls_BeforePlacing_BoostsMaxHealth()
+        {
+            var modifiers = new RunModifiers();
+            ServiceLocator.Register<IRunModifiers>(modifiers);
+            modifiers.AddModifier(StatModifier.Percent(StatType.BarricadeMaxHealth, 0.3f, "perk:sturdy_walls"));
+
+            _structure.Place(null, _data, 50);
+
+            Assert.AreEqual(390f, _structure.Health.Max, Tolerance);
+            Assert.AreEqual(390f, _structure.Health.Current, Tolerance);
+        }
+
+        [Test]
+        public void SturdyWalls_WhilePlaced_RaisesMaxAndHealsOnlyTheIncrease()
+        {
+            var modifiers = new RunModifiers();
+            ServiceLocator.Register<IRunModifiers>(modifiers);
+            _structure.Place(null, _data, 50);
+            _structure.Health.TakeDamage(new DamageInfo(100f, DamageType.Melee, null, Vector3.zero, Vector3.forward));
+
+            modifiers.AddModifier(StatModifier.Percent(StatType.BarricadeMaxHealth, 0.3f, "perk:sturdy_walls"));
+
+            Assert.AreEqual(390f, _structure.Health.Max, Tolerance);
+            Assert.AreEqual(290f, _structure.Health.Current, Tolerance, "Eksik can (100) korunur.");
+
+            _structure.Upgrade();
+            Assert.AreEqual(1040f, _structure.Health.Max, Tolerance, "Metal 800 × 1.3.");
+            Assert.AreEqual(940f, _structure.Health.Current, Tolerance);
+        }
+
+        [Test]
+        public void SturdyWalls_AfterDespawn_NoLongerWatched()
+        {
+            var modifiers = new RunModifiers();
+            ServiceLocator.Register<IRunModifiers>(modifiers);
+            _structure.Place(null, _data, 50);
+            _structure.OnDespawned();
+
+            modifiers.AddModifier(StatModifier.Percent(StatType.BarricadeMaxHealth, 0.3f, "perk:sturdy_walls"));
+
+            Assert.AreEqual(300f, _structure.Health.Max, Tolerance, "Havuzdaki yapı çarpanı dinlemez.");
+            _structure.Place(null, _data, 50);
+            Assert.AreEqual(390f, _structure.Health.Max, Tolerance, "Yeniden yerleşince güncel çarpanla.");
+        }
+
         private BuildableData CreateBarricadeData()
         {
             var data = ScriptableObject.CreateInstance<BuildableData>();

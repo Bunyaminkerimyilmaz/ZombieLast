@@ -5,13 +5,14 @@
  * Seçiciler .lh-screen.hud ile başlar: Theme.uss'teki iki sınıflı kuralları kesin ezsin diye.
  */
 
-/* --- İnşa çubuğu: sol alttaki can kutusu ile sağ alttaki silah kutusunun arasında. --- */
+/* --- İnşa çubuğu: sol alttaki can kutusu ile sağ alttaki silah kutusunun arasında, alt ortadaki XP şeridinin (HUD.uss,
+ * kenardan 24 px, ~42 px boy) üstünde. --- */
 
 .lh-screen.hud .hud-build-bar {
     position: absolute;
     left: 0;
     right: 0;
-    bottom: var(--hud-edge);
+    bottom: 78px;
     align-items: center;
 }
 

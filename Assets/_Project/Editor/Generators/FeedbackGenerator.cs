@@ -62,6 +62,8 @@ namespace LastHaven.Editor
         {
             FxMaterials.EnsureAll();
             LoadOrCreateConfig();
+            FeedbackFeelAssets.LoadOrCreateConfig();
+            FeedbackFeelAssets.LoadOrCreateVignetteProfile();
         }
 
         public void GeneratePrefabs()

@@ -4,7 +4,10 @@ using UnityEngine;
 
 namespace LastHaven.Editor
 {
-    /// <summary>[Systems]/EnemySpawner: düşmanları havuzdan doğuran <see cref="EnemySpawner"/> (config, veriler ve prefab'lar üreticiden).</summary>
+    /// <summary>
+    /// [Systems]/EnemySpawner: düşmanları havuzdan doğuran <see cref="EnemySpawner"/> (config, veriler ve prefab'lar üreticiden) ve
+    /// Zincirleme Son perk'i (<see cref="ChainExplosionPerk"/>, <see cref="EnemyPerkConfig"/> ile; 13.2).
+    /// </summary>
     public sealed class EnemySpawnerSceneStep : ISceneBuildStep
     {
         public const string ObjectName = "EnemySpawner";
@@ -20,6 +23,10 @@ namespace LastHaven.Editor
             var serialized = new SerializedObject(spawner);
             serialized.FindProperty("_config").objectReferenceValue = config;
             serialized.ApplyModifiedPropertiesWithoutUndo();
+
+            var chain = new SerializedObject(spawnerObject.AddComponent<ChainExplosionPerk>());
+            chain.FindProperty("_config").objectReferenceValue = EnemyPerksGenerator.LoadOrCreateConfig();
+            chain.ApplyModifiedPropertiesWithoutUndo();
         }
     }
 }

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using LastHaven.Combat;
 using LastHaven.Core;
 using UnityEngine;
@@ -11,7 +12,7 @@ namespace LastHaven.Building
     /// hizalanınca <see cref="HitscanShooter"/> ile ateş eder. <see cref="WeaponFiredEvent"/> ve atıcının olayları namlu ışığını,
     /// mermi izini ve vuruş efektini kendiliğinden oynatır. Hasar/atış hızı/menzil seviyeden × <see cref="IRunModifiers"/>
     /// (<see cref="TurretStats"/>). Güç yokken (<see cref="IPowerService"/>, <see cref="PowerChangedEvent"/>) ateş etmez ve
-    /// dönmez; kafa eğilir, gösterge söner (<see cref="TurretVisual"/>).
+    /// dönmez; kafa eğilir, gösterge söner (<see cref="TurretVisual"/>). Şok Taret açıksa vuruş yavaşlatır (<see cref="TurretShock"/>).
     /// </summary>
     [DisallowMultipleComponent]
     [RequireComponent(typeof(Structure))]
@@ -147,7 +148,14 @@ namespace LastHaven.Building
             var request = new HitscanRequest(
                 axis, direction, 0f, 1, _stats.Range, _config.HitMask, _stats.Damage, gameObject, _config.WeaponId, tracerOrigin: muzzle);
             EventBus<WeaponFiredEvent>.Raise(new WeaponFiredEvent(gameObject, _config.WeaponId, muzzle, direction, 1));
-            _shooter.Fire(request);
+            IReadOnlyList<ShotResult> results = _shooter.Fire(request);
+
+            // Şok Taret (GDD §13): isabet eden vuruş yavaşlatır.
+            BuildingPerkConfig perks = _config.Perks;
+            if (perks != null && _modifiers != null && _modifiers.HasFlag(PerkFlag.ShockTurret))
+            {
+                TurretShock.Apply(results, perks.ShockSlowFraction, perks.ShockSlowDuration);
+            }
         }
 
         // Seviye × run çarpanları (perk, market) her kare; ucuz (en fazla birkaç stat). Seviye değişince loglar.

@@ -89,6 +89,134 @@ namespace LastHaven.Tests.EditMode
             AssertHas<Label>(root, HudElementNames.BossName);
             AssertHas<VisualElement>(root, HudElementNames.BossHealthFill);
             AssertHas<Label>(root, HudElementNames.BossHealthValue);
+            AssertHas<VisualElement>(root, HudElementNames.XpGroup);
+            AssertHas<Label>(root, HudElementNames.XpLevel);
+            AssertHas<VisualElement>(root, HudElementNames.XpFill);
+            AssertHas<Label>(root, HudElementNames.XpValue);
+            AssertHas<VisualElement>(root, HudElementNames.PerkList);
+            AssertHas<VisualElement>(root, HudElementNames.PerkTooltip);
+            AssertHas<Label>(root, HudElementNames.PerkTooltipName);
+            AssertHas<Label>(root, HudElementNames.PerkTooltipStacks);
+            AssertHas<Label>(root, HudElementNames.PerkTooltipDescription);
+            AssertHas<VisualElement>(root, HudElementNames.FloatingTexts);
+            AssertHas<VisualElement>(root, HudElementNames.Banner);
+            AssertHas<VisualElement>(root, HudElementNames.BannerDay);
+            AssertHas<Label>(root, HudElementNames.BannerDayNumber);
+            AssertHas<VisualElement>(root, HudElementNames.BannerNight);
+            AssertHas<Label>(root, HudElementNames.BannerNightNumber);
+            AssertHas<VisualElement>(root, HudElementNames.BannerDawn);
+            AssertHas<VisualElement>(root, HudElementNames.BannerBoss);
+            AssertHas<Label>(root, HudElementNames.BannerSubtitle);
+        }
+
+        /// <summary>
+        /// 14.1: uçan yazı katmanı ekranın doğrudan çocuğu, boş (etiketleri kod oluşturur) ve HUD kutularından önce (altta çizilir);
+        /// evre başlığı ve tüm grupları gizli başlar, her grubun başlığı metnini UXML'den alır.
+        /// </summary>
+        [Test]
+        public void Hud_FloatingTextsAndBanner_Layout()
+        {
+            TemplateContainer root = Instantiate(UIGenerator.HudPath);
+            VisualElement screen = root.Q(className: UIClassNames.Screen);
+            VisualElement layer = root.Q(HudElementNames.FloatingTexts);
+            VisualElement banner = root.Q(HudElementNames.Banner);
+
+            Assert.AreSame(screen, layer.parent);
+            Assert.AreEqual(0, layer.childCount, "Etiketleri kod oluşturur.");
+            Assert.AreEqual(PickingMode.Ignore, layer.pickingMode, "Katman fareyi yakalamaz.");
+            Assert.AreSame(screen, banner.parent);
+            Assert.Less(screen.IndexOf(layer), screen.IndexOf(root.Q(HudElementNames.PlayerHealthFill).parent.parent.parent),
+                "HUD kutuları yazıların üstünde çizilir.");
+            Assert.IsTrue(banner.ClassListContains(UIClassNames.Hidden), "Başlık gizli başlar.");
+            foreach (string group in new[]
+                     {
+                         HudElementNames.BannerDay, HudElementNames.BannerNight, HudElementNames.BannerDawn, HudElementNames.BannerBoss,
+                     })
+            {
+                VisualElement element = root.Q(group);
+                Assert.IsTrue(element.ClassListContains(UIClassNames.Hidden), $"{group} gizli başlar.");
+                Assert.IsTrue(banner.Contains(element));
+                Assert.IsFalse(string.IsNullOrEmpty(element.Q<Label>().text), $"{group}: başlık metni UXML'de.");
+            }
+
+            Assert.IsTrue(root.Q(HudElementNames.BannerSubtitle).ClassListContains(UIClassNames.Hidden));
+        }
+
+        [Test]
+        public void HudFeelConfigAsset_ExistsWithPositiveTimings()
+        {
+            var config = AssetDatabase.LoadAssetAtPath<HudFeelConfig>(UIGenerator.HudFeelConfigPath);
+            if (config == null)
+            {
+                Assert.Inconclusive($"{UIGenerator.HudFeelConfigPath} yok; Tools/Last Haven/Generate Default Data çalıştır.");
+            }
+
+            Assert.GreaterOrEqual(config.FloatingTextPoolSize, 1);
+            Assert.Greater(config.DamageLifetime, 0f);
+            Assert.Greater(config.CoinLifetime, 0f);
+            Assert.Greater(config.CreateBannerTiming().Total, 0f);
+            Assert.Greater(config.GetDamageScale(config.BigDamage), config.GetDamageScale(0f), "Yüksek hasar daha büyük.");
+        }
+
+        /// <summary>13.3: perk listesi ve ipucu gizli başlar; liste can kutusuyla aynı sol alt sütunda, onun üstünde.</summary>
+        [Test]
+        public void Hud_PerkList_StartsHidden_AboveHealthInBottomLeft()
+        {
+            TemplateContainer root = Instantiate(UIGenerator.HudPath);
+            VisualElement list = root.Q(HudElementNames.PerkList);
+            VisualElement health = root.Q(HudElementNames.PlayerHealthFill);
+
+            Assert.IsTrue(list.ClassListContains(UIClassNames.Hidden), "Perk yokken gizli.");
+            Assert.IsTrue(root.Q(HudElementNames.PerkTooltip).ClassListContains(UIClassNames.Hidden));
+            Assert.AreSame(list.parent, root.Q(HudElementNames.PerkTooltip).parent);
+            Assert.IsTrue(list.parent.Contains(health), "Can kutusuyla aynı sütun.");
+            Assert.Less(list.parent.IndexOf(list), list.parent.IndexOf(health.parent.parent), "Liste can kutusunun üstünde.");
+        }
+
+        [Test]
+        public void LevelUpPanel_ContainsAllElements_StartsHidden()
+        {
+            TemplateContainer root = Instantiate(UIGenerator.LevelUpPanelPath);
+
+            AssertScreenRoot(root, startsHidden: true);
+            AssertHas<Label>(root, LevelUpElementNames.LevelValue);
+            AssertHas<VisualElement>(root, LevelUpElementNames.Cards);
+            AssertHas<VisualElement>(root, LevelUpElementNames.Pending);
+            AssertHas<Label>(root, LevelUpElementNames.PendingValue);
+            Assert.IsTrue(root.Q(LevelUpElementNames.Pending).ClassListContains(UIClassNames.Hidden));
+            Assert.AreEqual(root.Query(className: KeyboardKeyClass).ToList().Count > 0, root.Query(className: GamepadKeyClass).ToList().Count > 0,
+                "Klavye ve gamepad ipuçları birlikte.");
+        }
+
+        [Test]
+        public void PerkCard_IsButton_ContainsAllElements_OneLabelPerRarity()
+        {
+            TemplateContainer root = Instantiate(UIGenerator.PerkCardPath);
+
+            Assert.IsNotNull(root.Q<Button>(className: PerkCardView.CardClass), $"Kart kökü '{PerkCardView.CardClass}' sınıflı Button olmalı.");
+            AssertHas<Label>(root, LevelUpElementNames.CardKey);
+            AssertHas<VisualElement>(root, LevelUpElementNames.CardIcon);
+            AssertHas<Label>(root, LevelUpElementNames.CardInitials);
+            AssertHas<Label>(root, LevelUpElementNames.CardName);
+            AssertHas<Label>(root, LevelUpElementNames.CardDescription);
+            AssertHas<Label>(root, LevelUpElementNames.CardStacks);
+            foreach (PerkRarity rarity in System.Enum.GetValues(typeof(PerkRarity)))
+            {
+                Assert.AreEqual(1, root.Query(className: PerkStyle.RarityClass("perk-card__rarity", rarity)).ToList().Count, rarity.ToString());
+            }
+        }
+
+        [Test]
+        public void LevelUpConfigAsset_ExistsWithPositiveTimings()
+        {
+            var config = AssetDatabase.LoadAssetAtPath<LevelUpPanelConfig>(UIGenerator.LevelUpConfigPath);
+            if (config == null)
+            {
+                Assert.Inconclusive($"{UIGenerator.LevelUpConfigPath} yok; Tools/Last Haven/Generate Default Data çalıştır.");
+            }
+
+            Assert.Greater(config.InputDelay, 0f, "Kazara seçim koruması.");
+            Assert.Greater(config.ConfirmDuration, 0f, "Kısa seçim animasyonu.");
         }
 
         /// <summary>11.2: her saldırı yönünün (K, D, G, B) kendi göstergesi var; ok taşıyıcısı ve ok ucu var, hepsi gizli başlar.</summary>
@@ -237,6 +365,10 @@ namespace LastHaven.Tests.EditMode
         [TestCase(UIGenerator.HudIntelStylePath)]
         [TestCase(UIGenerator.PanelsStylePath)]
         [TestCase(UIGenerator.ShopStylePath)]
+        [TestCase(UIGenerator.HudPerksStylePath)]
+        [TestCase(UIGenerator.LevelUpStylePath)]
+        [TestCase(UIGenerator.HudFeelStylePath)]
+        [TestCase(UIGenerator.MenusStylePath)]
         public void StyleSheets_TakeColorsAndFontSizesFromTheme(string path)
         {
             string text = Regex.Replace(File.ReadAllText(path), @"/\*.*?\*/", string.Empty, RegexOptions.Singleline);
@@ -256,6 +388,19 @@ namespace LastHaven.Tests.EditMode
 
             Assert.IsTrue(root.Q(HudElementNames.ComboGroup).ClassListContains(UIClassNames.Hidden), "Kombo yokken gizli olmalı.");
             Assert.IsTrue(root.Q(HudElementNames.ComboMultiplier).ClassListContains(UIClassNames.Hidden));
+        }
+
+        [Test]
+        public void Hud_XpStrip_AlwaysVisible_DrawnBelowBuildBar()
+        {
+            TemplateContainer root = Instantiate(UIGenerator.HudPath);
+            VisualElement screen = root.Q(className: UIClassNames.Screen);
+            VisualElement xp = root.Q(HudElementNames.XpGroup);
+
+            Assert.IsFalse(xp.ClassListContains(UIClassNames.Hidden), "XP şeridi her evrede görünür.");
+            Assert.AreSame(screen, xp.parent);
+            Assert.Less(screen.IndexOf(xp), screen.IndexOf(root.Q(HudElementNames.BuildBar)), "İnşa çubuğu XP şeridinin üstünde çizilir.");
+            Assert.IsTrue(xp.Contains(root.Q(HudElementNames.XpFill)));
         }
 
         [Test]
@@ -341,6 +486,10 @@ namespace LastHaven.Tests.EditMode
         [TestCase(UIGenerator.HudIntelStylePath)]
         [TestCase(UIGenerator.PanelsStylePath)]
         [TestCase(UIGenerator.ShopStylePath)]
+        [TestCase(UIGenerator.HudPerksStylePath)]
+        [TestCase(UIGenerator.LevelUpStylePath)]
+        [TestCase(UIGenerator.HudFeelStylePath)]
+        [TestCase(UIGenerator.MenusStylePath)]
         public void StyleSheets_ImportWithoutErrors(string path)
         {
             var sheet = AssetDatabase.LoadAssetAtPath<StyleSheet>(path);

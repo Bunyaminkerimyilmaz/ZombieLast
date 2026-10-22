@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 71223e5f02a9e834d8afae6f1023fb61, type: 3}
+  m_Name: PerkCatalog
+  m_EditorClassIdentifier: LastHaven.Progression::LastHaven.Progression.PerkCatalog
+  _perks:
+  - {fileID: 11400000, guid: c0673b589ba684543bbd5f8d930bd2fd, type: 2}
+  - {fileID: 11400000, guid: 6cc5a43a5feb9fb4eb690c2aa5219523, type: 2}
+  - {fileID: 11400000, guid: dbcef0d9ca5d3ad45b75871260d9758d, type: 2}
+  - {fileID: 11400000, guid: 647e26d55dde45946a0e5bfb6cd5ea21, type: 2}
+  - {fileID: 11400000, guid: 774690c17acea4f4e92b4f84bef44035, type: 2}
+  - {fileID: 11400000, guid: 4a061a0423bf8cd479fc1e47fad6f081, type: 2}
+  - {fileID: 11400000, guid: e006902a48d5225449e5d52360f7ab90, type: 2}
+  - {fileID: 11400000, guid: 91de3653703e1eb4588b36c2ced32501, type: 2}
+  - {fileID: 11400000, guid: f837d49a0142e4f43822665c9bab849a, type: 2}
+  - {fileID: 11400000, guid: e0bbc52c6aff9284eb37e76227c81082, type: 2}
+  - {fileID: 11400000, guid: d5e781634c0d1744ab57262cb5082177, type: 2}
+  - {fileID: 11400000, guid: f1747b75f5d7ab74dac72942b10707b5, type: 2}
+  - {fileID: 11400000, guid: ef43872389fa9434da95b8660b57d3e7, type: 2}
+  - {fileID: 11400000, guid: 6e214c3f5f5f253479eaedd7b31a2f42, type: 2}

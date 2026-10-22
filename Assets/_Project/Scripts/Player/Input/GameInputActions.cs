@@ -19,6 +19,9 @@ namespace LastHaven.Player
         /// <summary>BuildMode'da 1–5 tuşları.</summary>
         public const int BuildSlotCount = 5;
 
+        /// <summary>UI'da 1–3 tuşları (seviye kartları).</summary>
+        public const int OptionSlotCount = 3;
+
         private readonly InputActionMap[] _maps;
 
         public GameInputActions()
@@ -144,6 +147,7 @@ namespace LastHaven.Player
             AddButton(map, Names.Confirm, "<Keyboard>/enter", "<Gamepad>/buttonSouth");
             AddButton(map, Names.Cancel, "<Keyboard>/escape", "<Gamepad>/buttonEast");
             AddButton(map, Names.Shop, "<Keyboard>/tab", "<Gamepad>/select");
+            AddSlots(map, Names.OptionSlot, OptionSlotCount);
 
             // UI'da Ready yok; Start'ı basılı tutmayı beklemeye gerek olmadığı için hemen Pause.
             AddButton(map, Names.Pause, "<Gamepad>/start");

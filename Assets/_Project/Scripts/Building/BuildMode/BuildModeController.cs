@@ -122,7 +122,7 @@ namespace LastHaven.Building
 
         private void Update()
         {
-            if (IsActive)
+            if (IsActive && _input.Mode == InputMode.BuildMode) // Duraklatma menüsü açıkken (UI) önizleme beklemede.
             {
                 _tool.Tick();
             }
@@ -179,10 +179,10 @@ namespace LastHaven.Building
             Debug.Log($"{LogPrefix}İnşa modu kapandı.", this);
         }
 
-        /// <summary>Sağ tık / East: önce seçimi bırakır; seçim yoksa inşa modundan çıkar.</summary>
+        /// <summary>Sağ tık / East: önce seçimi bırakır; seçim yoksa inşa modundan çıkar. UI'daki iptal (Esc) menünün.</summary>
         private void OnCancelPressed()
         {
-            if (IsActive && !_tool.ClearSelection())
+            if (IsActive && _input.Mode == InputMode.BuildMode && !_tool.ClearSelection())
             {
                 Exit();
             }

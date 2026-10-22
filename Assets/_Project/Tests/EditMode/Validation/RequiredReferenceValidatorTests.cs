@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Reflection;
+using LastHaven.Audio;
 using LastHaven.Building;
 using LastHaven.Combat;
 using LastHaven.Editor;
@@ -46,6 +47,7 @@ namespace LastHaven.Tests.EditMode
         {
             Assert.IsTrue(RequiredReferenceValidator.IsOptional(Field<EnemyData>("_deathVfx")), "Tooltip: Opsiyonel");
             Assert.IsTrue(RequiredReferenceValidator.IsOptional(Field<WeaponData>("_fireSound")), "AudioClip");
+            Assert.IsTrue(RequiredReferenceValidator.IsOptional(Field<AudioEventMap>("_enemyKilled")), "SoundData");
             Assert.IsTrue(RequiredReferenceValidator.IsOptional(Field<BuildableData>("_icon")), "Sprite");
             Assert.IsFalse(RequiredReferenceValidator.IsOptional(Field<EnemyData>("_prefab")));
             Assert.IsFalse(RequiredReferenceValidator.IsOptional(Field<LootConfig>("_lootTable")));

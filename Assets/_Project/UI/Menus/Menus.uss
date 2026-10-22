@@ -1,0 +1,205 @@
+/*
+ * Ana menü (.lh-menu), duraklatma menüsü (.lh-pause) ve ayarlar ekranı (.lh-settings).
+ * Renk ve yazı boyutları Theme.uss değişkenlerinden. Seçiciler .lh-screen ile başlar: Theme.uss'teki iki sınıflı kuralları ve
+ * varsayılan temayı (.unity-button, .unity-base-slider) kesin ezsin diye.
+ */
+
+/* --- Ortak: menü butonu ve kutu --- */
+
+.lh-screen .menu-button {
+    min-width: 360px;
+    margin-top: var(--space-large);
+    -unity-text-align: middle-center;
+}
+
+.lh-screen .menu-button:focus {
+    border-color: var(--color-focus);
+    background-color: var(--color-button-hover);
+}
+
+.lh-screen .menu-panel {
+    align-items: center;
+    min-width: 560px;
+    padding: 40px 56px;
+}
+
+.lh-screen .menu-panel-title {
+    color: var(--color-accent);
+    margin-bottom: var(--space);
+}
+
+.lh-screen .menu-hint {
+    margin-top: var(--space-large);
+    -unity-text-align: middle-center;
+}
+
+/* --- Ana menü: solda yarı saydam şerit, ortasında başlık ve butonlar --- */
+
+.lh-screen.lh-menu .menu-side {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 780px;
+    padding-left: 120px;
+    justify-content: center;
+    background-color: var(--color-panel);
+    border-right-width: var(--border-thin);
+    border-right-color: var(--color-panel-border);
+}
+
+.lh-screen.lh-menu .menu-column {
+    align-items: flex-start;
+}
+
+.lh-screen.lh-menu .menu-title {
+    color: var(--color-accent);
+}
+
+.lh-screen.lh-menu .menu-subtitle {
+    margin-top: var(--space-small);
+    letter-spacing: 6px;
+}
+
+.lh-screen.lh-menu .menu-tagline {
+    color: var(--color-text-dim);
+    margin-top: var(--space-large);
+    margin-bottom: var(--space-large);
+}
+
+/* --- Ayarlar --- */
+
+.lh-screen.lh-settings .settings-panel {
+    width: 960px;
+    align-items: stretch;
+}
+
+.lh-screen.lh-settings .menu-panel-title {
+    -unity-text-align: middle-center;
+}
+
+.lh-screen.lh-settings .settings-section {
+    margin-top: var(--space-large);
+    margin-bottom: var(--space-small);
+}
+
+.lh-screen.lh-settings .settings-row {
+    min-height: 64px;
+    padding: 0 var(--space);
+    border-width: var(--border);
+    border-color: var(--color-transparent);
+    border-radius: var(--radius);
+}
+
+.lh-screen.lh-settings .settings-row--focused {
+    border-color: var(--color-focus);
+    background-color: var(--color-key-back);
+}
+
+.lh-screen.lh-settings .settings-label {
+    width: 300px;
+}
+
+.lh-screen.lh-settings .settings-value {
+    width: 80px;
+    -unity-text-align: middle-right;
+    color: var(--color-accent);
+}
+
+/* Kaydırıcı: kalın iz + dolum, büyük tutamaç. */
+.lh-screen.lh-settings .settings-slider {
+    flex-grow: 1;
+    margin: 0 var(--space-large) 0 0;
+}
+
+.lh-screen.lh-settings .settings-slider .unity-base-slider__drag-container {
+    height: 40px;
+}
+
+.lh-screen.lh-settings .settings-slider .unity-base-slider__tracker {
+    height: 12px;
+    margin-top: -6px;
+    background-color: var(--color-bar-back);
+    border-width: var(--border-thin);
+    border-color: var(--color-bar-border);
+    border-radius: var(--bar-radius);
+}
+
+.lh-screen.lh-settings .settings-slider .unity-base-slider__fill {
+    background-color: var(--color-accent);
+    border-radius: var(--bar-radius);
+}
+
+.lh-screen.lh-settings .settings-slider .unity-base-slider__dragger {
+    width: 24px;
+    height: 32px;
+    margin-top: -16px;
+    background-color: var(--color-text);
+    border-width: var(--border);
+    border-color: var(--color-bar-border);
+    border-radius: var(--radius);
+}
+
+.lh-screen.lh-settings .settings-row--focused .unity-base-slider__dragger {
+    background-color: var(--color-focus);
+}
+
+/* Kamera preset'i: iki buton, seçili olan altın çerçeveli. */
+.lh-screen.lh-settings .settings-choices {
+    flex-grow: 1;
+}
+
+.lh-screen.lh-settings .settings-choice {
+    font-size: var(--font-normal);
+    -unity-font-style: bold;
+    color: var(--color-text-dim);
+    background-color: var(--color-button);
+    border-width: var(--border);
+    border-color: var(--color-panel-border);
+    border-radius: var(--radius);
+    min-width: 200px;
+    margin: 0 var(--space) 0 0;
+    padding: var(--space-small) var(--space-large);
+}
+
+.lh-screen.lh-settings .settings-choice:hover {
+    background-color: var(--color-button-hover);
+}
+
+.lh-screen.lh-settings .settings-choice.settings-choice--selected {
+    color: var(--color-selected);
+    background-color: var(--color-selected-back);
+    border-color: var(--color-selected);
+}
+
+.lh-screen.lh-settings .settings-choice:focus {
+    border-color: var(--color-focus);
+}
+
+/* Onay kutusu: büyük kare, işaretliyken altın. */
+.lh-screen.lh-settings .settings-toggle {
+    margin: 0;
+}
+
+.lh-screen.lh-settings .settings-toggle .unity-toggle__checkmark {
+    width: 36px;
+    height: 36px;
+    background-color: var(--color-bar-back);
+    border-width: var(--border);
+    border-color: var(--color-key-border);
+    border-radius: var(--radius);
+    -unity-background-image-tint-color: var(--color-window);
+}
+
+.lh-screen.lh-settings .settings-toggle:checked .unity-toggle__checkmark {
+    background-color: var(--color-accent);
+    border-color: var(--color-accent);
+}
+
+.lh-screen.lh-settings .settings-row--focused .unity-toggle__checkmark {
+    border-color: var(--color-focus);
+}
+
+.lh-screen.lh-settings .settings-back {
+    align-self: center;
+}

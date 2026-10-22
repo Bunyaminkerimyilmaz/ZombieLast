@@ -1,8 +1,9 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
     <Style src="../Themes/Theme.uss" />
     <Style src="Panels.uss" />
-    <!-- Element adları PanelElementNames.cs ile eşleşmeli; GameOverPanel.uxml ile aynı adlar (RunEndPanelController).
-         Kök gizli başlar (hidden); kod gerektiğinde gösterir. UI Builder'da önizlemek için kökten "hidden" sınıfını geçici kaldır. -->
+    <!-- Element adları PanelElementNames.cs ile eşleşmeli; GameOverPanel.uxml ile aynı adlar (RunEndPanelController). Para = run boyunca
+         toplanan jetonlar. Perk satırını kod doldurur. Kök gizli başlar (hidden); kod gerektiğinde gösterir. UI Builder'da önizlemek
+         için kökten "hidden" sınıfını geçici kaldır. -->
     <ui:VisualElement name="victory-panel" class="lh-screen lh-panel hidden">
         <ui:VisualElement class="overlay">
             <ui:VisualElement class="panel result-panel">
@@ -17,8 +18,22 @@
                         <ui:Label text="Toplam öldürme" class="label" />
                         <ui:Label name="total-kills-value" text="0" class="label-large stat-value" />
                     </ui:VisualElement>
+                    <ui:VisualElement class="row-spread stat-row">
+                        <ui:Label text="Kazanılan para" class="label" />
+                        <ui:Label name="total-money-value" text="0" class="label-large stat-value stat-value--money" />
+                    </ui:VisualElement>
+                    <ui:VisualElement class="row-spread stat-row">
+                        <ui:Label text="En yüksek kombo" class="label" />
+                        <ui:Label name="best-combo-value" text="0" class="label-large stat-value" />
+                    </ui:VisualElement>
                 </ui:VisualElement>
-                <ui:Button name="restart-button" text="Yeniden Başlat" class="button" />
+                <ui:Label text="ALINAN PERK'LER" class="label-small run-end-perks-title" />
+                <ui:VisualElement name="run-end-perks" class="run-end-perks hidden" />
+                <ui:Label name="run-end-no-perks" text="Perk alınmadı." class="label run-end-no-perks" />
+                <ui:VisualElement class="row run-end-buttons">
+                    <ui:Button name="restart-button" text="Tekrar Oyna" class="button run-end-button" />
+                    <ui:Button name="main-menu-button" text="Ana Menü" class="button run-end-button" />
+                </ui:VisualElement>
             </ui:VisualElement>
         </ui:VisualElement>
     </ui:VisualElement>

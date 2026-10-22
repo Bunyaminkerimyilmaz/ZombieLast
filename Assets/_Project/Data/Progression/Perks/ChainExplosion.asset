@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5cedf0d0ca142c24392cada69411d88d, type: 3}
+  m_Name: ChainExplosion
+  m_EditorClassIdentifier: LastHaven.Progression::LastHaven.Progression.PerkData
+  _id: chain_explosion
+  _displayName: Zincirleme Son
+  _description: "\xD6ld\xFCrd\xFC\u011F\xFCn d\xFC\u015Fman %10 \u015Fansla patlar
+    (3 m, 40 hasar)."
+  _icon: {fileID: 0}
+  _rarity: 2
+  _maxStacks: 1
+  _effects:
+  - rid: 2348788195056943408
+  references:
+    version: 2
+    RefIds:
+    - rid: 2348788195056943408
+      type: {class: FlagEffect, ns: LastHaven.Progression, asm: LastHaven.Progression}
+      data:
+        _flag: 4

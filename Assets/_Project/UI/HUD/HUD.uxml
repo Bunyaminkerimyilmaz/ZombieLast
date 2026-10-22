@@ -5,6 +5,8 @@
     <Style src="HudInteraction.uss" />
     <Style src="HudLoot.uss" />
     <Style src="HudIntel.uss" />
+    <Style src="HudPerks.uss" />
+    <Style src="HudFeel.uss" />
     <!-- Element adları HudElementNames.cs ile eşleşmeli (EditMode testi kontrol eder). Metinler burada; kod sadece sayı ve veri
          adlarını yazar. Tuş ipuçlarında klavye ve gamepad karşılığı yan yana: kökteki lh-gamepad sınıfı hangisinin görüneceğini
          seçer (HudInputHintsController). -->
@@ -81,6 +83,28 @@
                     <ui:VisualElement class="hud-edge-indicator__arrow" picking-mode="Ignore" />
                 </ui:VisualElement>
             </ui:VisualElement>
+        </ui:VisualElement>
+        <!-- Uçan yazılar (HudFloatingTextController): hasar sayıları ve "+12" jeton yazıları. Etiketleri kod oluşturur ve her kare
+             dünyadan ekrana yansıtır. HUD kutularından önce: kutular yazıların üstünde çizilir. -->
+        <ui:VisualElement name="floating-texts" class="hud-float-layer" picking-mode="Ignore" />
+        <!-- Evre başlığı (HudBannerController): gündüz/gece/şafak geçişinde ve boss doğunca ekran ortasında büyük başlık. Sadece bir
+             grup görünür; kod sayıyı ve alt yazıyı (gece olayının / boss'un adı) yazar, opaklığı ve boyu sürer. -->
+        <ui:VisualElement name="banner" class="hud-banner hidden" picking-mode="Ignore">
+            <ui:VisualElement name="banner-day" class="row hud-banner__group hud-banner__group--day hidden" picking-mode="Ignore">
+                <ui:Label text="GÜN" class="label-huge hud-banner__title" picking-mode="Ignore" />
+                <ui:Label name="banner-day-number" text="1" class="label-huge hud-banner__title hud-banner__number" picking-mode="Ignore" />
+            </ui:VisualElement>
+            <ui:VisualElement name="banner-night" class="row hud-banner__group hud-banner__group--night hidden" picking-mode="Ignore">
+                <ui:Label text="GECE" class="label-huge hud-banner__title" picking-mode="Ignore" />
+                <ui:Label name="banner-night-number" text="1" class="label-huge hud-banner__title hud-banner__number" picking-mode="Ignore" />
+            </ui:VisualElement>
+            <ui:VisualElement name="banner-dawn" class="row hud-banner__group hud-banner__group--dawn hidden" picking-mode="Ignore">
+                <ui:Label text="ŞAFAK" class="label-huge hud-banner__title" picking-mode="Ignore" />
+            </ui:VisualElement>
+            <ui:VisualElement name="banner-boss" class="row hud-banner__group hud-banner__group--boss hidden" picking-mode="Ignore">
+                <ui:Label text="BOSS" class="label-huge hud-banner__title" picking-mode="Ignore" />
+            </ui:VisualElement>
+            <ui:Label name="banner-subtitle" text="" class="label-large hud-banner__subtitle hidden" picking-mode="Ignore" />
         </ui:VisualElement>
         <ui:VisualElement class="hud-top" picking-mode="Ignore">
             <ui:VisualElement class="panel hud-phase-panel" picking-mode="Ignore">
@@ -216,18 +240,45 @@
                 <ui:VisualElement name="combo-window-fill" class="bar-fill bar-fill--combo" picking-mode="Ignore" />
             </ui:VisualElement>
         </ui:VisualElement>
-        <ui:VisualElement class="panel hud-bottom-left" picking-mode="Ignore">
-            <ui:VisualElement class="row-spread" picking-mode="Ignore">
-                <ui:Label text="CAN" class="label-small" picking-mode="Ignore" />
-                <ui:Label name="player-health-value" text="0/0" class="label" picking-mode="Ignore" />
+        <!-- Sol alt sütun: alınan perk'ler (HudPerksController; rozetleri kod ekler, perk yokken gizli) ve can kutusu. Rozetin
+             üstüne gelince sütunun üstünde perk ipucu açılır (nadirlik sınıfı adın rengini ve nadirlik etiketini seçer). Rozetler
+             fareyi yakalar (üzerine gelme); diğer her şey Ignore. -->
+        <ui:VisualElement class="hud-bottom-left" picking-mode="Ignore">
+            <ui:VisualElement name="perk-tooltip" class="panel hud-perk-tooltip hidden" picking-mode="Ignore">
+                <ui:VisualElement class="row-spread hud-perk-tooltip__header" picking-mode="Ignore">
+                    <ui:Label name="perk-tooltip-name" text="" class="label-large hud-perk-tooltip__name" picking-mode="Ignore" />
+                    <ui:Label name="perk-tooltip-stacks" text="0/0" class="label" picking-mode="Ignore" />
+                </ui:VisualElement>
+                <ui:Label text="SIRADAN" class="label-small hud-perk-tooltip__rarity hud-perk-tooltip__rarity--common" picking-mode="Ignore" />
+                <ui:Label text="NADİR" class="label-small hud-perk-tooltip__rarity hud-perk-tooltip__rarity--rare" picking-mode="Ignore" />
+                <ui:Label text="EPİK" class="label-small hud-perk-tooltip__rarity hud-perk-tooltip__rarity--epic" picking-mode="Ignore" />
+                <ui:Label name="perk-tooltip-description" text="" class="label-small hud-perk-tooltip__description" picking-mode="Ignore" />
             </ui:VisualElement>
-            <ui:VisualElement class="bar" picking-mode="Ignore">
-                <ui:VisualElement name="player-health-fill" class="bar-fill" picking-mode="Ignore" />
+            <ui:VisualElement name="perk-list" class="hud-perks hidden" picking-mode="Ignore" />
+            <ui:VisualElement class="panel" picking-mode="Ignore">
+                <ui:VisualElement class="row-spread" picking-mode="Ignore">
+                    <ui:Label text="CAN" class="label-small" picking-mode="Ignore" />
+                    <ui:Label name="player-health-value" text="0/0" class="label" picking-mode="Ignore" />
+                </ui:VisualElement>
+                <ui:VisualElement class="bar" picking-mode="Ignore">
+                    <ui:VisualElement name="player-health-fill" class="bar-fill" picking-mode="Ignore" />
+                </ui:VisualElement>
             </ui:VisualElement>
         </ui:VisualElement>
         <ui:VisualElement class="panel hud-bottom-right" picking-mode="Ignore">
             <ui:Label name="weapon-name" text="—" class="label-large" picking-mode="Ignore" />
             <ui:Label name="ammo-value" text="0 / 0" class="label-big hud-ammo" picking-mode="Ignore" />
+        </ui:VisualElement>
+        <!-- XP ve seviye (alt orta, ince şerit; HudXpController): seviye numarası, bu seviyenin XP barı ve "XP/eşik". Seviye
+             atlayınca kod seviye numarasını "pulse" sınıfıyla kısa büyütür (HudXpController.PulseClass). İnşa çubuğundan önce:
+             inşa çubuğu bunun üstünde çizilir. -->
+        <ui:VisualElement name="xp-group" class="panel row hud-xp" picking-mode="Ignore">
+            <ui:Label text="SV" class="label-small hud-xp__caption" picking-mode="Ignore" />
+            <ui:Label name="xp-level" text="1" class="label hud-xp__level" picking-mode="Ignore" />
+            <ui:VisualElement class="bar hud-xp__bar" picking-mode="Ignore">
+                <ui:VisualElement name="xp-fill" class="bar-fill bar-fill--xp" picking-mode="Ignore" />
+            </ui:VisualElement>
+            <ui:Label name="xp-value" text="0/0" class="label-tiny hud-xp__value" picking-mode="Ignore" />
         </ui:VisualElement>
         <!-- İnşa çubuğu (alt orta, sadece inşa modunda): kartları BuildCard.uxml'den kod ekler (HudBuildBarController). -->
         <ui:VisualElement name="build-bar" class="hud-build-bar hidden" picking-mode="Ignore">

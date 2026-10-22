@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 89a5cfea18d8ba04eb7c4e9c56b8f003, type: 3}
+  m_Name: SettingsConfig
+  m_EditorClassIdentifier: LastHaven.GameFlow::LastHaven.GameFlow.SettingsConfig
+  _masterVolume: 1
+  _musicVolume: 1
+  _sfxVolume: 1
+  _cameraPreset: 0
+  _screenShake: 1
+  _fullscreen: 1

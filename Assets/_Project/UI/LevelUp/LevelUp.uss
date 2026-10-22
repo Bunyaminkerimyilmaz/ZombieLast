@@ -1,0 +1,243 @@
+/*
+ * Seviye kartları (1920×1080 referans): tüm ekranı kaplayan karartma (oyun duraklı), üstte başlık + seviye, ortada 3 kart, altta
+ * sıradaki seviye sayısı ve tuş ipuçları. Kart şablonu PerkCard.uxml (kök bir Button; varsayılan buton temasını ezmek için seçiciler
+ * .lh-screen.lh-levelup ile başlar). Renkler Theme.uss değişkenlerinden (nadirlik: --color-rarity-*).
+ * Kodun eklediği sınıflar: perk-card--common / --rare / --epic (PerkStyle), perk-card--enter / --chosen / --dismissed (PerkCardView).
+ * Zamanlama: giriş ve seçim transition'ları burada; kartların açık kaldığı süre LevelUpPanelConfig'te (seçim transition'ından uzun
+ * olmalı). UI Toolkit transition'ları gerçek zamanla akar: oyun duraklıyken (Time.timeScale 0) de oynar.
+ */
+
+.lh-screen.lh-levelup .levelup-backdrop {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--color-overlay);
+    align-items: center;
+    justify-content: center;
+
+    /* İçerik ortadan ~90 px aşağıda: başlık, üstteki evre kutusu ile Hazırım ipucu / boss barının altında kalsın. */
+    padding-top: 180px;
+}
+
+/* --- Başlık --- */
+
+.lh-screen.lh-levelup .levelup-header {
+    align-items: center;
+    margin-bottom: var(--space-large);
+}
+
+.lh-screen.lh-levelup .levelup-title {
+    color: var(--color-xp);
+}
+
+.lh-screen.lh-levelup .levelup-level {
+    margin-top: var(--space-small);
+}
+
+.lh-screen.lh-levelup .levelup-caption {
+    margin-right: var(--space-small);
+}
+
+.lh-screen.lh-levelup .levelup-level-value {
+    color: var(--color-xp);
+}
+
+.lh-screen.lh-levelup .levelup-subtitle {
+    margin-top: var(--space-small);
+    color: var(--color-text-dim);
+}
+
+/* --- Kartlar --- */
+
+.lh-screen.lh-levelup .levelup-cards {
+    justify-content: center;
+    align-items: stretch;
+}
+
+.lh-screen.lh-levelup .perk-card {
+    width: 360px;
+    min-height: 430px;
+    margin: 0 var(--space);
+    padding: var(--space) var(--space-large) var(--space-large) var(--space-large);
+    flex-direction: column;
+    align-items: center;
+    -unity-text-align: middle-center;
+    white-space: normal;
+    background-color: var(--color-card);
+    border-width: var(--border-thick);
+    border-radius: var(--radius);
+    border-color: var(--color-rarity-common);
+    transition-property: scale, translate, opacity, background-color;
+    transition-duration: 0.18s;
+    transition-timing-function: ease-out;
+}
+
+/* Fare üstünde / odakta (gamepad): kart biraz büyür, zemin nadirlik renginde. */
+.lh-screen.lh-levelup .perk-card:hover,
+.lh-screen.lh-levelup .perk-card:focus {
+    scale: 1.04 1.04;
+}
+
+.lh-screen.lh-levelup .perk-card:active {
+    scale: 1.02 1.02;
+}
+
+.lh-screen.lh-levelup .perk-card.perk-card--common {
+    border-color: var(--color-rarity-common);
+}
+
+.lh-screen.lh-levelup .perk-card.perk-card--rare {
+    border-color: var(--color-rarity-rare);
+}
+
+.lh-screen.lh-levelup .perk-card.perk-card--epic {
+    border-color: var(--color-rarity-epic);
+}
+
+.lh-screen.lh-levelup .perk-card.perk-card--common:hover,
+.lh-screen.lh-levelup .perk-card.perk-card--common:focus,
+.lh-screen.lh-levelup .perk-card.perk-card--common.perk-card--chosen {
+    background-color: var(--color-rarity-common-back);
+}
+
+.lh-screen.lh-levelup .perk-card.perk-card--rare:hover,
+.lh-screen.lh-levelup .perk-card.perk-card--rare:focus,
+.lh-screen.lh-levelup .perk-card.perk-card--rare.perk-card--chosen {
+    background-color: var(--color-rarity-rare-back);
+}
+
+.lh-screen.lh-levelup .perk-card.perk-card--epic:hover,
+.lh-screen.lh-levelup .perk-card.perk-card--epic:focus,
+.lh-screen.lh-levelup .perk-card.perk-card--epic.perk-card--chosen {
+    background-color: var(--color-rarity-epic-back);
+}
+
+/* Açılış: kod bir kare sonra kaldırır, kart aşağıdan yerine gelir (kaldırılmasa da okunur kalır). */
+.lh-screen.lh-levelup .perk-card.perk-card--enter {
+    opacity: 0.4;
+    translate: 0 40px;
+    scale: 0.92 0.92;
+}
+
+/* Seçim: seçilen büyür, diğerleri söner. */
+.lh-screen.lh-levelup .perk-card.perk-card--chosen {
+    scale: 1.1 1.1;
+}
+
+.lh-screen.lh-levelup .perk-card.perk-card--dismissed {
+    opacity: 0.25;
+    scale: 0.94 0.94;
+}
+
+/* --- Kartın içi --- */
+
+.lh-screen.lh-levelup .perk-card__top {
+    width: 100%;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    min-height: 28px;
+}
+
+.lh-screen.lh-levelup .perk-card__key {
+    margin: 0;
+}
+
+.lh-screen.lh-levelup .perk-card__rarities {
+    flex-grow: 1;
+    flex-direction: row;
+    justify-content: flex-end;
+}
+
+.lh-screen.lh-levelup .perk-card__rarity {
+    display: none;
+}
+
+.lh-screen.lh-levelup .perk-card--common .perk-card__rarity--common {
+    display: flex;
+    color: var(--color-rarity-common);
+}
+
+.lh-screen.lh-levelup .perk-card--rare .perk-card__rarity--rare {
+    display: flex;
+    color: var(--color-rarity-rare);
+}
+
+.lh-screen.lh-levelup .perk-card--epic .perk-card__rarity--epic {
+    display: flex;
+    color: var(--color-rarity-epic);
+}
+
+/* İkon: kod ikonu arka plan yapar; ikon yoksa baş harfler (PerkStyle.ApplyIcon). */
+.lh-screen.lh-levelup .perk-card__icon {
+    width: 108px;
+    height: 108px;
+    margin-top: var(--space);
+    align-items: center;
+    justify-content: center;
+    border-width: var(--border-thick);
+    border-radius: 54px;
+    border-color: var(--color-rarity-common);
+    background-color: var(--color-bar-back);
+    -unity-background-scale-mode: scale-to-fit;
+}
+
+.lh-screen.lh-levelup .perk-card--rare .perk-card__icon {
+    border-color: var(--color-rarity-rare);
+}
+
+.lh-screen.lh-levelup .perk-card--epic .perk-card__icon {
+    border-color: var(--color-rarity-epic);
+}
+
+.lh-screen.lh-levelup .perk-card__initials {
+    color: var(--color-rarity-common);
+}
+
+.lh-screen.lh-levelup .perk-card--rare .perk-card__initials {
+    color: var(--color-rarity-rare);
+}
+
+.lh-screen.lh-levelup .perk-card--epic .perk-card__initials {
+    color: var(--color-rarity-epic);
+}
+
+.lh-screen.lh-levelup .perk-card__name {
+    margin-top: var(--space);
+    white-space: normal;
+    -unity-text-align: middle-center;
+}
+
+.lh-screen.lh-levelup .perk-card__description {
+    flex-grow: 1;
+    margin-top: var(--space-small);
+    white-space: normal;
+    -unity-text-align: upper-center;
+}
+
+.lh-screen.lh-levelup .perk-card__stacks {
+    margin-top: var(--space);
+}
+
+.lh-screen.lh-levelup .perk-card__stacks-value {
+    margin-left: var(--space-small);
+    -unity-font-style: bold;
+}
+
+/* --- Alt bilgi --- */
+
+.lh-screen.lh-levelup .levelup-pending {
+    margin-top: var(--space-large);
+}
+
+.lh-screen.lh-levelup .levelup-pending-value {
+    margin: 0 var(--space-small);
+    color: var(--color-xp);
+    -unity-font-style: bold;
+}
+
+.lh-screen.lh-levelup .levelup-hints {
+    margin-top: var(--space-large);
+}

@@ -23,3 +23,4 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 2368
   _weaponId: turret
+  _perks: {fileID: 11400000, guid: 0bf3679f3dc55314aa55e9894b4faea3, type: 2}

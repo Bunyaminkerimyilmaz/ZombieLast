@@ -37,6 +37,10 @@ namespace LastHaven.Player
         [SerializeField, Min(0f), Tooltip("Jeton mıknatısı yarıçapı (m).")]
         private float _pickupRadius = 3f;
 
+        [Header("Perk'ler (GDD §13)")]
+        [SerializeField, Min(0f), Tooltip("Vampir: oyuncunun her öldürmesinde iyileşen can.")]
+        private float _vampireHealPerKill = 2f;
+
         public float MaxHealth => _maxHealth;
 
         public float HitInvulnerabilityDuration => _hitInvulnerabilityDuration;
@@ -54,5 +58,7 @@ namespace LastHaven.Player
         public float GamepadAimDistance => _gamepadAimDistance;
 
         public float PickupRadius => _pickupRadius;
+
+        public float VampireHealPerKill => _vampireHealPerKill;
     }
 }

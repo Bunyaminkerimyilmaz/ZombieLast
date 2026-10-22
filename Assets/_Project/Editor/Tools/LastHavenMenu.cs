@@ -19,9 +19,12 @@ namespace LastHaven.Editor
             ProjectSetup.Run();
             int failed = GenerationPipeline.GenerateData();
             failed += GenerationPipeline.GeneratePrefabs();
+
+            // Oyun sahnesi en son: Rebuild All bitince açık sahne Game.unity olsun.
+            bool menuBuilt = MainMenuSceneBuilder.Build();
             bool sceneBuilt = GameSceneBuilder.Build();
 
-            if (failed > 0 || !sceneBuilt)
+            if (failed > 0 || !menuBuilt || !sceneBuilt)
             {
                 Debug.LogError("[Last Haven] Rebuild All hatalarla bitti; yukarıdaki log'lara bak.");
             }
@@ -64,6 +67,15 @@ namespace LastHaven.Editor
             if (CanRun())
             {
                 GameSceneBuilder.Build();
+            }
+        }
+
+        [MenuItem(Root + "Build Main Menu Scene", priority = 24)]
+        public static void BuildMainMenuScene()
+        {
+            if (CanRun())
+            {
+                MainMenuSceneBuilder.Build();
             }
         }
 

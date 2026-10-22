@@ -58,5 +58,39 @@ namespace LastHaven.Editor
 
             return change;
         }
+
+        /// <summary>
+        /// Sahneyi listenin başına alır (yoksa ekler) ve etkinleştirir: player build bununla açılır (14.3: ana menü). Diğer satırların
+        /// sırası korunur.
+        /// </summary>
+        public static Change EnsureFirst(List<EditorBuildSettingsScene> scenes, string scenePath)
+        {
+            var change = Change.None;
+            int index = scenes.FindIndex(scene => string.Equals(scene.path, scenePath, StringComparison.Ordinal));
+            EditorBuildSettingsScene entry;
+            if (index < 0)
+            {
+                entry = new EditorBuildSettingsScene(scenePath, true);
+                change |= Change.Added;
+            }
+            else
+            {
+                entry = scenes[index];
+                scenes.RemoveAt(index);
+                if (!entry.enabled)
+                {
+                    entry.enabled = true;
+                    change |= Change.Enabled;
+                }
+
+                if (index > 0)
+                {
+                    change |= Change.MovedForward;
+                }
+            }
+
+            scenes.Insert(0, entry);
+            return change;
+        }
     }
 }

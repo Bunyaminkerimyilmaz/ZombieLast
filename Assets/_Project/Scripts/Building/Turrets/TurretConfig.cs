@@ -34,6 +34,10 @@ namespace LastHaven.Building
         [SerializeField, Tooltip("Olaylara yazılan silah id'si (mermi izi rengi; bilinmeyen id varsayılan renk alır).")]
         private string _weaponId = "turret";
 
+        [Header("Perk'ler (GDD §13)")]
+        [SerializeField, Tooltip("Şok Taret yavaşlatması. Üretici bağlar.")]
+        private BuildingPerkConfig _perks;
+
         public float ScanInterval => _scanInterval;
 
         public LayerMask TargetLayers => _targetLayers;
@@ -47,5 +51,8 @@ namespace LastHaven.Building
         public LayerMask HitMask => _hitMask;
 
         public string WeaponId => _weaponId;
+
+        /// <summary>Boşsa Şok Taret etkisiz.</summary>
+        public BuildingPerkConfig Perks => _perks;
     }
 }

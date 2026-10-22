@@ -16,9 +16,16 @@ namespace LastHaven.Editor
 
         public void Build(SceneBuildContext context)
         {
+            Create(context);
+        }
+
+        /// <summary>[Systems]/Input'u kurar (ana menü sahnesi de kullanır).</summary>
+        public static GameObject Create(SceneBuildContext context)
+        {
             GameObject input = context.CreateObject(InputObjectName, context.Systems);
             input.AddComponent<InputReader>();
             input.AddComponent<InputDebugLogger>().enabled = false;
+            return input;
         }
     }
 }

@@ -51,7 +51,10 @@ namespace LastHaven.Core
         public int Amount { get; }
     }
 
-    /// <summary>Oyuncu iyileşmeli (GDD §10: can paketi +50). Market gönderir, Player uygular (ölüyken etkisiz).</summary>
+    /// <summary>
+    /// Oyuncu iyileşmeli. Market (GDD §10: can paketi +50) ve perk'ler (GDD §13: Kalın Deri, maks. can artışından sonra +25)
+    /// gönderir, Player uygular (ölüyken etkisiz).
+    /// </summary>
     public readonly struct HealRequestedEvent : IEvent
     {
         public HealRequestedEvent(float amount)

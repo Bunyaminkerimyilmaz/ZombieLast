@@ -1,0 +1,17 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <Style src="../Themes/Theme.uss" />
+    <Style src="Menus.uss" />
+    <!-- Element adları MenuElementNames.cs ile eşleşmeli (MainMenuController). Ana menü görünür başlar; arkada sahnenin dönen kamerası. -->
+    <ui:VisualElement name="main-menu" class="lh-screen lh-menu">
+        <ui:VisualElement class="menu-side">
+            <ui:VisualElement class="menu-column">
+                <ui:Label text="LAST HAVEN" class="label-huge menu-title" />
+                <ui:Label text="GÜNDÜZ &amp; GECE" class="label-small menu-subtitle" />
+                <ui:Label text="Gündüz topla ve inşa et, gece jeneratörü koru." class="label menu-tagline" />
+                <ui:Button name="play-button" text="Oyna" class="button menu-button" />
+                <ui:Button name="settings-button" text="Ayarlar" class="button menu-button" />
+                <ui:Button name="quit-button" text="Çıkış" class="button menu-button" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

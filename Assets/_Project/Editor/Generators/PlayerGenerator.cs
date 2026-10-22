@@ -11,6 +11,7 @@ namespace LastHaven.Editor
     /// "Muzzle": Visual dışında, nişan yüksekliğinde; WeaponController mermileri buradan atar.
     /// Vuruş hissi (4.3): AnimationDriver + PlayerAnimation ve kırmızı HitFlash. Yeniden doğma (6.1): PlayerRespawn.
     /// Fener (6.2): Visual dışında "Flashlight" (<see cref="PlayerFlashlight"/>). Market etkileri (10.1): <see cref="PlayerPurchaseEffects"/>.
+    /// Perk etkileri (13.2): <see cref="PlayerPerkEffects"/> (maks. can, Vampir; PlayerData bağlı).
     /// Varsa dokunulmaz; sadece eksik bileşen ve boş referanslar tamamlanır.
     /// </summary>
     public sealed class PlayerGenerator : IGenerationStep
@@ -74,7 +75,8 @@ namespace LastHaven.Editor
 
             int changes = EditorAssetUtility.EditPrefab(
                 PrefabPath,
-                root => AssignData(root, data) + EnsureWeaponController(root, data, loadout) + EnsureFeedback(root)
+                root => VisualFeedbackSetup.EnsureComponent<PlayerPerkEffects>(root) // AssignData'dan önce: data'sı bağlansın.
+                        + AssignData(root, data) + EnsureWeaponController(root, data, loadout) + EnsureFeedback(root)
                         + VisualFeedbackSetup.EnsureComponent<PlayerRespawn>(root) + PlayerFlashlight.Ensure(root)
                         + VisualFeedbackSetup.EnsureComponent<Interactor>(root)
                         + VisualFeedbackSetup.EnsureComponent<PlayerPurchaseEffects>(root));
@@ -112,6 +114,7 @@ namespace LastHaven.Editor
                 root.AddComponent<PlayerMotor>();
                 root.AddComponent<PlayerAim>();
                 root.AddComponent<PlayerCharacter>();
+                root.AddComponent<PlayerPerkEffects>();
                 AssignData(root, data);
 
                 BuildVisual(root.transform);
@@ -198,7 +201,8 @@ namespace LastHaven.Editor
         {
             return AssignDataTo(root.GetComponent<PlayerCharacter>(), data)
                    + AssignDataTo(root.GetComponent<PlayerMotor>(), data)
-                   + AssignDataTo(root.GetComponent<PlayerAim>(), data);
+                   + AssignDataTo(root.GetComponent<PlayerAim>(), data)
+                   + AssignDataTo(root.GetComponent<PlayerPerkEffects>(), data);
         }
 
         private static int AssignDataTo(Component component, PlayerData data)

@@ -14,13 +14,23 @@ namespace LastHaven.Editor
         /// <summary>Profili yükler; yoksa tanımla oluşturur (bileşenler asset'in alt nesneleri olarak kaydedilir).</summary>
         public static VolumeProfile LoadOrCreate(string path, in PostProcessDefinition definition, out bool created)
         {
+            PostProcessDefinition copy = definition;
+            return LoadOrCreate(path, profile => Populate(profile, copy), out created);
+        }
+
+        /// <summary>
+        /// Profili yükler; yoksa boş oluşturup <paramref name="populate"/> ile bileşenlerini ekler ve bileşenleri asset'in alt nesneleri
+        /// olarak kaydeder. Var olan profile dokunulmaz.
+        /// </summary>
+        public static VolumeProfile LoadOrCreate(string path, System.Action<VolumeProfile> populate, out bool created)
+        {
             var profile = EditorAssetUtility.LoadOrCreate<VolumeProfile>(path, out created);
             if (!created)
             {
                 return profile;
             }
 
-            Populate(profile, definition);
+            populate(profile);
             foreach (VolumeComponent component in profile.components)
             {
                 // URP'nin profil editörü bileşenleri böyle saklar: asset içinde, Project penceresinde gizli.

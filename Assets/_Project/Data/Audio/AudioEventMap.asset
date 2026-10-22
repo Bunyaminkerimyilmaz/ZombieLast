@@ -1,0 +1,61 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 28874e9da6263d4419e054c242d561aa, type: 3}
+  m_Name: AudioEventMap
+  m_EditorClassIdentifier: LastHaven.Audio::LastHaven.Audio.AudioEventMap
+  _weaponFired:
+  - _weaponId: pistol
+    _sound: {fileID: 11400000, guid: f482d82c4b0e9c0438067bccbb406fef, type: 2}
+  - _weaponId: shotgun
+    _sound: {fileID: 11400000, guid: 78d42d2b6b8f00e428926b9c395487d9, type: 2}
+  - _weaponId: rifle
+    _sound: {fileID: 11400000, guid: d4ba156f7878865479fd3eb9bc8d15b3, type: 2}
+  - _weaponId: turret
+    _sound: {fileID: 11400000, guid: b57b3ea33a9b1594481e3d7d32fe576d, type: 2}
+  _weaponFiredFallback: {fileID: 11400000, guid: c34a885686a299343a44d2c7520b0940, type: 2}
+  _shotHitFlesh: {fileID: 11400000, guid: b9ed575b764f9454ba9e0e449e7abf69, type: 2}
+  _shotHitSurface: {fileID: 11400000, guid: 71b26ceea6e930244a8d66f89dcb2ebd, type: 2}
+  _enemyKilled: {fileID: 11400000, guid: 19d86989f89622f4980d026d06e4f888, type: 2}
+  _bossSpawned: {fileID: 11400000, guid: 083939b29438aa944b2f52f15940ec8e, type: 2}
+  _coinCollected: {fileID: 11400000, guid: 0e0545f1fe1c6da4faa4e7fbf31e35f4, type: 2}
+  _purchaseCompleted: {fileID: 11400000, guid: 39c8e75db96cc964da763f63b2f56fad, type: 2}
+  _structurePlaced: {fileID: 11400000, guid: dd969d3c87dc1644f9c4d1c3309fdbea, type: 2}
+  _structureDestroyed: {fileID: 11400000, guid: e30d912656c336943ba0ff0f574ec640, type: 2}
+  _powerLost: {fileID: 11400000, guid: 05d411b6544937d4ca21d4eb3290d4e9, type: 2}
+  _dayEndingSoon: {fileID: 11400000, guid: 38a4eaaf824c2f0499b0c96aacb4e691, type: 2}
+  _levelUp: {fileID: 11400000, guid: 7b55f713375df0f4c9e03e787dfabfc6, type: 2}
+  _phaseChanged:
+  - _phase: 1
+    _sound: {fileID: 11400000, guid: 54de0a80fa026044da03669a4284aca2, type: 2}
+  - _phase: 2
+    _sound: {fileID: 11400000, guid: 58432025f52c6c64cac51c7ab97298ff, type: 2}
+  - _phase: 3
+    _sound: {fileID: 11400000, guid: d96918405291de24a95a5a0cd30d1f0e, type: 2}
+  - _phase: 4
+    _sound: {fileID: 11400000, guid: 1e2f8b35218e59f468e4a5fc35458ef3, type: 2}
+  _uiClick: {fileID: 11400000, guid: e6ef4cbf119db984ba16bf848fac24d0, type: 2}
+  _music:
+  - _cue: 1
+    _sound: {fileID: 11400000, guid: a887beaae683873439b0aa9f1e9c5c57, type: 2}
+    _loop: 1
+  - _cue: 2
+    _sound: {fileID: 11400000, guid: ade2bfebfd19dd34fa756ae62a96581c, type: 2}
+    _loop: 1
+  - _cue: 3
+    _sound: {fileID: 11400000, guid: 4180f0d76c05ee54395134a6caa73474, type: 2}
+    _loop: 1
+  - _cue: 4
+    _sound: {fileID: 11400000, guid: d56bd3ec30fda234a926ade817e39438, type: 2}
+    _loop: 0
+  - _cue: 5
+    _sound: {fileID: 11400000, guid: 5f20941467143fb4dbd5e07f2371159c, type: 2}
+    _loop: 0

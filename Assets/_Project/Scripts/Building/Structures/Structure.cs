@@ -91,7 +91,7 @@ namespace LastHaven.Building
             _services ??= StructureServices.Resolve(this);
             _site = site;
             _data = data;
-            _levels.Reset(data, buildCost);
+            _levels.Reset(data, buildCost, _services.Modifiers);
             IsPlaced = true;
             Bind();
         }

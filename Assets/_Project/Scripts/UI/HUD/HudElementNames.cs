@@ -104,6 +104,32 @@ namespace LastHaven.UI
         public const string BossHealthFill = "boss-health-fill";
         public const string BossHealthValue = "boss-health-value";
 
+        // XP ve seviye (HudXpController).
+        public const string XpGroup = "xp-group";
+        public const string XpLevel = "xp-level";
+        public const string XpFill = "xp-fill";
+        public const string XpValue = "xp-value";
+
+        // Alınan perk'ler (HudPerksController): rozetleri kod ekler; ipucu kutusu rozetin üstüne gelince.
+        public const string PerkList = "perk-list";
+        public const string PerkTooltip = "perk-tooltip";
+        public const string PerkTooltipName = "perk-tooltip-name";
+        public const string PerkTooltipStacks = "perk-tooltip-stacks";
+        public const string PerkTooltipDescription = "perk-tooltip-description";
+
+        // Uçan yazılar: hasar sayıları ve jeton yazıları (HudFloatingTextController); etiketleri kod oluşturur.
+        public const string FloatingTexts = "floating-texts";
+
+        // Evre başlığı (HudBannerController): her başlık türünün kendi grubu, metni UXML'de; kod sadece sayı ve adı yazar.
+        public const string Banner = "banner";
+        public const string BannerDay = "banner-day";
+        public const string BannerDayNumber = "banner-day-number";
+        public const string BannerNight = "banner-night";
+        public const string BannerNightNumber = "banner-night-number";
+        public const string BannerDawn = "banner-dawn";
+        public const string BannerBoss = "banner-boss";
+        public const string BannerSubtitle = "banner-subtitle";
+
         /// <summary>Saldırı yönü göstergeleri, <see cref="Core.CompassDirection"/> sırasıyla (indeks = yön).</summary>
         public static readonly string[] AttackIndicatorsByDirection =
         {

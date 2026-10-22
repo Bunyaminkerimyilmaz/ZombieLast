@@ -26,7 +26,8 @@ namespace LastHaven.Editor
                 entries.Add(new BuildSceneEntry(scene.path, scene.enabled, exists));
             }
 
-            BuildSettingsValidator.Validate(entries, new List<string>(projectScenes), GameSceneBuilder.ScenesFolder, report);
+            BuildSettingsValidator.Validate(entries, new List<string>(projectScenes), GameSceneBuilder.ScenesFolder,
+                MainMenuSceneBuilder.ScenePath, report);
             report.Note($"{GameSceneBuilder.ScenesFolder} altında {projectScenes.Count} sahne, Build Settings'te {entries.Count} satır kontrol edildi.");
         }
     }

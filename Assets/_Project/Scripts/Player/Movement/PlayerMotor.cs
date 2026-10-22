@@ -5,7 +5,8 @@ namespace LastHaven.Player
 {
     /// <summary>
     /// CharacterController ile hareket: kamera yaw'ına göre yürüme, yerçekimi ve atılma (GDD §5).
-    /// Atılma süresince <see cref="IsInvulnerable"/> true olur. Zamanlayıcı mantığı <see cref="DashModel"/>'de.
+    /// Atılma süresince <see cref="IsInvulnerable"/> true olur. Zamanlayıcı mantığı <see cref="DashModel"/>'de. Bekleme süresi
+    /// <see cref="IRunModifiers"/> DashCooldown'la değişir (Adrenalin −%40), her atılmada okunur.
     /// </summary>
     [DisallowMultipleComponent]
     [RequireComponent(typeof(CharacterController), typeof(Health))]
@@ -22,6 +23,7 @@ namespace LastHaven.Player
         private Health _health;
         private IInputReader _input;
         private ICameraService _camera;
+        private IRunModifiers _modifiers;
         private Vector3 _moveDirection;
         private float _verticalVelocity;
         private bool _dashRequested;
@@ -39,6 +41,12 @@ namespace LastHaven.Player
 
         /// <summary>Bu karenin kameraya göre çevrilmiş yürüme yönü (yatay, uzunluk 0..1).</summary>
         public Vector3 MoveDirection => _moveDirection;
+
+        /// <summary>Atılma bekleme süresi: taban (PlayerData) × run çarpanı (Adrenalin); en az 0. <paramref name="modifiers"/> null ise taban.</summary>
+        public static float CalculateDashCooldown(float baseCooldown, IRunModifiers modifiers)
+        {
+            return modifiers != null ? Mathf.Max(0f, modifiers.Get(StatType.DashCooldown, baseCooldown)) : baseCooldown;
+        }
 
         private void Awake()
         {
@@ -62,6 +70,9 @@ namespace LastHaven.Player
             {
                 Debug.LogWarning("PlayerMotor: ICameraService bulunamadı; hareket dünya eksenine göre olacak (W = kuzey).", this);
             }
+
+            // Yoksa bekleme süresi sadece PlayerData'dan (WeaponController zaten uyarır).
+            ServiceLocator.TryGet(out _modifiers);
 
             _started = true;
             SubscribeInput();
@@ -125,7 +136,7 @@ namespace LastHaven.Player
 
             // Hareket girdisi yoksa baktığı yöne atılır.
             Vector3 direction = _moveDirection.sqrMagnitude >= PlanarMath.MinDirectionSqr ? _moveDirection : transform.forward;
-            _dash.TryStart(direction, _data.DashDistance, _data.DashDuration, _data.DashCooldown);
+            _dash.TryStart(direction, _data.DashDistance, _data.DashDuration, CalculateDashCooldown(_data.DashCooldown, _modifiers));
         }
 
         private void SubscribeInput()

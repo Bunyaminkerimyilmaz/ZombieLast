@@ -48,7 +48,7 @@ namespace LastHaven.Editor
             }
 
             report.Note($"{DataFolder} altında {checkedCount} ScriptableObject kontrol edildi (gece verisi kendi bölümünde). " +
-                        $"Boş bırakılabilir alanlar: Tooltip'inde \"Opsiyonel\" geçenler, ses ve görsel (AudioClip, Sprite, Texture).");
+                        $"Boş bırakılabilir alanlar: Tooltip'inde \"Opsiyonel\" geçenler, ses ve görsel (AudioClip, SoundData, Sprite, Texture).");
         }
 
         private static List<string> FindAssetPaths()

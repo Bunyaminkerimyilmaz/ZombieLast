@@ -53,3 +53,68 @@
 .lh-screen.lh-panel .result-hint {
     margin-top: var(--space);
 }
+
+/* --- Run sonu (14.3): alınan perk'ler ve iki buton --- */
+
+.lh-screen.lh-panel .run-end-perks-title {
+    align-self: flex-start;
+    margin-bottom: var(--space-small);
+}
+
+.lh-screen.lh-panel .run-end-perks {
+    flex-direction: row;
+    flex-wrap: wrap;
+    width: 100%;
+    max-width: 960px;
+    margin-bottom: var(--space);
+}
+
+.lh-screen.lh-panel .run-end-no-perks {
+    align-self: flex-start;
+    color: var(--color-text-dim);
+    margin-bottom: var(--space);
+}
+
+.lh-screen.lh-panel .run-end-perk {
+    flex-direction: row;
+    align-items: center;
+    margin: 0 var(--space-small) var(--space-small) 0;
+    padding: var(--space-small) var(--space);
+    border-width: var(--border);
+    border-radius: var(--radius);
+    border-color: var(--color-rarity-common);
+    background-color: var(--color-rarity-common-back);
+}
+
+.lh-screen.lh-panel .run-end-perk--rare {
+    border-color: var(--color-rarity-rare);
+    background-color: var(--color-rarity-rare-back);
+}
+
+.lh-screen.lh-panel .run-end-perk--epic {
+    border-color: var(--color-rarity-epic);
+    background-color: var(--color-rarity-epic-back);
+}
+
+.lh-screen.lh-panel .run-end-perk__name {
+    font-size: var(--font-small);
+    -unity-font-style: bold;
+}
+
+.lh-screen.lh-panel .run-end-perk__stacks {
+    margin-left: var(--space);
+}
+
+.lh-screen.lh-panel .run-end-buttons {
+    justify-content: center;
+    margin-top: var(--space);
+}
+
+.lh-screen.lh-panel .run-end-button {
+    margin: var(--space) var(--space) 0 var(--space);
+}
+
+.lh-screen.lh-panel .button:focus {
+    border-color: var(--color-focus);
+    background-color: var(--color-button-hover);
+}

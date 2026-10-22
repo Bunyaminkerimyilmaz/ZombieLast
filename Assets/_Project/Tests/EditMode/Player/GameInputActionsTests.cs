@@ -80,6 +80,8 @@ namespace LastHaven.Tests.EditMode
         [TestCase(InputMode.UI, Names.Shop, "<Keyboard>/tab")]
         [TestCase(InputMode.UI, Names.Shop, "<Gamepad>/select")]
         [TestCase(InputMode.UI, Names.Pause, "<Gamepad>/start")]
+        [TestCase(InputMode.UI, "OptionSlot1", "<Keyboard>/1")]
+        [TestCase(InputMode.UI, "OptionSlot3", "<Keyboard>/3")]
         public void Binding_MatchesGddTable(InputMode mode, string actionName, string path)
         {
             InputAction action = _actions.GetMap(mode).FindAction(actionName);
@@ -128,6 +130,9 @@ namespace LastHaven.Tests.EditMode
             Assert.IsNull(_actions.Gameplay.FindAction("WeaponSlot" + (GameInputActions.WeaponSlotCount + 1)));
             Assert.IsNotNull(_actions.BuildMode.FindAction("BuildSlot" + GameInputActions.BuildSlotCount));
             Assert.IsNull(_actions.BuildMode.FindAction("BuildSlot" + (GameInputActions.BuildSlotCount + 1)));
+            Assert.IsNotNull(_actions.UI.FindAction("OptionSlot" + GameInputActions.OptionSlotCount), "13.3: seviye kartları 1–3.");
+            Assert.IsNull(_actions.UI.FindAction("OptionSlot" + (GameInputActions.OptionSlotCount + 1)));
+            Assert.IsNull(_actions.Gameplay.FindAction("OptionSlot1"), "Oyunda 1–3 silah yuvası.");
             Assert.AreEqual("WeaponSlot1", GameInputActions.SlotActionName(Names.WeaponSlot, 0));
         }
 

@@ -1,0 +1,123 @@
+/*
+ * HUD perk listesi (sol alt, can kutusunun üstünde; HudPerksController): alınan her perk için kare rozet (PerkBadgeView, kodla
+ * kurulur), ikon yoksa baş harfler; çerçeve ve zemin nadirlik renginde (PerkStyle: hud-perk--common / --rare / --epic). Yığın 2+
+ * ise köşede sayı. Rozetin üstüne gelince sütunun üstünde ipucu kutusu (hud-perk-tooltip--<nadirlik> adın rengini seçer).
+ * Renkler ve yazı boyutları Theme.uss değişkenlerinden (UIGenerationTests kontrol eder). Sol alt sütunun konumu HUD.uss'te.
+ */
+
+.lh-screen.hud .hud-perks {
+    flex-direction: row;
+    flex-wrap: wrap;
+    margin-bottom: var(--space-small);
+}
+
+.lh-screen.hud .hud-perk {
+    width: 46px;
+    height: 46px;
+    margin: var(--space-small) var(--space) var(--space-small) 0;
+    align-items: center;
+    justify-content: center;
+    border-width: var(--border);
+    border-radius: var(--radius);
+    border-color: var(--color-rarity-common);
+    background-color: var(--color-rarity-common-back);
+}
+
+.lh-screen.hud .hud-perk.hud-perk--rare {
+    border-color: var(--color-rarity-rare);
+    background-color: var(--color-rarity-rare-back);
+}
+
+.lh-screen.hud .hud-perk.hud-perk--epic {
+    border-color: var(--color-rarity-epic);
+    background-color: var(--color-rarity-epic-back);
+}
+
+.lh-screen.hud .hud-perk:hover {
+    border-color: var(--color-focus);
+}
+
+.lh-screen.hud .hud-perk__icon {
+    position: absolute;
+    left: 4px;
+    top: 4px;
+    right: 4px;
+    bottom: 4px;
+    -unity-background-scale-mode: scale-to-fit;
+}
+
+.lh-screen.hud .hud-perk__initials {
+    font-size: var(--font-small);
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+}
+
+/* Yığın sayısı: rozetin sağ üst köşesinde, dışa taşan küçük kabarcık (baş harflerin üstüne binmesin). */
+.lh-screen.hud .hud-perk__stacks {
+    position: absolute;
+    right: -8px;
+    top: -8px;
+    min-width: 20px;
+    height: 20px;
+    padding: 0 var(--space-small);
+    border-width: var(--border-thin);
+    border-color: var(--color-panel-border);
+    border-radius: 10px;
+    background-color: var(--color-bar-back);
+    color: var(--color-text);
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+}
+
+/* --- İpucu: sol alt sütunun hemen üstünde --- */
+
+.lh-screen.hud .hud-perk-tooltip {
+    position: absolute;
+    left: 0;
+    bottom: 100%;
+    width: 440px;
+    margin-bottom: var(--space-small);
+}
+
+.lh-screen.hud .hud-perk-tooltip__header {
+    align-items: center;
+}
+
+.lh-screen.hud .hud-perk-tooltip--common .hud-perk-tooltip__name {
+    color: var(--color-rarity-common);
+}
+
+.lh-screen.hud .hud-perk-tooltip--rare .hud-perk-tooltip__name {
+    color: var(--color-rarity-rare);
+}
+
+.lh-screen.hud .hud-perk-tooltip--epic .hud-perk-tooltip__name {
+    color: var(--color-rarity-epic);
+}
+
+.lh-screen.hud .hud-perk-tooltip__rarity {
+    display: none;
+}
+
+.lh-screen.hud .hud-perk-tooltip--common .hud-perk-tooltip__rarity--common {
+    display: flex;
+    color: var(--color-rarity-common);
+}
+
+.lh-screen.hud .hud-perk-tooltip--rare .hud-perk-tooltip__rarity--rare {
+    display: flex;
+    color: var(--color-rarity-rare);
+}
+
+.lh-screen.hud .hud-perk-tooltip--epic .hud-perk-tooltip__rarity--epic {
+    display: flex;
+    color: var(--color-rarity-epic);
+}
+
+.lh-screen.hud .hud-perk-tooltip__description {
+    margin-top: var(--space-small);
+    white-space: normal;
+    color: var(--color-text);
+    -unity-font-style: normal;
+    letter-spacing: 0;
+}

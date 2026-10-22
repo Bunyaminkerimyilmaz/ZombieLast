@@ -15,7 +15,16 @@ namespace LastHaven.Core
 
         void SetPreset(CameraPreset preset);
 
-        /// <summary>Kamerayı sarsar. Şimdilik boş; Gün 14'te dolacak.</summary>
+        /// <summary>
+        /// Ekran sarsıntısı açık mı (GDD §16 ayarı; başlangıç değeri kamera ayarlarından). Kapalıyken <see cref="Shake"/> ve
+        /// <see cref="CameraShakeRequestedEvent"/> etkisizdir. Ayarlar ekranı (14.3) bunu yazar.
+        /// </summary>
+        bool ShakeEnabled { get; set; }
+
+        /// <summary>
+        /// Kamerayı uzaklıktan bağımsız sarsar (0 = yok; 1 ≈ güçlü darbe). Aynı karedeki istekler toplanmaz, en güçlüsü uygulanır.
+        /// Konumlu istek için <see cref="CameraShakeRequestedEvent"/> gönder.
+        /// </summary>
         void Shake(float strength);
     }
 }

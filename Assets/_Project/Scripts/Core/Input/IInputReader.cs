@@ -68,6 +68,9 @@ namespace LastHaven.Core
         /// <summary>Onay: yapıyı yerleştir (BuildMode) veya seçimi onayla (UI).</summary>
         event Action ConfirmPressed;
 
+        /// <summary>Menü seçeneği doğrudan seçildi (UI, 1–3 tuşları; ör. seviye kartı). İndeks 0 tabanlıdır (1 tuşu → 0).</summary>
+        event Action<int> OptionPressed;
+
         /// <summary>Sadece <paramref name="mode"/>'un action haritasını açar.</summary>
         void SetMode(InputMode mode);
     }

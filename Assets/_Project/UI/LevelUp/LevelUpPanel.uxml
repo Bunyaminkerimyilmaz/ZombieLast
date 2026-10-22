@@ -1,0 +1,33 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <Style src="../Themes/Theme.uss" />
+    <Style src="LevelUp.uss" />
+    <!-- Seviye kartları (GDD §13, §16; LevelUpPanelController). Element adları LevelUpElementNames.cs ile eşleşmeli (EditMode testi
+         kontrol eder). Kartlar PerkCard.uxml'den kodla levelup-cards satırına eklenir. Kök gizli başlar (hidden); UI Builder'da
+         önizlemek için geçici kaldır. Karartma tüm ekranı kaplar: alttaki HUD'a ve panellere tıklama geçmez. -->
+    <ui:VisualElement name="levelup-panel" class="lh-screen lh-levelup hidden">
+        <ui:VisualElement class="levelup-backdrop">
+            <ui:VisualElement class="levelup-header" picking-mode="Ignore">
+                <ui:Label text="SEVİYE ATLADIN" class="label-big levelup-title" picking-mode="Ignore" />
+                <ui:VisualElement class="row levelup-level" picking-mode="Ignore">
+                    <ui:Label text="SEVİYE" class="label-small levelup-caption" picking-mode="Ignore" />
+                    <ui:Label name="levelup-level-value" text="2" class="label-large levelup-level-value" picking-mode="Ignore" />
+                </ui:VisualElement>
+                <ui:Label text="Bir perk seç" class="label levelup-subtitle" picking-mode="Ignore" />
+            </ui:VisualElement>
+            <ui:VisualElement name="levelup-cards" class="row levelup-cards" picking-mode="Ignore" />
+            <!-- Kuyrukta bekleyen seviye varsa: "Sırada +2 seviye daha" (seçimden sonra onların kartları gelir). -->
+            <ui:VisualElement name="levelup-pending" class="row levelup-pending hidden" picking-mode="Ignore">
+                <ui:Label text="Sırada" class="label-small" picking-mode="Ignore" />
+                <ui:Label name="levelup-pending-value" text="+0" class="label levelup-pending-value" picking-mode="Ignore" />
+                <ui:Label text="seviye daha" class="label-small" picking-mode="Ignore" />
+            </ui:VisualElement>
+            <ui:VisualElement class="row levelup-hints" picking-mode="Ignore">
+                <ui:Label text="1–3" class="key key--keyboard" picking-mode="Ignore" />
+                <ui:Label text="Sol tık" class="key key--keyboard" picking-mode="Ignore" />
+                <ui:Label text="D-pad" class="key key--gamepad" picking-mode="Ignore" />
+                <ui:Label text="A" class="key key--gamepad" picking-mode="Ignore" />
+                <ui:Label text="kart seç" class="label-tiny" picking-mode="Ignore" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

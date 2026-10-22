@@ -1,0 +1,50 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <Style src="../Themes/Theme.uss" />
+    <Style src="Menus.uss" />
+    <!-- Element adları MenuElementNames.cs ile eşleşmeli (SettingsPanelController / SettingsPanelView). Her satır "settings-row";
+         odaktaki satırı kod vurgular. Kök gizli başlar (hidden); UI Builder'da önizlemek için kökten "hidden" sınıfını geçici kaldır. -->
+    <ui:VisualElement name="settings-panel" class="lh-screen lh-settings hidden">
+        <ui:VisualElement class="overlay">
+            <ui:VisualElement class="panel menu-panel settings-panel">
+                <ui:Label text="AYARLAR" class="label-big menu-panel-title" />
+
+                <ui:Label text="SES" class="label-small settings-section" />
+                <ui:VisualElement class="row settings-row">
+                    <ui:Label text="Genel" class="label settings-label" />
+                    <ui:SliderInt name="master-volume-slider" low-value="0" high-value="100" value="100" fill="true" class="settings-slider" />
+                    <ui:Label name="master-volume-value" text="100" class="label settings-value" />
+                </ui:VisualElement>
+                <ui:VisualElement class="row settings-row">
+                    <ui:Label text="Müzik" class="label settings-label" />
+                    <ui:SliderInt name="music-volume-slider" low-value="0" high-value="100" value="100" fill="true" class="settings-slider" />
+                    <ui:Label name="music-volume-value" text="100" class="label settings-value" />
+                </ui:VisualElement>
+                <ui:VisualElement class="row settings-row">
+                    <ui:Label text="Efektler" class="label settings-label" />
+                    <ui:SliderInt name="sfx-volume-slider" low-value="0" high-value="100" value="100" fill="true" class="settings-slider" />
+                    <ui:Label name="sfx-volume-value" text="100" class="label settings-value" />
+                </ui:VisualElement>
+
+                <ui:Label text="KAMERA VE EKRAN" class="label-small settings-section" />
+                <ui:VisualElement class="row settings-row">
+                    <ui:Label text="Kamera" class="label settings-label" />
+                    <ui:VisualElement class="row settings-choices">
+                        <ui:Button name="camera-isometric-button" text="İzometrik" class="settings-choice" />
+                        <ui:Button name="camera-top-down-button" text="Tepeden" class="settings-choice" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+                <ui:VisualElement class="row settings-row">
+                    <ui:Label text="Ekran sarsıntısı" class="label settings-label" />
+                    <ui:Toggle name="shake-toggle" class="settings-toggle" />
+                </ui:VisualElement>
+                <ui:VisualElement class="row settings-row">
+                    <ui:Label text="Tam ekran" class="label settings-label" />
+                    <ui:Toggle name="fullscreen-toggle" class="settings-toggle" />
+                </ui:VisualElement>
+
+                <ui:Button name="settings-back-button" text="Geri" class="button menu-button settings-back" />
+                <ui:Label text="Değişiklikler hemen uygulanır ve kaydedilir  ·  Esc / B: geri" class="label-small menu-hint" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

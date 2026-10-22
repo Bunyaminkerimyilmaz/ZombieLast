@@ -30,5 +30,8 @@ namespace LastHaven.Player
         public const string Sell = "Sell";
         public const string Confirm = "Confirm";
         public const string Cancel = "Cancel";
+
+        /// <summary>UI modunda 1–3: menüdeki seçeneği (ör. seviye kartı) doğrudan seçer. Yuva action'ı ("OptionSlot1").</summary>
+        public const string OptionSlot = "OptionSlot";
     }
 }

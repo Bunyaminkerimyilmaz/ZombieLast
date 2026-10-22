@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e2686592ef2ffe428e8c24355683ee5, type: 3}
+  m_Name: MenuConfig
+  m_EditorClassIdentifier: LastHaven.UI::LastHaven.UI.MenuConfig
+  _volumeStepPercent: 5
+  _orbitCenter: {x: 0, y: 0, z: 0}
+  _orbitRadius: 19
+  _orbitHeight: 9
+  _lookHeight: 1.5
+  _orbitSpeed: 4
+  _startAngle: 35
+  _fieldOfView: 40

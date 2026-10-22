@@ -6,15 +6,16 @@ namespace LastHaven.Building
     /// <summary>
     /// <see cref="Structure"/>'ın kullandığı servisler (ilk yerleşmede ServiceLocator'dan bir kez alınır). Eksik olan null kalır ve
     /// uyarı loglanır: hedef kaydı yoksa düşmanlar yapıyı görmez, cüzdan yoksa yükseltme ücretsizdir, ekonomi kuralları yoksa
-    /// satış iade vermez.
+    /// satış iade vermez. Run çarpanları (barikat canı, Sağlam Duvar) yoksa uyarısız taban can kullanılır.
     /// </summary>
     public sealed class StructureServices
     {
-        private StructureServices(ITargetRegistry registry, IWallet wallet, IEconomyRules rules)
+        private StructureServices(ITargetRegistry registry, IWallet wallet, IEconomyRules rules, IRunModifiers modifiers)
         {
             Registry = registry;
             Wallet = wallet;
             Rules = rules;
+            Modifiers = modifiers;
         }
 
         public ITargetRegistry Registry { get; }
@@ -22,6 +23,9 @@ namespace LastHaven.Building
         public IWallet Wallet { get; }
 
         public IEconomyRules Rules { get; }
+
+        /// <summary>Null olabilir.</summary>
+        public IRunModifiers Modifiers { get; }
 
         /// <param name="context">Uyarıların bağlamı (tıklanınca seçilen obje).</param>
         public static StructureServices Resolve(Object context)
@@ -41,7 +45,8 @@ namespace LastHaven.Building
                 Debug.LogWarning("Structure: IEconomyRules bulunamadı; satış iade vermeyecek. Sahnede [Systems]/Economy var mı?", context);
             }
 
-            return new StructureServices(registry, wallet, rules);
+            ServiceLocator.TryGet(out IRunModifiers modifiers);
+            return new StructureServices(registry, wallet, rules, modifiers);
         }
     }
 }

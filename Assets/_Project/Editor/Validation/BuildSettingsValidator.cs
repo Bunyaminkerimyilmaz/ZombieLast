@@ -36,6 +36,15 @@ namespace LastHaven.Editor
         public static void Validate(IReadOnlyList<BuildSceneEntry> buildScenes, IReadOnlyList<string> projectScenes,
             string projectFolder, ValidationReport report)
         {
+            Validate(buildScenes, projectScenes, projectFolder, null, report);
+        }
+
+        /// <summary>
+        /// Yukarıdaki kurallar + 14.3: <paramref name="startScene"/> (ana menü) projede varsa ilk etkin sahne o olmalı (uyarı).
+        /// </summary>
+        public static void Validate(IReadOnlyList<BuildSceneEntry> buildScenes, IReadOnlyList<string> projectScenes,
+            string projectFolder, string startScene, ValidationReport report)
+        {
             foreach (string scene in projectScenes)
             {
                 int index = IndexOf(buildScenes, scene);
@@ -72,6 +81,25 @@ namespace LastHaven.Editor
                 report.Warning($"Player build '{first.Value.Path}' ile açılır (ilk etkin sahne {projectFolder} dışında). " +
                                "Tools/Last Haven/Build Game Scene oyun sahnesini öne alır.");
             }
+            else if (startScene != null && Contains(projectScenes, startScene)
+                     && !string.Equals(first.Value.Path, startScene, StringComparison.Ordinal))
+            {
+                report.Warning($"Player build '{first.Value.Path}' ile açılır; açılış sahnesi {startScene} olmalı. " +
+                               "Tools/Last Haven/Build Main Menu Scene onu başa alır.");
+            }
+        }
+
+        private static bool Contains(IReadOnlyList<string> paths, string path)
+        {
+            for (int i = 0; i < paths.Count; i++)
+            {
+                if (string.Equals(paths[i], path, StringComparison.Ordinal))
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         /// <summary><paramref name="path"/> klasörün (veya alt klasörünün) içinde mi; ordinal.</summary>

@@ -7,14 +7,15 @@ namespace LastHaven.Editor
 {
     /// <summary>
     /// Validate Project bölümü: <c>Prefabs/</c> altındaki varlık prefab'larında Visual alt objesi (<see cref="PrefabVisualValidator"/>).
-    /// Efekt prefab'ları (<c>Prefabs/Feedback/</c>: iz, kıvılcım, namlu ışığı, moloz) varlık değildir; kontrol edilmez.
+    /// Efekt prefab'ları (<c>Prefabs/Feedback/</c>: iz, kıvılcım, namlu ışığı, moloz) ve ses kaynakları (<c>Prefabs/Audio/</c>, 14.2)
+    /// varlık değildir; kontrol edilmez.
     /// </summary>
     public sealed class PrefabVisualValidationStep : IValidationStep
     {
         public const string PrefabsFolder = "Assets/_Project/Prefabs";
 
         /// <summary>İki katman kuralı dışındaki klasörler (sonunda '/').</summary>
-        public static readonly IReadOnlyList<string> ExcludedFolders = new[] { PrefabsFolder + "/Feedback/" };
+        public static readonly IReadOnlyList<string> ExcludedFolders = new[] { PrefabsFolder + "/Feedback/", PrefabsFolder + "/Audio/" };
 
         public int Order => 200;
 

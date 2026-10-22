@@ -10,7 +10,8 @@
         "LastHaven.Building",
         "LastHaven.Economy",
         "LastHaven.GameFlow",
-        "LastHaven.Progression"
+        "LastHaven.Progression",
+        "Unity.RenderPipelines.Core.Runtime"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

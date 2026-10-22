@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cb7306ebbf7966f468627c2ae485ccbb, type: 3}
+  m_Name: FeedbackConfig
+  m_EditorClassIdentifier: LastHaven.Feedback::LastHaven.Feedback.FeedbackConfig
+  _shotShake: 0.06
+  _weaponShakes:
+  - _weaponId: shotgun
+    _strength: 0.2
+  _killShake: 0.12
+  _killShakePlayerKillsOnly: 1
+  _heavyKillShake: 0.6
+  _heavyEnemyIds:
+  - tank
+  - brute
+  - brute_final
+  _heavyKillHitStop: 0.06
+  _hitStopPlayerKillsOnly: 1
+  _explosionShake: 0.35
+  _damageFlashWeight: 1
+  _damageFlashDuration: 0.35
+  _lowHealthThreshold: 0.3
+  _lowHealthPulsePeriod: 0.9
+  _lowHealthMinWeight: 0.2
+  _lowHealthMaxWeight: 0.65

@@ -23,6 +23,7 @@ namespace LastHaven.Building
         private readonly BuildRangePreview _range;
         private readonly Color _validColor;
         private readonly Color _invalidColor;
+        private IInputReader _input;
 
         public BuildPlacementTool(
             BuildSite site, BuildSelection selection, BuildGhost ghost, BuildPointer pointer, StructureHoverTool hover, BuildRangePreview range)
@@ -44,10 +45,11 @@ namespace LastHaven.Building
         /// <summary>İnşa modunun yapı tuşlarını (1–5, D-pad, Q, sol tık, U, X) bu araca bağlar.</summary>
         public void Bind(IInputReader input)
         {
+            _input = input;
             input.BuildSlotPressed += SelectSlot;
             input.BuildCyclePressed += Cycle;
             input.RotatePressed += Rotate;
-            input.ConfirmPressed += Confirm;
+            input.ConfirmPressed += OnConfirmPressed;
             input.UpgradePressed += Upgrade;
             input.SellPressed += Sell;
         }
@@ -57,9 +59,18 @@ namespace LastHaven.Building
             input.BuildSlotPressed -= SelectSlot;
             input.BuildCyclePressed -= Cycle;
             input.RotatePressed -= Rotate;
-            input.ConfirmPressed -= Confirm;
+            input.ConfirmPressed -= OnConfirmPressed;
             input.UpgradePressed -= Upgrade;
             input.SellPressed -= Sell;
+        }
+
+        // Onay hem inşa modu hem UI haritasında var: inşa modunda duraklatma menüsü açıkken (UI) Enter / A yapı yerleştirmesin.
+        private void OnConfirmPressed()
+        {
+            if (_input != null && _input.Mode == InputMode.BuildMode)
+            {
+                Confirm();
+            }
         }
 
         /// <summary>

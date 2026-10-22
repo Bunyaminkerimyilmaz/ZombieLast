@@ -2,6 +2,29 @@ using UnityEngine;
 
 namespace LastHaven.Core
 {
+    /// <summary>
+    /// Bir patlama olunca gönderilir (Patlayan, Zincirleme Son), alan hasarı uygulandıktan sonra. Kamera sarsıntısı (Feedback) ve
+    /// ses dinler. Boss'un yere vurması patlama değildir (kendi sarsıntı isteğini gönderir).
+    /// </summary>
+    public readonly struct ExplosionEvent : IEvent
+    {
+        public ExplosionEvent(Vector3 position, float radius, GameObject source)
+        {
+            Position = position;
+            Radius = radius;
+            Source = source;
+        }
+
+        /// <summary>Patlamanın merkezi (dünya).</summary>
+        public Vector3 Position { get; }
+
+        /// <summary>Hasar yarıçapı (m).</summary>
+        public float Radius { get; }
+
+        /// <summary>Patlamanın sahibi (patlayan düşman; Zincirleme Son'da oyuncu). Null olabilir.</summary>
+        public GameObject Source { get; }
+    }
+
     /// <summary>Bir silah ateşlendiğinde gönderilir: tetik başına bir kez, saçma sayısından bağımsız.</summary>
     public readonly struct WeaponFiredEvent : IEvent
     {

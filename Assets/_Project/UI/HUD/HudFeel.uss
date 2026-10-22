@@ -1,0 +1,73 @@
+/*
+ * HUD oyun hissi (14.1): uçan yazılar (hasar sayıları, "+12" jeton yazıları) ve evre başlığı. Renkler ve yazı boyutları Theme.uss
+ * değişkenlerinden. Konum, opaklık ve boy kodla sürülür (HudFloatingTextController, HudBannerController); burada sadece görünüm.
+ */
+
+/* --- Uçan yazılar: ekranı kaplayan katman; etiketin left/top'u yazının merkezi (translate ile ortalanır). --- */
+
+.lh-screen.hud .hud-float-layer {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+}
+
+/* Yazı boyu, kalınlık ve gölge Theme.uss'teki label-large sınıfından (kod ikisini birlikte ekler). */
+.lh-screen.hud .hud-float-text {
+    position: absolute;
+    translate: -50% -50%;
+    -unity-text-align: middle-center;
+    white-space: nowrap;
+}
+
+.lh-screen.hud .hud-float-text--damage {
+    color: var(--color-damage-text);
+}
+
+.lh-screen.hud .hud-float-text--big {
+    color: var(--color-damage-big);
+}
+
+.lh-screen.hud .hud-float-text--coin {
+    color: var(--color-money);
+}
+
+/* --- Evre başlığı: ekranın üst-ortası (oyuncunun biraz üstü); kod opaklığı ve boyu sürer (belir → dur → sön). --- */
+
+.lh-screen.hud .hud-banner {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 24%;
+    align-items: center;
+}
+
+.lh-screen.hud .hud-banner__title {
+    font-size: var(--font-giant);
+    letter-spacing: 6px;
+}
+
+.lh-screen.hud .hud-banner__number {
+    margin-left: var(--space-large);
+}
+
+.lh-screen.hud .hud-banner__group--day .hud-banner__title {
+    color: var(--color-day);
+}
+
+.lh-screen.hud .hud-banner__group--night .hud-banner__title {
+    color: var(--color-night);
+}
+
+.lh-screen.hud .hud-banner__group--dawn .hud-banner__title {
+    color: var(--color-dawn);
+}
+
+.lh-screen.hud .hud-banner__group--boss .hud-banner__title {
+    color: var(--color-boss);
+}
+
+.lh-screen.hud .hud-banner__subtitle {
+    color: var(--color-text);
+}

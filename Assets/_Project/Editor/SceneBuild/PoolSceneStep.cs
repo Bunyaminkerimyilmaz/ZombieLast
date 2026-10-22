@@ -11,7 +11,13 @@ namespace LastHaven.Editor
 
         public void Build(SceneBuildContext context)
         {
-            context.CreateObject(PoolObjectName, context.Systems).AddComponent<PoolService>();
+            Create(context);
+        }
+
+        /// <summary>[Systems]/Pool'u kurar (ana menü sahnesi de kullanır: arayüz sesleri havuzdan).</summary>
+        public static PoolService Create(SceneBuildContext context)
+        {
+            return context.CreateObject(PoolObjectName, context.Systems).AddComponent<PoolService>();
         }
     }
 }
